@@ -11,7 +11,6 @@ import {
     ArrowRight, Sparkles
 } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
-import * as api from '../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const registrationSchema = z.object({
@@ -97,15 +96,17 @@ const Register = () => {
         window.scrollTo(0, 0);
     };
 
-    const onSubmit = async (data) => {
-        try {
-            const response = await api.register(data);
-            login(response.data);
-            navigate('/dashboard');
-        } catch (err) {
-            console.error(err);
-            alert(err.response?.data?.message || 'Registration failed');
-        }
+    const onSubmit = (data) => {
+        // Frontend-only mock registration
+        const mockUser = {
+            _id: 'mock_user_' + Date.now(),
+            name: data.name,
+            email: data.email,
+            membership: data.membership || 'Basic',
+            token: 'mock_token_frontend_only',
+        };
+        login(mockUser);
+        navigate('/dashboard');
     };
 
     const renderProgress = () => (
@@ -477,27 +478,39 @@ const Register = () => {
                                                     { id: 'Basic', name: 'Basic', price: '₹499 /mo', perks: ['Limited searches', 'Standard profile', 'Basic matching'] },
                                                     { id: 'Premium', name: 'Premium', price: '₹999 /mo', perks: ['Unlimited interests', 'Highlighted profile', 'See who viewed you'], recommended: true },
                                                     { id: 'Elite', name: 'Elite', price: '₹1599 /mo', perks: ['Personalized matchmaker', 'Priority support', 'All premium features'] },
-                                                ].map((plan) => (
-                                                    <label key={plan.id} className={`relative flex items-center justify-between p-6 rounded-3xl border-2 cursor-pointer transition-all ${watch('membership') === plan.id ? 'border-[#800020] bg-[#800020]/5 shadow-lg' : 'border-gray-100 hover:border-[#800020]/20 bg-white'}`}>
-                                                        <input type="radio" value={plan.id} {...register('membership')} className="hidden" />
-                                                        <div className="flex items-center gap-4">
-                                                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${watch('membership') === plan.id ? 'border-[#800020]' : 'border-gray-200'}`}>
-                                                                {watch('membership') === plan.id && <div className="w-3 h-3 rounded-full bg-[#800020]"></div>}
-                                                            </div>
-                                                            <div>
-                                                                <div className="flex items-center gap-2">
-                                                                    <span className="font-bold text-gray-900">{plan.name}</span>
-                                                                    {plan.recommended && <span className="bg-[#D4AF37] text-white text-[8px] font-black uppercase px-2 py-0.5 rounded-full tracking-tighter">Recommended</span>}
+                                                ].map((plan) => {
+                                                    const isSelected = watch('membership') === plan.id;
+                                                    return (
+                                                        <div
+                                                            key={plan.id}
+                                                            onClick={() => setValue('membership', plan.id)}
+                                                            className={`flex items-center justify-between p-6 rounded-3xl border-2 cursor-pointer transition-all select-none ${isSelected ? 'border-[#800020] shadow-lg' : 'border-gray-100 hover:border-[#800020]/30'}`}
+                                                            style={{ backgroundColor: '#ffffff' }}
+                                                        >
+                                                            <div className="flex items-center gap-4">
+                                                                <div
+                                                                    className="w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0"
+                                                                    style={{ borderColor: isSelected ? '#800020' : '#e5e7eb', backgroundColor: '#ffffff' }}
+                                                                >
+                                                                    {isSelected && (
+                                                                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#800020' }}></div>
+                                                                    )}
                                                                 </div>
-                                                                <p className="text-[10px] text-gray-400 font-medium">{plan.perks.join(' • ')}</p>
+                                                                <div>
+                                                                    <div className="flex items-center gap-2">
+                                                                        <span className="font-bold" style={{ color: '#111827' }}>{plan.name}</span>
+                                                                        {plan.recommended && <span className="text-white text-[8px] font-black uppercase px-2 py-0.5 rounded-full tracking-tighter" style={{ backgroundColor: '#D4AF37' }}>Recommended</span>}
+                                                                    </div>
+                                                                    <p className="text-[10px] font-medium" style={{ color: '#9ca3af' }}>{plan.perks.join(' • ')}</p>
+                                                                </div>
+                                                            </div>
+                                                            <div className="text-right flex flex-col items-end">
+                                                                <span className="text-xl font-serif font-black italic" style={{ color: '#800020' }}>{plan.price.split(' ')[0]}</span>
+                                                                <span className="text-[10px] font-bold uppercase tracking-wider mt-1" style={{ color: '#9ca3af' }}>Monthly</span>
                                                             </div>
                                                         </div>
-                                                        <div className="text-right flex flex-col items-end">
-                                                            <span className="text-xl font-serif font-black text-[#800020] italic">{plan.price.split(' ')[0]}</span>
-                                                            {plan.price.includes('/mo') && <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block mt-1">Monthly</span>}
-                                                        </div>
-                                                    </label>
-                                                ))}
+                                                    );
+                                                })}
                                             </div>
                                         </div>
 

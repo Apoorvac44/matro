@@ -23,8 +23,8 @@ const userSchema = mongoose.Schema({
     interestsSent: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     membership: {
         type: String,
-        enum: ['Free', 'Premium', 'Elite'],
-        default: 'Free'
+        enum: ['Basic', 'Premium', 'Elite'],
+        default: 'Basic'
     },
     paymentStatus: {
         type: String,

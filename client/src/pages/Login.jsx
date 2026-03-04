@@ -5,7 +5,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Mail, Lock, Heart, ArrowRight, Sparkles, ShieldCheck } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
-import * as api from '../services/api';
 import { motion } from 'framer-motion';
 
 const loginSchema = z.object({
@@ -20,16 +19,18 @@ const Login = () => {
         resolver: zodResolver(loginSchema)
     });
 
-    const onSubmit = async (data) => {
-        try {
-            const response = await api.login(data);
-            login(response.data);
-            navigate('/dashboard');
-        } catch (err) {
-            console.error(err);
-            alert(err.response?.data?.message || 'Login failed');
-        }
+    const onSubmit = (data) => {
+        // Frontend-only mock login
+        const mockUser = {
+            _id: 'mock_user_001',
+            name: 'Demo User',
+            email: data.email,
+            token: 'mock_token_frontend_only',
+        };
+        login(mockUser);
+        navigate('/dashboard');
     };
+
 
     return (
         <div className="bg-[#FFFDD0]/20 min-h-screen flex items-center justify-center p-6 pt-24 relative overflow-hidden">

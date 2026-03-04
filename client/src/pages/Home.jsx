@@ -243,7 +243,7 @@ const Home = () => {
                         </p>
                         <div className="flex flex-col sm:flex-row gap-6 justify-center pt-8">
                             <Link to="/register" className="px-16 py-6 bg-[#800020] text-white rounded-3xl font-black uppercase text-sm tracking-[0.3em] shadow-2xl shadow-[#800020]/20 hover:scale-105 transition-all">
-                                Create Free Account
+                                Create Account
                             </Link>
                         </div>
                     </motion.div>
