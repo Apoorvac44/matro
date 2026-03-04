@@ -45,7 +45,7 @@ const Chat = () => {
     }, [id]);
 
     useEffect(() => {
-        scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
+        scrollRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }, [messages]);
 
     const handleSend = async (e) => {

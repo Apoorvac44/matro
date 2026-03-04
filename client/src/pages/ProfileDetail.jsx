@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import * as api from '../services/api';
-import { User, MapPin, CupSoda, Book, Briefcase, Heart, MessageSquare, Check, X, Shield, Image as ImageIcon, ArrowLeft, Clock, GraduationCap, Send, Sparkles, Loader2 } from 'lucide-react';
+import { User, MapPin, CupSoda, Book, Briefcase, Heart, MessageSquare, Check, CheckCircle, X, Shield, Image as ImageIcon, ArrowLeft, Clock, GraduationCap, Send, Sparkles, Loader2 } from 'lucide-react';
 
 const ProfileDetail = () => {
     const { id } = useParams();
@@ -11,16 +11,20 @@ const ProfileDetail = () => {
     const [interestSent, setInterestSent] = useState(false);
 
     useEffect(() => {
+        window.scrollTo(0, 0);
         const fetchProfile = async () => {
             try {
-                const { data } = await api.getProfiles();
-                const found = data.find(p => (p._id === id) || (p.id === id));
-                if (found) {
-                    setProfile(found);
+                const { data } = await api.getProfile(id);
+                setProfile(data);
+
+                // check if interest is already sent
+                const { data: sentList } = await api.getSentInterestsList();
+                if (sentList.includes(id)) {
+                    setInterestSent(true);
                 }
-                setLoading(false);
             } catch (err) {
                 console.error(err);
+            } finally {
                 setLoading(false);
             }
         };

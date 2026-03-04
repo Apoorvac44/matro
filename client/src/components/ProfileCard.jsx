@@ -12,6 +12,21 @@ const ProfileCard = ({ profile }) => {
     const [sending, setSending] = useState(false);
     const imgSrc = profile.profilePicture || profile.image;
 
+    React.useEffect(() => {
+        const checkInterestStatus = async () => {
+            if (!profileId) return;
+            try {
+                const { data: sentList } = await api.getSentInterestsList();
+                if (sentList.includes(profileId)) {
+                    setInterestSent(true);
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        };
+        checkInterestStatus();
+    }, [profileId]);
+
     const handleInterest = async (interested) => {
         if (!interested) {
             setDismissed(true);
@@ -123,7 +138,7 @@ const ProfileCard = ({ profile }) => {
                     ) : (
                         <div className="flex gap-3">
                             <button
-                                onClick={() => handleInterest(true)}
+                                onClick={(e) => { e.preventDefault(); handleInterest(true); }}
                                 disabled={sending}
                                 className="flex items-center gap-2 px-6 py-2 bg-[#800020] text-[#D4AF37] rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-[#600318] transition-colors shadow-lg shadow-[#800020]/20 disabled:opacity-60"
                             >
@@ -131,7 +146,7 @@ const ProfileCard = ({ profile }) => {
                                 {sending ? 'Sending...' : 'Interested'}
                             </button>
                             <button
-                                onClick={() => handleInterest(false)}
+                                onClick={(e) => { e.preventDefault(); handleInterest(false); }}
                                 disabled={sending}
                                 className="flex-1 py-3.5 rounded-2xl bg-gray-50 text-gray-400 text-xs font-bold uppercase tracking-widest hover:bg-gray-100 transition-all active:scale-95 disabled:opacity-60"
                             >

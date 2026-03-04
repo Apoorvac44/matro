@@ -19,6 +19,8 @@ const MOCK_MESSAGES = {
     ]
 };
 
+const SENT_INTERESTS = [];
+
 const mockResolve = (data) => Promise.resolve({ data });
 
 export const login = (formData) => mockResolve({
@@ -27,12 +29,21 @@ export const login = (formData) => mockResolve({
 export const register = (formData) => mockResolve({
     _id: 'mock_user_1', name: formData.name, email: formData.email, token: 'mock_token'
 });
-export const getProfile = () => mockResolve({
-    _id: 'mock_user_1', name: 'Demo User', email: 'demo@example.com', age: 28, gender: 'Male', religion: 'Hindu', caste: 'General', location: 'Mumbai', education: 'Masters in Management', profession: 'Senior Executive', income: '₹15 LPA', aboutMe: 'I am a balanced individual looking for a life partner who values family and dreams.', membership: 'Premium', interests: ['Reading', 'Travel', 'Movies'], profilePicture: 'https://randomuser.me/api/portraits/men/1.jpg'
-});
+export const getProfile = (id) => {
+    if (id) {
+        return mockResolve(DUMMY_PROFILES.find(p => p._id === id || p.id === id) || DUMMY_PROFILES[0]);
+    }
+    return mockResolve({
+        _id: 'mock_user_1', name: 'Demo User', email: 'demo@example.com', age: 28, gender: 'Male', religion: 'Hindu', caste: 'General', location: 'Mumbai', education: 'Masters in Management', profession: 'Senior Executive', income: '₹15 LPA', aboutMe: 'I am a balanced individual looking for a life partner who values family and dreams.', membership: 'Premium', interests: ['Reading', 'Travel', 'Movies'], profilePicture: 'https://randomuser.me/api/portraits/men/1.jpg'
+    });
+};
 export const updateProfile = (formData) => mockResolve(formData);
 export const getProfiles = () => mockResolve(DUMMY_PROFILES);
-export const sendInterest = (id) => mockResolve({ message: 'Interest sent' });
+export const sendInterest = (id) => {
+    if (!SENT_INTERESTS.includes(id)) SENT_INTERESTS.push(id);
+    return mockResolve({ message: 'Interest sent' });
+};
+export const getSentInterestsList = () => mockResolve(SENT_INTERESTS);
 export const toggleFavorite = (id) => mockResolve({ message: 'Favorite toggled' });
 export const sendMessage = (data) => {
     const { receiverId, content } = data;
