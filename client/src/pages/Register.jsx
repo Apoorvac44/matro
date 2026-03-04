@@ -40,7 +40,7 @@ const registrationSchema = z.object({
     prefLocation: z.string().optional(),
     prefEducation: z.string().optional(),
     prefProfession: z.string().optional(),
-    membership: z.string().default('Free'),
+    membership: z.string().default('Basic'),
 }).refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
     path: ["confirmPassword"],
@@ -474,9 +474,9 @@ const Register = () => {
                                             <h3 className="text-xl font-serif font-black text-gray-900 mb-6 italic">Choose Your Membership</h3>
                                             <div className="grid grid-cols-1 gap-4">
                                                 {[
-                                                    { id: 'Free', name: 'Basic (Free)', price: '₹0', perks: ['Limited searches', 'Standard profile', 'Basic matching'] },
-                                                    { id: 'Premium', name: 'Premium', price: '₹499', perks: ['Unlimited interests', 'Highlighted profile', 'See who viewed you'], recommended: true },
-                                                    { id: 'Elite', name: 'Elite', price: '₹999', perks: ['Personalized matchmaker', 'Priority support', 'All premium features'] },
+                                                    { id: 'Basic', name: 'Basic', price: '₹499 /mo', perks: ['Limited searches', 'Standard profile', 'Basic matching'] },
+                                                    { id: 'Premium', name: 'Premium', price: '₹999 /mo', perks: ['Unlimited interests', 'Highlighted profile', 'See who viewed you'], recommended: true },
+                                                    { id: 'Elite', name: 'Elite', price: '₹1599 /mo', perks: ['Personalized matchmaker', 'Priority support', 'All premium features'] },
                                                 ].map((plan) => (
                                                     <label key={plan.id} className={`relative flex items-center justify-between p-6 rounded-3xl border-2 cursor-pointer transition-all ${watch('membership') === plan.id ? 'border-[#800020] bg-[#800020]/5 shadow-lg' : 'border-gray-100 hover:border-[#800020]/20 bg-white'}`}>
                                                         <input type="radio" value={plan.id} {...register('membership')} className="hidden" />
@@ -492,74 +492,73 @@ const Register = () => {
                                                                 <p className="text-[10px] text-gray-400 font-medium">{plan.perks.join(' • ')}</p>
                                                             </div>
                                                         </div>
-                                                        <div className="text-right">
-                                                            <span className="text-xl font-serif font-black text-[#800020] italic">{plan.price}</span>
+                                                        <div className="text-right flex flex-col items-end">
+                                                            <span className="text-xl font-serif font-black text-[#800020] italic">{plan.price.split(' ')[0]}</span>
+                                                            {plan.price.includes('/mo') && <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block mt-1">Monthly</span>}
                                                         </div>
                                                     </label>
                                                 ))}
                                             </div>
                                         </div>
 
-                                        {watch('membership') !== 'Free' && (
-                                            <div className="space-y-6">
-                                                <div className="flex gap-4 p-2 bg-[#F8F9FA] rounded-2xl border border-gray-100">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setPaymentMethod('UPI')}
-                                                        className={`flex-1 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest transition-all ${paymentMethod === 'UPI' ? 'bg-[#800020] text-[#D4AF37] shadow-lg' : 'text-gray-400 hover:text-[#800020]'}`}
-                                                    >
-                                                        UPI / QR Code
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setPaymentMethod('Card')}
-                                                        className={`flex-1 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest transition-all ${paymentMethod === 'Card' ? 'bg-[#800020] text-[#D4AF37] shadow-lg' : 'text-gray-400 hover:text-[#800020]'}`}
-                                                    >
-                                                        Credit / Debit Card
-                                                    </button>
-                                                </div>
-
-                                                <motion.div
-                                                    initial={{ opacity: 0, y: 10 }}
-                                                    animate={{ opacity: 1, y: 0 }}
-                                                    className="p-8 bg-[#800020] rounded-[2.5rem] text-[#D4AF37] border border-[#D4AF37]/20 relative overflow-hidden group"
+                                        <div className="space-y-6">
+                                            <div className="flex gap-4 p-2 bg-[#F8F9FA] rounded-2xl border border-gray-100">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setPaymentMethod('UPI')}
+                                                    className={`flex-1 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest transition-all ${paymentMethod === 'UPI' ? 'bg-[#800020] text-[#D4AF37] shadow-lg' : 'text-gray-400 hover:text-[#800020]'}`}
                                                 >
-                                                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')] opacity-10"></div>
-                                                    <div className="relative z-10">
-                                                        <div className="flex items-center justify-between mb-8">
-                                                            <h4 className="text-xs font-black uppercase tracking-[0.3em]">{paymentMethod === 'UPI' ? 'Scan & Pay' : 'Secure Card Payment'}</h4>
-                                                            <Sparkles size={20} className="animate-pulse" />
-                                                        </div>
-
-                                                        {paymentMethod === 'UPI' ? (
-                                                            <div className="flex flex-col items-center gap-6 py-4">
-                                                                <div className="w-40 h-40 bg-white p-4 rounded-3xl shadow-2xl">
-                                                                    <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=mock@upi&pn=MilanaMatrimony&am=${watch('membership') === 'Elite' ? '999' : '499'}`} alt="UPI QR" className="w-full h-full" />
-                                                                </div>
-                                                                <p className="text-[10px] font-bold uppercase tracking-widest text-center opacity-80">Scan QR to pay securely via any UPI app</p>
-                                                            </div>
-                                                        ) : (
-                                                            <div className="space-y-6 py-4">
-                                                                <div className="space-y-2">
-                                                                    <label className="text-[10px] font-black uppercase tracking-widest opacity-60">Card Number</label>
-                                                                    <input type="text" placeholder="•••• •••• •••• ••••" className="w-full bg-white/10 border border-[#D4AF37]/30 rounded-xl px-4 py-3 text-white placeholder:text-white/30 outline-none focus:border-[#D4AF37]" />
-                                                                </div>
-                                                                <div className="grid grid-cols-2 gap-4">
-                                                                    <div className="space-y-2">
-                                                                        <label className="text-[10px] font-black uppercase tracking-widest opacity-60">Expiry Date</label>
-                                                                        <input type="text" placeholder="MM/YY" className="w-full bg-white/10 border border-[#D4AF37]/30 rounded-xl px-4 py-3 text-white placeholder:text-white/30 outline-none focus:border-[#D4AF37]" />
-                                                                    </div>
-                                                                    <div className="space-y-2">
-                                                                        <label className="text-[10px] font-black uppercase tracking-widest opacity-60">CVV</label>
-                                                                        <input type="password" placeholder="•••" className="w-full bg-white/10 border border-[#D4AF37]/30 rounded-xl px-4 py-3 text-white placeholder:text-white/30 outline-none focus:border-[#D4AF37]" />
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </motion.div>
+                                                    UPI / QR Code
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setPaymentMethod('Card')}
+                                                    className={`flex-1 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest transition-all ${paymentMethod === 'Card' ? 'bg-[#800020] text-[#D4AF37] shadow-lg' : 'text-gray-400 hover:text-[#800020]'}`}
+                                                >
+                                                    Credit / Debit Card
+                                                </button>
                                             </div>
-                                        )}
+
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                className="p-8 bg-[#800020] rounded-[2.5rem] text-[#D4AF37] border border-[#D4AF37]/20 relative overflow-hidden group"
+                                            >
+                                                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')] opacity-10"></div>
+                                                <div className="relative z-10">
+                                                    <div className="flex items-center justify-between mb-8">
+                                                        <h4 className="text-xs font-black uppercase tracking-[0.3em]">{paymentMethod === 'UPI' ? 'Scan & Pay' : 'Secure Card Payment'}</h4>
+                                                        <Sparkles size={20} className="animate-pulse" />
+                                                    </div>
+
+                                                    {paymentMethod === 'UPI' ? (
+                                                        <div className="flex flex-col items-center gap-6 py-4">
+                                                            <div className="w-40 h-40 bg-white p-4 rounded-3xl shadow-2xl">
+                                                                <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=mock@upi&pn=MilanaMatrimony&am=${watch('membership') === 'Elite' ? '1599' : watch('membership') === 'Premium' ? '999' : '499'}`} alt="UPI QR" className="w-full h-full" />
+                                                            </div>
+                                                            <p className="text-[10px] font-bold uppercase tracking-widest text-center opacity-80">Scan QR to pay securely via any UPI app</p>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="space-y-6 py-4">
+                                                            <div className="space-y-2">
+                                                                <label className="text-[10px] font-black uppercase tracking-widest opacity-60">Card Number</label>
+                                                                <input type="text" placeholder="•••• •••• •••• ••••" className="w-full bg-white/10 border border-[#D4AF37]/30 rounded-xl px-4 py-3 text-white placeholder:text-white/30 outline-none focus:border-[#D4AF37]" />
+                                                            </div>
+                                                            <div className="grid grid-cols-2 gap-4">
+                                                                <div className="space-y-2">
+                                                                    <label className="text-[10px] font-black uppercase tracking-widest opacity-60">Expiry Date</label>
+                                                                    <input type="text" placeholder="MM/YY" className="w-full bg-white/10 border border-[#D4AF37]/30 rounded-xl px-4 py-3 text-white placeholder:text-white/30 outline-none focus:border-[#D4AF37]" />
+                                                                </div>
+                                                                <div className="space-y-2">
+                                                                    <label className="text-[10px] font-black uppercase tracking-widest opacity-60">CVV</label>
+                                                                    <input type="password" placeholder="•••" className="w-full bg-white/10 border border-[#D4AF37]/30 rounded-xl px-4 py-3 text-white placeholder:text-white/30 outline-none focus:border-[#D4AF37]" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </motion.div>
+                                        </div>
                                     </motion.div>
                                 )}
                             </AnimatePresence>
