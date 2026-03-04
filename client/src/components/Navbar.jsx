@@ -9,12 +9,20 @@ const Navbar = () => {
     const location = useLocation();
     const [isOpen, setIsOpen] = React.useState(false);
 
-    const navLinks = [
+    const publicLinks = [
+        { name: 'Home', path: '/', icon: <Home size={18} /> },
+        { name: 'Login', path: '/login', icon: <User size={18} /> },
+        { name: 'Register', path: '/register', icon: <Heart size={18} /> },
+    ];
+
+    const privateLinks = [
         { name: 'Home', path: '/', icon: <Home size={18} /> },
         { name: 'Matches', path: '/explore', icon: <Heart size={18} /> },
         { name: 'Chat', path: '/chat/inbox', icon: <MessageSquare size={18} /> },
         { name: 'Profile', path: '/dashboard', icon: <User size={18} /> },
     ];
+
+    const navLinks = user ? privateLinks : publicLinks;
 
     return (
         <nav className="fixed w-full z-[100] bg-white/80 backdrop-blur-xl shadow-[0_2px_20px_-5px_rgba(128,0,32,0.1)] border-b border-[#800020]/5">
@@ -40,6 +48,17 @@ const Navbar = () => {
                             {link.name}
                         </Link>
                     ))}
+                    {user && (
+                        <button
+                            onClick={() => { logout(); setIsOpen(false); }}
+                            className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] transition-all text-[#800020]/60 hover:text-[#D4AF37]"
+                        >
+                            <span className="transition-colors text-[#D4AF37]/60 hover:text-[#D4AF37]">
+                                <LogOut size={18} />
+                            </span>
+                            Logout
+                        </button>
+                    )}
                 </div>
 
                 {/* Mobile Menu Button */}
@@ -67,13 +86,13 @@ const Navbar = () => {
                                     to={link.path}
                                     onClick={() => setIsOpen(false)}
                                     className={`flex items-center gap-5 text-xl font-serif italic transition-all group ${location.pathname === link.path
-                                            ? 'text-[#800020]'
-                                            : 'text-gray-500 hover:text-[#800020]'
+                                        ? 'text-[#800020]'
+                                        : 'text-gray-500 hover:text-[#800020]'
                                         }`}
                                 >
                                     <span className={`p-4 rounded-2xl shadow-sm transition-all duration-300 ${location.pathname === link.path
-                                            ? 'bg-[#800020] text-[#D4AF37] shadow-[#800020]/20 scale-110'
-                                            : 'bg-gray-50 text-gray-400 group-hover:bg-[#800020]/5 group-hover:text-[#800020] group-hover:scale-105'
+                                        ? 'bg-[#800020] text-[#D4AF37] shadow-[#800020]/20 scale-110'
+                                        : 'bg-gray-50 text-gray-400 group-hover:bg-[#800020]/5 group-hover:text-[#800020] group-hover:scale-105'
                                         }`}>
                                         {React.cloneElement(link.icon, { size: 28 })}
                                     </span>
@@ -82,6 +101,19 @@ const Navbar = () => {
                                     </span>
                                 </Link>
                             ))}
+                            {user && (
+                                <button
+                                    onClick={() => { logout(); setIsOpen(false); }}
+                                    className="flex items-center gap-5 text-xl font-serif italic transition-all group text-gray-500 hover:text-[#800020]"
+                                >
+                                    <span className="p-4 rounded-2xl shadow-sm transition-all duration-300 bg-gray-50 text-gray-400 group-hover:bg-[#800020]/5 group-hover:text-[#800020] group-hover:scale-105">
+                                        <LogOut size={28} />
+                                    </span>
+                                    <span className="group-hover:translate-x-2 transition-transform duration-300">
+                                        Logout
+                                    </span>
+                                </button>
+                            )}
                         </div>
                     </motion.div>
                 )}
