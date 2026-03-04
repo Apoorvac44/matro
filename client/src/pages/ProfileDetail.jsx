@@ -40,8 +40,8 @@ const ProfileDetail = () => {
         navigate(`/chat/${id}`);
     };
 
-    if (loading) return <div className="h-screen flex items-center justify-center bg-brand-pink/20">
-        <Loader2 className="animate-spin text-brand-maroon" size={48} />
+    if (loading) return <div className="h-screen flex items-center justify-center bg-white">
+        <Loader2 className="animate-spin text-[#800020]" size={48} />
     </div>;
 
     if (!profile) return (
@@ -55,13 +55,13 @@ const ProfileDetail = () => {
     );
 
     return (
-        <div className="min-h-screen py-24 px-6 bg-pink-50">
+        <div className="min-h-screen py-24 px-6 bg-white">
             <div className="container mx-auto max-w-6xl">
                 <button
                     onClick={() => navigate(-1)}
-                    className="flex items-center gap-2 text-gray-600 hover:text-pink-600 font-bold mb-8 transition-colors"
+                    className="flex items-center gap-2 text-[#800020]/60 hover:text-[#800020] font-bold mb-8 transition-colors uppercase text-[10px] tracking-widest"
                 >
-                    <ArrowLeft size={20} />
+                    <ArrowLeft size={16} />
                     <span>Back to Search</span>
                 </button>
 
@@ -84,17 +84,17 @@ const ProfileDetail = () => {
                             <button
                                 onClick={handleInterest}
                                 disabled={interestSent}
-                                className={`py-4 rounded-xl font-bold flex flex-col items-center gap-2 transition-all ${interestSent ? 'bg-pink-100 text-pink-600' : 'bg-pink-600 text-white hover:bg-pink-700'}`}
+                                className={`py-4 rounded-xl font-bold flex flex-col items-center gap-2 transition-all ${interestSent ? 'bg-green-50 text-green-600' : 'bg-[#800020] text-[#D4AF37] hover:bg-[#600318] shadow-lg shadow-[#800020]/20'}`}
                             >
-                                {interestSent ? <Check size={24} /> : <Heart size={24} />}
-                                <span className="text-xs">{interestSent ? 'Interest Sent' : 'Send Interest'}</span>
+                                {interestSent ? <CheckCircle size={24} /> : <Heart size={24} className="fill-[#D4AF37]" />}
+                                <span className="text-[10px] uppercase tracking-widest">{interestSent ? 'Interest Sent' : 'Interested'}</span>
                             </button>
                             <button
                                 onClick={handleChat}
-                                className="py-4 rounded-xl bg-white border border-pink-200 text-pink-600 flex flex-col items-center gap-2 font-bold hover:bg-pink-50 transition-all"
+                                className="py-4 rounded-xl bg-white border border-[#800020]/10 text-[#800020] flex flex-col items-center gap-2 font-bold hover:bg-[#800020]/5 transition-all"
                             >
                                 <MessageSquare size={24} />
-                                <span className="text-xs">Message</span>
+                                <span className="text-[10px] uppercase tracking-widest">Message</span>
                             </button>
                         </div>
                     </div>
@@ -117,12 +117,12 @@ const ProfileDetail = () => {
                                 { icon: <GraduationCap size={20} />, label: 'Education', value: profile.education || 'Not Specified' },
                                 { icon: <Shield size={20} />, label: 'Caste', value: profile.caste || 'Not Specified' }
                             ].map((item, idx) => (
-                                <div key={idx} className="bg-white p-6 rounded-2xl shadow-sm border border-pink-100 flex items-center gap-4">
-                                    <div className="w-12 h-12 bg-pink-50 text-pink-600 rounded-xl flex items-center justify-center">
+                                <div key={idx} className="bg-white p-6 rounded-2xl shadow-sm border border-[#800020]/5 flex items-center gap-4">
+                                    <div className="w-12 h-12 bg-[#FFFDD0] text-[#D4AF37] rounded-xl flex items-center justify-center">
                                         {item.icon}
                                     </div>
                                     <div>
-                                        <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">{item.label}</p>
+                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">{item.label}</p>
                                         <p className="text-gray-900 font-bold">{item.value}</p>
                                     </div>
                                 </div>
@@ -130,19 +130,19 @@ const ProfileDetail = () => {
                         </div>
 
                         <div className="space-y-12">
-                            <div className="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-pink-100">
-                                <h3 className="text-sm font-bold text-pink-600 uppercase tracking-wider mb-6 pb-2 border-b border-pink-50">About Me</h3>
-                                <p className="text-gray-600 leading-relaxed text-lg">
+                            <div className="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-[#800020]/5">
+                                <h3 className="text-[10px] font-bold text-[#800020] uppercase tracking-[0.2em] mb-6 pb-2 border-b border-[#800020]/5">About Me</h3>
+                                <p className="text-gray-600 leading-relaxed text-lg italic font-serif">
                                     {profile.aboutMe || "I'm looking for a partner who respects values and has a modern outlook on life. Let's connect to know more."}
                                 </p>
                             </div>
 
                             {profile.interests?.length > 0 && (
                                 <div>
-                                    <h3 className="text-sm font-bold text-pink-600 uppercase tracking-wider mb-6">Interests</h3>
+                                    <h3 className="text-[10px] font-bold text-[#800020] uppercase tracking-[0.2em] mb-6">Interests</h3>
                                     <div className="flex flex-wrap gap-3">
                                         {profile.interests.map(interest => (
-                                            <span key={interest} className="px-5 py-2 bg-pink-100 text-pink-700 rounded-full text-xs font-bold shadow-sm">
+                                            <span key={interest} className="px-5 py-2 bg-[#FFFDD0] text-[#800020] rounded-full text-[10px] font-bold uppercase tracking-widest shadow-sm border border-[#D4AF37]/20">
                                                 {interest}
                                             </span>
                                         ))}
@@ -152,10 +152,10 @@ const ProfileDetail = () => {
 
                             {profile.photos && profile.photos.length > 0 && (
                                 <div>
-                                    <h3 className="text-sm font-bold text-pink-600 uppercase tracking-wider mb-6 pb-2 border-b border-pink-50">Photo Gallery</h3>
+                                    <h3 className="text-[10px] font-bold text-[#800020] uppercase tracking-[0.2em] mb-6 pb-2 border-b border-[#800020]/5">Photo Gallery</h3>
                                     <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
                                         {profile.photos.map((photo, index) => (
-                                            <div key={index} className="aspect-[4/5] rounded-2xl overflow-hidden border-2 border-white shadow-md group cursor-pointer hover:shadow-lg transition-all">
+                                            <div key={index} className="aspect-[4/5] rounded-[2rem] overflow-hidden border-2 border-white shadow-md group cursor-pointer hover:shadow-xl transition-all">
                                                 <img
                                                     src={photo}
                                                     alt={`Gallery ${index + 1}`}

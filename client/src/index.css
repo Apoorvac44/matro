@@ -9,7 +9,7 @@
   --color-brand-maroon: #800020;
   --color-brand-gold: #D4AF37;
   --color-brand-cream: #FFFDD0;
-  --color-brand-pink: #FFF5F7;
+  --color-brand-pink: #FFFDD0;
   --color-brand-secondary: #f1f5f9;
 }
 
@@ -43,7 +43,7 @@
   }
 
   .btn-primary {
-    @apply bg-pink-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-pink-700 transition-all active:scale-95;
+    @apply bg-[#800020] text-[#D4AF37] px-8 py-3 rounded-xl font-bold hover:bg-[#600018] transition-all active:scale-95;
   }
 
   .section-padding {

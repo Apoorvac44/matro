@@ -3,21 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { AuthContext } from '../context/AuthContext';
 import { User, Heart, MessageSquare, Bell, LogOut, Home, Eye, Send, CheckCheck, Image, ArrowRight, Search } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-
-const DUMMY_PROFILES = [
-    { _id: '1', name: 'Priya Sharma', age: 26, gender: 'Female', religion: 'Hindu', location: 'Mumbai', profession: 'Software Engineer', education: 'B.Tech', profilePicture: 'https://randomuser.me/api/portraits/women/44.jpg' },
-    { _id: '2', name: 'Amit Patel', age: 29, gender: 'Male', religion: 'Hindu', location: 'Ahmedabad', profession: 'Doctor', education: 'MBBS', profilePicture: 'https://randomuser.me/api/portraits/men/32.jpg' },
-    { _id: '3', name: 'Anjali Reddy', age: 24, gender: 'Female', religion: 'Hindu', location: 'Hyderabad', profession: 'Data Analyst', education: 'MBA', profilePicture: 'https://randomuser.me/api/portraits/women/68.jpg' },
-    { _id: '4', name: 'Rahul Mehta', age: 31, gender: 'Male', religion: 'Jain', location: 'Surat', profession: 'Chartered Accountant', education: 'CA', profilePicture: 'https://randomuser.me/api/portraits/men/45.jpg' },
-    { _id: '5', name: 'Kavya Nair', age: 27, gender: 'Female', religion: 'Hindu', location: 'Kochi', profession: 'Architect', education: 'B.Arch', profilePicture: 'https://randomuser.me/api/portraits/women/55.jpg' },
-    { _id: '6', name: 'Vikram Singh', age: 33, gender: 'Male', religion: 'Sikh', location: 'Chandigarh', profession: 'Army Officer', education: 'B.Sc', profilePicture: 'https://randomuser.me/api/portraits/men/60.jpg' },
-    { _id: '7', name: 'Sneha Iyer', age: 25, gender: 'Female', religion: 'Hindu', location: 'Chennai', profession: 'Teacher', education: 'M.Ed', profilePicture: 'https://randomuser.me/api/portraits/women/72.jpg' },
-    { _id: '8', name: 'Rohan Gupta', age: 28, gender: 'Male', religion: 'Hindu', location: 'Delhi', profession: 'Marketing Manager', education: 'MBA', profilePicture: 'https://randomuser.me/api/portraits/men/25.jpg' },
-    { _id: '9', name: 'Meera Joshi', age: 30, gender: 'Female', religion: 'Hindu', location: 'Pune', profession: 'Lawyer', education: 'LLB', profilePicture: 'https://randomuser.me/api/portraits/women/30.jpg' },
-    { _id: '10', name: 'Arjun Kumar', age: 27, gender: 'Male', religion: 'Christian', location: 'Bangalore', profession: 'Product Manager', education: 'B.Tech + MBA', profilePicture: 'https://randomuser.me/api/portraits/men/15.jpg' },
-    { _id: '11', name: 'Divya Krishnan', age: 23, gender: 'Female', religion: 'Hindu', location: 'Coimbatore', profession: 'Nurse', education: 'B.Sc Nursing', profilePicture: 'https://randomuser.me/api/portraits/women/85.jpg' },
-    { _id: '12', name: 'Nikhil Bose', age: 32, gender: 'Male', religion: 'Hindu', location: 'Kolkata', profession: 'Business Owner', education: 'B.Com', profilePicture: 'https://randomuser.me/api/portraits/men/78.jpg' },
-];
+import * as api from '../services/api';
 
 const ProfileThumbnail = ({ profile }) => {
     if (!profile) return null;
@@ -62,29 +48,48 @@ const Dashboard = () => {
     const [allProfiles, setAllProfiles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
-    const [dashStats, setDashStats] = useState({ viewedYou: 8, saved: 5, receivedInterested: 3, sentInterests: 7, gallery: 4 });
+    const [dashStats, setDashStats] = useState({ viewedYou: 0, saved: 0, receivedInterested: 0, sentInterests: 0, gallery: 0 });
     const [activeView, setActiveView] = useState(null);
     const [viewProfiles, setViewProfiles] = useState([]);
     const [viewLoading, setViewLoading] = useState(false);
 
     useEffect(() => {
-        // Frontend-only: load dummy profiles
-        setTimeout(() => {
-            setAllProfiles(DUMMY_PROFILES);
+        const fetchData = async () => {
+            try {
+                const [profilesRes, statsRes] = await Promise.all([
+                    api.getProfiles(),
+                    api.getDashboardStats()
+                ]);
+                setAllProfiles(profilesRes.data);
+                setDashStats(statsRes.data);
+            } catch (err) {
+                console.error(err);
+            }
             setLoading(false);
-        }, 500);
+        };
+        fetchData();
     }, []);
 
-    const handleStatClick = (type) => {
+    const handleStatClick = async (type) => {
         if (type === 'gallery') { navigate('/gallery'); return; }
         if (type === 'viewed') return;
         setActiveView(activeView === type ? null : type);
-        setViewProfiles(DUMMY_PROFILES.slice(0, 3));
+        setViewLoading(true);
+        try {
+            if (type === 'received') {
+                const { data } = await api.getInterestsReceived();
+                setViewProfiles(data);
+            } else if (type === 'sent') {
+                const { data } = await api.getInterestsSent();
+                setViewProfiles(data);
+            }
+        } catch (err) { setViewProfiles([]); }
+        setViewLoading(false);
     };
 
     const stats = [
         { label: 'Viewed You', value: dashStats.viewedYou, bg: 'bg-teal-50', iconBg: 'bg-teal-100', iconColor: 'text-teal-500', icon: Eye, type: 'viewed' },
-        { label: 'Received Interests', value: dashStats.receivedInterested, bg: 'bg-pink-50', iconBg: 'bg-pink-100', iconColor: 'text-pink-500', icon: Bell, type: 'received' },
+        { label: 'Received Interests', value: dashStats.receivedInterested, bg: 'bg-[#FFFDD0]', iconBg: 'bg-[#D4AF37]/20', iconColor: 'text-[#800020]', icon: Bell, type: 'received' },
         { label: 'Interests Sent', value: dashStats.sentInterests, bg: 'bg-blue-50', iconBg: 'bg-blue-100', iconColor: 'text-blue-500', icon: Send, type: 'sent' },
         { label: 'Gallery', value: dashStats.gallery, bg: 'bg-green-50', iconBg: 'bg-green-100', iconColor: 'text-green-500', icon: Image, type: 'gallery' },
     ];

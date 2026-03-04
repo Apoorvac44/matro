@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import ProfileCard from '../components/ProfileCard';
 import { motion, AnimatePresence } from 'framer-motion';
+import * as api from '../services/api';
 
 const Explore = () => {
     const { user } = useContext(AuthContext);
@@ -25,27 +26,19 @@ const Explore = () => {
         maritalStatus: '',
     });
 
-    const DUMMY_PROFILES = [
-        { _id: '1', name: 'Priya Sharma', age: 26, gender: 'Female', religion: 'Hindu', location: 'Mumbai', profession: 'Software Engineer', education: 'B.Tech', income: '₹12 LPA', profilePicture: 'https://randomuser.me/api/portraits/women/44.jpg', aboutMe: 'Passionate about technology and classical dance.', isApproved: true },
-        { _id: '2', name: 'Amit Patel', age: 29, gender: 'Male', religion: 'Hindu', location: 'Ahmedabad', profession: 'Doctor', education: 'MBBS', income: '₹18 LPA', profilePicture: 'https://randomuser.me/api/portraits/men/32.jpg', aboutMe: 'A dedicated physician who loves cricket and travel.', isApproved: true },
-        { _id: '3', name: 'Anjali Reddy', age: 24, gender: 'Female', religion: 'Hindu', location: 'Hyderabad', profession: 'Data Analyst', education: 'MBA', income: '₹10 LPA', profilePicture: 'https://randomuser.me/api/portraits/women/68.jpg', aboutMe: 'Love cooking and exploring new cuisines.', isApproved: true },
-        { _id: '4', name: 'Rahul Mehta', age: 31, gender: 'Male', religion: 'Jain', location: 'Surat', profession: 'Chartered Accountant', education: 'CA', income: '₹15 LPA', profilePicture: 'https://randomuser.me/api/portraits/men/45.jpg', aboutMe: 'Traditional values with a modern outlook.', isApproved: true },
-        { _id: '5', name: 'Kavya Nair', age: 27, gender: 'Female', religion: 'Hindu', location: 'Kochi', profession: 'Architect', education: 'B.Arch', income: '₹14 LPA', profilePicture: 'https://randomuser.me/api/portraits/women/55.jpg', aboutMe: 'Creative soul who loves design and music.', isApproved: true },
-        { _id: '6', name: 'Vikram Singh', age: 33, gender: 'Male', religion: 'Sikh', location: 'Chandigarh', profession: 'Army Officer', education: 'B.Sc', income: '₹20 LPA', profilePicture: 'https://randomuser.me/api/portraits/men/60.jpg', aboutMe: 'Disciplined, adventurous and family-oriented.', isApproved: true },
-        { _id: '7', name: 'Sneha Iyer', age: 25, gender: 'Female', religion: 'Hindu', location: 'Chennai', profession: 'Teacher', education: 'M.Ed', income: '₹7 LPA', profilePicture: 'https://randomuser.me/api/portraits/women/72.jpg', aboutMe: 'Passionate about education and classical music.', isApproved: true },
-        { _id: '8', name: 'Rohan Gupta', age: 28, gender: 'Male', religion: 'Hindu', location: 'Delhi', profession: 'Marketing Manager', education: 'MBA', income: '₹16 LPA', profilePicture: 'https://randomuser.me/api/portraits/men/25.jpg', aboutMe: 'Energetic, creative and love traveling.', isApproved: true },
-        { _id: '9', name: 'Meera Joshi', age: 30, gender: 'Female', religion: 'Hindu', location: 'Pune', profession: 'Lawyer', education: 'LLB', income: '₹13 LPA', profilePicture: 'https://randomuser.me/api/portraits/women/30.jpg', aboutMe: 'Strong, independent and family-oriented.', isApproved: true },
-        { _id: '10', name: 'Arjun Kumar', age: 27, gender: 'Male', religion: 'Christian', location: 'Bangalore', profession: 'Product Manager', education: 'B.Tech + MBA', income: '₹22 LPA', profilePicture: 'https://randomuser.me/api/portraits/men/15.jpg', aboutMe: 'Tech enthusiast and avid reader.', isApproved: true },
-        { _id: '11', name: 'Divya Krishnan', age: 23, gender: 'Female', religion: 'Hindu', location: 'Coimbatore', profession: 'Nurse', education: 'B.Sc Nursing', income: '₹6 LPA', profilePicture: 'https://randomuser.me/api/portraits/women/85.jpg', aboutMe: 'Caring, compassionate and loves arts and crafts.', isApproved: true },
-        { _id: '12', name: 'Nikhil Bose', age: 32, gender: 'Male', religion: 'Hindu', location: 'Kolkata', profession: 'Business Owner', education: 'B.Com', income: '₹25 LPA', profilePicture: 'https://randomuser.me/api/portraits/men/78.jpg', aboutMe: 'Ambitious entrepreneur who enjoys music and travel.', isApproved: true },
-    ];
-
     useEffect(() => {
-        // Frontend-only: load dummy profiles
-        setTimeout(() => {
-            setProfiles(DUMMY_PROFILES);
-            setLoading(false);
-        }, 600);
+        const fetchProfiles = async () => {
+            try {
+                const { data } = await api.getProfiles();
+                setProfiles(data);
+                setLoading(false);
+            } catch (err) {
+                console.error(err);
+                setError('Failed to fetch matches. Please try again.');
+                setLoading(false);
+            }
+        };
+        fetchProfiles();
     }, []);
 
     const handleFilterChange = (key, value) => {

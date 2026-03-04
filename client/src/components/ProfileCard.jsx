@@ -101,7 +101,7 @@ const ProfileCard = ({ profile }) => {
                     </div>
                     {/* Profession */}
                     <div className="flex items-center gap-2.5 text-gray-600 text-xs">
-                        <div className="w-7 h-7 bg-pink-50 rounded-lg flex items-center justify-center">
+                        <div className="w-7 h-7 bg-[#FFFDD0] rounded-lg flex items-center justify-center">
                             <Briefcase size={13} className="text-[#800020]" />
                         </div>
                         <span className="font-semibold truncate">{profile.profession || 'Professional'}</span>

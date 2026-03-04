@@ -140,57 +140,6 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* Trust & Security Section */}
-            <section className="py-24 md:py-32 bg-white flex items-center overflow-hidden">
-                <div className="container mx-auto px-6 lg:px-24">
-                    <div className="flex flex-col md:flex-row items-center gap-20">
-                        <motion.div
-                            initial={{ opacity: 0, x: -50 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            className="flex-1 space-y-8"
-                        >
-                            <div>
-                                <span className="text-[10px] font-bold uppercase tracking-[0.5em] text-[#D4AF37] mb-3 block">Safety First</span>
-                                <h2 className="text-4xl md:text-6xl font-serif font-black text-gray-900 italic leading-tight">Your Privacy is <br />Our Sacred Vow</h2>
-                            </div>
-                            <p className="text-lg text-gray-500 font-light leading-relaxed">
-                                We understand the importance of discretion. Milana uses state-of-the-art encryption and manual moderation to ensure your journey is safe, secure, and private.
-                            </p>
-                            <ul className="space-y-4">
-                                {["100% Screened Profiles", "Phone & ID Verification", "Report & Block Options", "Secure Chat System"].map((item, i) => (
-                                    <li key={i} className="flex items-center gap-4 text-[#800020] font-bold uppercase text-[10px] tracking-widest">
-                                        <div className="w-6 h-6 rounded-full bg-[#800020]/10 flex items-center justify-center text-[#800020]">
-                                            <Sparkles size={12} />
-                                        </div>
-                                        {item}
-                                    </li>
-                                ))}
-                            </ul>
-                        </motion.div>
-                        <motion.div
-                            initial={{ opacity: 0, x: 50 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            className="flex-1 relative"
-                        >
-                            <div className="w-full aspect-square bg-[#800020] rounded-[4rem] relative overflow-hidden shadow-2xl">
-                                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')] opacity-20"></div>
-                                <div className="absolute inset-0 flex items-center justify-center p-12">
-                                    <div className="text-center space-y-6">
-                                        <div className="w-32 h-32 bg-[#D4AF37]/20 rounded-full flex items-center justify-center mx-auto border-2 border-[#D4AF37]/30">
-                                            <Users size={48} className="text-[#D4AF37]" />
-                                        </div>
-                                        <h3 className="text-3xl font-serif font-bold text-white italic">Join 10,000+ Verified Members</h3>
-                                        <Link to="/register" className="inline-block px-10 py-4 bg-[#D4AF37] text-[#800020] rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-white transition-all">
-                                            Join Now
-                                        </Link>
-                                    </div>
-                                </div>
-                            </div>
-                        </motion.div>
-                    </div>
-                </div>
-            </section>
-
             {/* Success Stories Section */}
             <section className="py-24 md:py-32 bg-[#800020] relative overflow-hidden">
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')] opacity-10"></div>
@@ -229,26 +178,6 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* Final CTA */}
-            <section className="py-32 bg-white">
-                <div className="container mx-auto px-6 lg:px-24 text-center">
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        whileInView={{ opacity: 1, scale: 1 }}
-                        className="max-w-4xl mx-auto space-y-12"
-                    >
-                        <h2 className="text-5xl md:text-7xl font-serif font-black text-gray-900 italic leading-tight">Ready to Find Your <br />Forever?</h2>
-                        <p className="text-xl text-gray-500 font-light max-w-2xl mx-auto">
-                            Join the sanctuary where modern souls find timeless connections. Your destiny is just a registration away.
-                        </p>
-                        <div className="flex flex-col sm:flex-row gap-6 justify-center pt-8">
-                            <Link to="/register" className="px-16 py-6 bg-[#800020] text-white rounded-3xl font-black uppercase text-sm tracking-[0.3em] shadow-2xl shadow-[#800020]/20 hover:scale-105 transition-all">
-                                Create Account
-                            </Link>
-                        </div>
-                    </motion.div>
-                </div>
-            </section>
         </div>
     );
 };
