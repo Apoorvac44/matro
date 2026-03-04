@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Playfair Display", serif;
+  --font-sans: "Inter", sans-serif;
+
+  --color-brand-primary: #800020;
+  /* Blue accent */
+  --color-brand-maroon: #800020;
+  --color-brand-gold: #D4AF37;
+  --color-brand-cream: #FFFDD0;
+  --color-brand-pink: #FFF5F7;
+  --color-brand-secondary: #f1f5f9;
+}
+
+@layer base {
+  body {
+    @apply bg-[#FFFDD0]/30 text-slate-900 antialiased font-sans transition-all duration-300;
+  }
+}
+
+@layer components {
+
+  /* Global Hover Utilities */
+  .hover-brand {
+    @apply transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-xl active:scale-95;
+  }
+
+  .hover-maroon {
+    @apply hover-brand hover:bg-[#800020] hover:text-[#D4AF37] hover:shadow-[#800020]/20;
+  }
+
+  .hover-gold {
+    @apply hover-brand hover:text-[#D4AF37];
+  }
+
+  .premium-card {
+    @apply bg-white border border-[#800020]/5 rounded-[2.5rem] shadow-sm transition-all duration-500 hover:shadow-2xl hover:shadow-[#800020]/10 hover:border-[#800020]/10 hover:-translate-y-2;
+  }
+
+  .glass-card {
+    @apply bg-white border border-gray-100 rounded-3xl shadow-xl;
+  }
+
+  .btn-primary {
+    @apply bg-pink-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-pink-700 transition-all active:scale-95;
+  }
+
+  .section-padding {
+    @apply py-16 px-6 md:px-12 lg:px-24;
+  }
+}
+
+/* Custom Scrollbar for Premium Feel */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: var(--color-brand-pink);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-brand-maroon);
+  opacity: 0.2;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  opacity: 0.4;
+}
+
+.animate-floating {
+  animation: floating 8s ease-in-out infinite;
+}
+
+.pulse-ring {
+  animation: pulse-ring 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
