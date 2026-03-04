@@ -27,11 +27,11 @@
   }
 
   .hover-maroon {
-    @apply hover-brand hover:bg-[#800020] hover:text-[#D4AF37] hover:shadow-[#800020]/20;
+    @apply hover:bg-[#800020] hover:text-[#D4AF37] hover:shadow-[#800020]/20;
   }
 
   .hover-gold {
-    @apply hover-brand hover:text-[#D4AF37];
+    @apply hover:text-[#D4AF37];
   }
 
   .premium-card {
