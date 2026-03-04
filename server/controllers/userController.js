@@ -43,8 +43,8 @@ const registerUser = async (req, res) => {
             name, email, password, gender,
             age: dob ? (new Date().getFullYear() - new Date(dob).getFullYear()) : undefined,
             religion, location, education, profession,
-            // Add other fields as per model
-            membership: membership || 'Basic'
+            membership: membership || 'Free',
+            paymentStatus: (membership && membership !== 'Free') ? 'Completed' : 'Pending'
         });
 
         if (user) {

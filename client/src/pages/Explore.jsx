@@ -164,6 +164,7 @@ const Explore = () => {
                                             <option value="sikh">Sikh</option>
                                             <option value="jain">Jain</option>
                                             <option value="buddhist">Buddhist</option>
+                                            <option value="Other">Other</option>
                                         </select>
                                     </div>
                                     <div>
@@ -202,6 +203,7 @@ const Explore = () => {
                                             <option value="">All</option>
                                             <option value="Male">Male</option>
                                             <option value="Female">Female</option>
+                                            <option value="Other">Other</option>
                                         </select>
                                     </div>
                                     <div>
@@ -212,6 +214,7 @@ const Explore = () => {
                                             <option value="muslim">Muslim</option>
                                             <option value="christian">Christian</option>
                                             <option value="sikh">Sikh</option>
+                                            <option value="Other">Other</option>
                                         </select>
                                     </div>
                                 </div>

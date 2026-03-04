@@ -27,7 +27,7 @@ const registrationSchema = z.object({
     religion: z.string().min(1, 'Religion is required'),
     caste: z.string().optional(),
     motherTongue: z.string().min(1, 'Mother tongue is required'),
-    maritalStatus: z.enum(['Single', 'Divorced', 'Widowed'], { required_error: 'Marital status is required' }),
+    maritalStatus: z.enum(['Single', 'Divorced', 'Widowed', 'Other'], { required_error: 'Marital status is required' }),
     height: z.string().min(1, 'Height is required'),
     location: z.string().min(1, 'Location is required'),
     // Step 3
@@ -40,6 +40,7 @@ const registrationSchema = z.object({
     prefLocation: z.string().optional(),
     prefEducation: z.string().optional(),
     prefProfession: z.string().optional(),
+    membership: z.string().default('Free'),
 }).refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
     path: ["confirmPassword"],
@@ -53,6 +54,7 @@ const Register = () => {
     const [age, setAge] = useState(null);
     const { login } = useContext(AuthContext);
     const navigate = useNavigate();
+    const [paymentMethod, setPaymentMethod] = useState('UPI');
 
     const { register, handleSubmit, formState: { errors }, watch, trigger, setValue } = useForm({
         resolver: zodResolver(registrationSchema),
@@ -109,14 +111,14 @@ const Register = () => {
     const renderProgress = () => (
         <div className="mb-10">
             <div className="flex justify-between items-center mb-4">
-                <span className="text-[10px] font-bold text-[#800020] uppercase tracking-[0.3em]">Phase {step} of 4</span>
-                <span className="text-[10px] font-bold text-[#D4AF37] uppercase tracking-widest">{Math.round((step / 4) * 100)}% Complete</span>
+                <span className="text-[10px] font-bold text-[#800020] uppercase tracking-[0.3em]">Phase {step} of 5</span>
+                <span className="text-[10px] font-bold text-[#D4AF37] uppercase tracking-widest">{Math.round((step / 5) * 100)}% Complete</span>
             </div>
             <div className="h-1.5 bg-[#FFFDD0] rounded-full overflow-hidden border border-[#D4AF37]/10">
                 <motion.div
                     className="h-full bg-gradient-to-r from-[#800020] to-[#D4AF37]"
                     initial={{ width: 0 }}
-                    animate={{ width: `${(step / 4) * 100}%` }}
+                    animate={{ width: `${(step / 5) * 100}%` }}
                     transition={{ duration: 0.8, ease: "anticipate" }}
                 />
             </div>
@@ -299,6 +301,7 @@ const Register = () => {
                                                     <option>Christian</option>
                                                     <option>Sikh</option>
                                                     <option>Jain</option>
+                                                    <option>Other</option>
                                                 </select>
                                                 {errors.religion && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.religion.message}</p>}
                                             </div>
@@ -319,6 +322,7 @@ const Register = () => {
                                                     <option>Telugu</option>
                                                     <option>Tamil</option>
                                                     <option>Kannada</option>
+                                                    <option>Other</option>
                                                 </select>
                                                 {errors.motherTongue && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.motherTongue.message}</p>}
                                             </div>
@@ -329,6 +333,7 @@ const Register = () => {
                                                     <option value="Single">Single</option>
                                                     <option value="Divorced">Divorced</option>
                                                     <option value="Widowed">Widowed</option>
+                                                    <option value="Other">Other</option>
                                                 </select>
                                                 {errors.maritalStatus && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.maritalStatus.message}</p>}
                                             </div>
@@ -346,6 +351,7 @@ const Register = () => {
                                                     <option>5'8" (172 cm)</option>
                                                     <option>5'10" (177 cm)</option>
                                                     <option>6'0" (182 cm)</option>
+                                                    <option>Other</option>
                                                 </select>
                                                 {errors.height && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.height.message}</p>}
                                             </div>
@@ -398,6 +404,7 @@ const Register = () => {
                                                         <option>7 - 15 LPA</option>
                                                         <option>15 - 30 LPA</option>
                                                         <option>30+ LPA</option>
+                                                        <option>Other</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -454,6 +461,107 @@ const Register = () => {
                                         </div>
                                     </motion.div>
                                 )}
+
+                                {step === 5 && (
+                                    <motion.div
+                                        key="step5"
+                                        initial={{ opacity: 0, x: 20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        exit={{ opacity: 0, x: -20 }}
+                                        className="space-y-8"
+                                    >
+                                        <div>
+                                            <h3 className="text-xl font-serif font-black text-gray-900 mb-6 italic">Choose Your Membership</h3>
+                                            <div className="grid grid-cols-1 gap-4">
+                                                {[
+                                                    { id: 'Free', name: 'Basic (Free)', price: '₹0', perks: ['Limited searches', 'Standard profile', 'Basic matching'] },
+                                                    { id: 'Premium', name: 'Premium', price: '₹499', perks: ['Unlimited interests', 'Highlighted profile', 'See who viewed you'], recommended: true },
+                                                    { id: 'Elite', name: 'Elite', price: '₹999', perks: ['Personalized matchmaker', 'Priority support', 'All premium features'] },
+                                                ].map((plan) => (
+                                                    <label key={plan.id} className={`relative flex items-center justify-between p-6 rounded-3xl border-2 cursor-pointer transition-all ${watch('membership') === plan.id ? 'border-[#800020] bg-[#800020]/5 shadow-lg' : 'border-gray-100 hover:border-[#800020]/20 bg-white'}`}>
+                                                        <input type="radio" value={plan.id} {...register('membership')} className="hidden" />
+                                                        <div className="flex items-center gap-4">
+                                                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${watch('membership') === plan.id ? 'border-[#800020]' : 'border-gray-200'}`}>
+                                                                {watch('membership') === plan.id && <div className="w-3 h-3 rounded-full bg-[#800020]"></div>}
+                                                            </div>
+                                                            <div>
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className="font-bold text-gray-900">{plan.name}</span>
+                                                                    {plan.recommended && <span className="bg-[#D4AF37] text-white text-[8px] font-black uppercase px-2 py-0.5 rounded-full tracking-tighter">Recommended</span>}
+                                                                </div>
+                                                                <p className="text-[10px] text-gray-400 font-medium">{plan.perks.join(' • ')}</p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="text-right">
+                                                            <span className="text-xl font-serif font-black text-[#800020] italic">{plan.price}</span>
+                                                        </div>
+                                                    </label>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {watch('membership') !== 'Free' && (
+                                            <div className="space-y-6">
+                                                <div className="flex gap-4 p-2 bg-[#F8F9FA] rounded-2xl border border-gray-100">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setPaymentMethod('UPI')}
+                                                        className={`flex-1 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest transition-all ${paymentMethod === 'UPI' ? 'bg-[#800020] text-[#D4AF37] shadow-lg' : 'text-gray-400 hover:text-[#800020]'}`}
+                                                    >
+                                                        UPI / QR Code
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setPaymentMethod('Card')}
+                                                        className={`flex-1 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest transition-all ${paymentMethod === 'Card' ? 'bg-[#800020] text-[#D4AF37] shadow-lg' : 'text-gray-400 hover:text-[#800020]'}`}
+                                                    >
+                                                        Credit / Debit Card
+                                                    </button>
+                                                </div>
+
+                                                <motion.div
+                                                    initial={{ opacity: 0, y: 10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    className="p-8 bg-[#800020] rounded-[2.5rem] text-[#D4AF37] border border-[#D4AF37]/20 relative overflow-hidden group"
+                                                >
+                                                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')] opacity-10"></div>
+                                                    <div className="relative z-10">
+                                                        <div className="flex items-center justify-between mb-8">
+                                                            <h4 className="text-xs font-black uppercase tracking-[0.3em]">{paymentMethod === 'UPI' ? 'Scan & Pay' : 'Secure Card Payment'}</h4>
+                                                            <Sparkles size={20} className="animate-pulse" />
+                                                        </div>
+
+                                                        {paymentMethod === 'UPI' ? (
+                                                            <div className="flex flex-col items-center gap-6 py-4">
+                                                                <div className="w-40 h-40 bg-white p-4 rounded-3xl shadow-2xl">
+                                                                    <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=mock@upi&pn=MilanaMatrimony&am=${watch('membership') === 'Elite' ? '999' : '499'}`} alt="UPI QR" className="w-full h-full" />
+                                                                </div>
+                                                                <p className="text-[10px] font-bold uppercase tracking-widest text-center opacity-80">Scan QR to pay securely via any UPI app</p>
+                                                            </div>
+                                                        ) : (
+                                                            <div className="space-y-6 py-4">
+                                                                <div className="space-y-2">
+                                                                    <label className="text-[10px] font-black uppercase tracking-widest opacity-60">Card Number</label>
+                                                                    <input type="text" placeholder="•••• •••• •••• ••••" className="w-full bg-white/10 border border-[#D4AF37]/30 rounded-xl px-4 py-3 text-white placeholder:text-white/30 outline-none focus:border-[#D4AF37]" />
+                                                                </div>
+                                                                <div className="grid grid-cols-2 gap-4">
+                                                                    <div className="space-y-2">
+                                                                        <label className="text-[10px] font-black uppercase tracking-widest opacity-60">Expiry Date</label>
+                                                                        <input type="text" placeholder="MM/YY" className="w-full bg-white/10 border border-[#D4AF37]/30 rounded-xl px-4 py-3 text-white placeholder:text-white/30 outline-none focus:border-[#D4AF37]" />
+                                                                    </div>
+                                                                    <div className="space-y-2">
+                                                                        <label className="text-[10px] font-black uppercase tracking-widest opacity-60">CVV</label>
+                                                                        <input type="password" placeholder="•••" className="w-full bg-white/10 border border-[#D4AF37]/30 rounded-xl px-4 py-3 text-white placeholder:text-white/30 outline-none focus:border-[#D4AF37]" />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </motion.div>
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                )}
                             </AnimatePresence>
 
                             <div className="mt-auto pt-12 flex gap-6">
@@ -467,7 +575,7 @@ const Register = () => {
                                     </button>
                                 )}
 
-                                {step < 4 ? (
+                                {step < 5 ? (
                                     <button
                                         type="button"
                                         onClick={nextStep}
@@ -514,7 +622,7 @@ const Register = () => {
                     box-shadow: 0 15px 25px -5px rgba(10, 25, 47, 0.08);
                 }
                 select.form-input-premium {
-                    padding-left: 1.5rem;
+                    padding-left: 3.5rem;
                     cursor: pointer;
                 }
                 .label-premium {

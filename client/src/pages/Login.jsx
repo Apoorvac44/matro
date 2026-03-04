@@ -32,11 +32,11 @@ const Login = () => {
     };
 
     return (
-        <div className="bg-[#FFFDD0]/20 min-h-screen flex items-center justify-center p-6 relative overflow-hidden">
+        <div className="bg-[#FFFDD0]/20 min-h-screen flex items-center justify-center p-6 pt-24 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#D4AF37]/5 rounded-full blur-[100px] -mr-48 -mt-48"></div>
             <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-[#800020]/5 rounded-full blur-[100px] -ml-48 -mb-48"></div>
 
-            <div className="max-w-md w-full bg-white rounded-[2.5rem] shadow-2xl shadow-[#800020]/10 p-12 border border-[#800020]/5 relative z-10">
+            <div className="max-w-md w-full bg-white rounded-[2.5rem] shadow-2xl shadow-[#800020]/10 px-6 py-10 md:p-12 border border-[#800020]/5 relative z-10">
                 <div className="text-center mb-12">
                     <div className="bg-[#FFFDD0] w-20 h-20 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-sm border border-[#D4AF37]/20">
                         <Heart className="text-[#800020] fill-[#800020]/20" size={36} />

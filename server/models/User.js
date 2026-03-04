@@ -21,6 +21,16 @@ const userSchema = mongoose.Schema({
     favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     interestsReceived: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     interestsSent: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    membership: {
+        type: String,
+        enum: ['Free', 'Premium', 'Elite'],
+        default: 'Free'
+    },
+    paymentStatus: {
+        type: String,
+        enum: ['Pending', 'Completed', 'Failed'],
+        default: 'Pending'
+    },
 }, {
     timestamps: true
 });
