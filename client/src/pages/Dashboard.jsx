@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AuthContext } from '../context/AuthContext';
-import { User, Heart, MessageSquare, Bell, LogOut, Home, Eye, Send, CheckCheck, Image, ArrowRight, Search } from 'lucide-react';
+import { User, Heart, MessageSquare, Bell, LogOut, Home, Eye, Send, CheckCheck, Image, ArrowRight, Search, Sparkles } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import * as api from '../services/api';
 
@@ -173,7 +173,7 @@ const Dashboard = () => {
                 <div className="max-w-6xl mx-auto grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
                     {[
                         { label: 'Interested Users', value: dashStats.receivedInterested, icon: Bell, type: 'received' },
-                        { label: 'Hearts Sent', value: dashStats.sentInterests, icon: Send, type: 'sent' },
+                        { label: 'Interests Sent', value: dashStats.sentInterests, icon: Send, type: 'sent' },
                         { label: 'Profile Views', value: dashStats.viewedYou, icon: Eye, type: 'viewed' },
                         { label: 'My Photos', value: dashStats.gallery, icon: Image, type: 'gallery' },
                     ].map((stat, i) => (
@@ -190,6 +190,48 @@ const Dashboard = () => {
                             <div className="text-[10px] font-bold uppercase tracking-[0.3em] mt-3 text-gray-400 group-hover:text-[#D4AF37]/60 transition-colors">{stat.label}</div>
                         </motion.button>
                     ))}
+                </div>
+            </div>
+
+            {/* Premium Membership Banner */}
+            <div className="px-6 pb-16">
+                <div className="max-w-6xl mx-auto">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="bg-gradient-to-r from-[#800020] to-[#600318] rounded-[3rem] p-8 md:p-12 text-white relative overflow-hidden shadow-2xl shadow-[#800020]/30 border border-[#D4AF37]/20"
+                    >
+                        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')] opacity-10"></div>
+                        <div className="absolute top-0 right-0 w-96 h-96 bg-[#D4AF37]/10 rounded-full blur-[80px] -mr-32 -mt-32"></div>
+
+                        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-10">
+                            <div className="text-center md:text-left">
+                                <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#D4AF37]/20 border border-[#D4AF37]/30 rounded-full mb-6">
+                                    <Sparkles size={12} className="text-[#D4AF37]" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-[#D4AF37]">Premium Status</span>
+                                </div>
+                                <h2 className="text-4xl md:text-5xl font-serif font-black italic mb-4 leading-tight">
+                                    Your {user?.membership || 'Basic'} <span className="text-[#D4AF37] not-italic">Journey</span>
+                                </h2>
+                                <p className="text-white/60 text-sm font-medium max-w-md leading-relaxed">
+                                    Unlock the full potential of Milana Matrimony. Gain access to direct chats, verified badges, and personalized matchmaker assistance.
+                                </p>
+                            </div>
+
+                            <div className="flex flex-col items-center gap-4">
+                                <div className="w-32 h-32 rounded-[2.5rem] bg-white/10 backdrop-blur-md border border-white/20 flex flex-col items-center justify-center p-4">
+                                    <span className="text-[10px] font-black uppercase tracking-tighter opacity-60">Expires</span>
+                                    <span className="text-2xl font-serif font-bold italic text-[#D4AF37]">30 Days</span>
+                                </div>
+                                <Link
+                                    to="/register" // In a real app, this would be a payment page
+                                    className="px-10 py-5 bg-[#D4AF37] text-[#800020] rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] hover:bg-white hover:shadow-2xl transition-all shadow-xl active:scale-95 whitespace-nowrap"
+                                >
+                                    Elevate Experience
+                                </Link>
+                            </div>
+                        </div>
+                    </motion.div>
                 </div>
             </div>
 
@@ -238,11 +280,11 @@ const Dashboard = () => {
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-xl font-bold text-gray-800">Recommended Matches</h2>
                     </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
+                    <div className="flex overflow-x-auto sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 md:gap-8 no-scrollbar pb-4 sm:pb-0 snap-x">
                         {loading ? (
-                            [1, 2, 3, 4].map(i => <SkeletonCard key={i} />)
+                            [1, 2, 3, 4].map(i => <div key={i} className="shrink-0 w-[200px] sm:w-auto snap-center"><SkeletonCard /></div>)
                         ) : recommended.length > 0 ? (
-                            recommended.map(p => <ProfileThumbnail key={p._id || p.id} profile={p} />)
+                            recommended.map(p => <div key={p._id || p.id} className="shrink-0 w-[200px] sm:w-auto snap-center"><ProfileThumbnail profile={p} /></div>)
                         ) : (
                             <p className="text-sm text-gray-400">No matches found</p>
                         )}
@@ -256,11 +298,11 @@ const Dashboard = () => {
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-xl font-bold text-gray-800">Near your Location</h2>
                     </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
+                    <div className="flex overflow-x-auto sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 md:gap-8 no-scrollbar pb-4 sm:pb-0 snap-x">
                         {loading ? (
-                            [1, 2, 3, 4].map(i => <SkeletonCard key={`loc-${i}`} />)
+                            [1, 2, 3, 4].map(i => <div key={`loc-${i}`} className="shrink-0 w-[200px] sm:w-auto snap-center"><SkeletonCard /></div>)
                         ) : nearFallback.length > 0 ? (
-                            nearFallback.map(p => <ProfileThumbnail key={p._id || p.id} profile={p} />)
+                            nearFallback.map(p => <div key={p._id || p.id} className="shrink-0 w-[200px] sm:w-auto snap-center"><ProfileThumbnail profile={p} /></div>)
                         ) : (
                             <p className="text-sm text-gray-400">No profiles nearby</p>
                         )}
@@ -275,11 +317,11 @@ const Dashboard = () => {
                         <h2 className="text-xl font-bold text-gray-800">All Matches</h2>
                         <Link to="/explore" className="text-sm font-semibold text-[#FFBD8C] hover:text-orange-500 transition-colors bg-orange-50 px-4 py-2 rounded-full">view all</Link>
                     </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
+                    <div className="flex overflow-x-auto sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 md:gap-8 no-scrollbar pb-4 sm:pb-0 snap-x">
                         {loading ? (
-                            [1, 2, 3, 4].map(i => <SkeletonCard key={`all-${i}`} />)
+                            [1, 2, 3, 4].map(i => <div key={`all-${i}`} className="shrink-0 w-[200px] sm:w-auto snap-center"><SkeletonCard /></div>)
                         ) : allProfiles.length > 0 ? (
-                            allProfiles.map(p => <ProfileThumbnail key={p._id || p.id} profile={p} />)
+                            allProfiles.map(p => <div key={p._id || p.id} className="shrink-0 w-[200px] sm:w-auto snap-center"><ProfileThumbnail profile={p} /></div>)
                         ) : (
                             <p className="text-sm text-gray-400">No profiles found</p>
                         )}
@@ -306,6 +348,15 @@ const Dashboard = () => {
                     <span className="text-[10px] font-semibold">Profile</span>
                 </Link>
             </div>
+            <style>{`
+                .no-scrollbar::-webkit-scrollbar {
+                    display: none;
+                }
+                .no-scrollbar {
+                    -ms-overflow-style: none;
+                    scrollbar-width: none;
+                }
+            `}</style>
         </div >
     );
 };

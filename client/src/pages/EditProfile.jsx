@@ -6,9 +6,9 @@ import { motion } from 'framer-motion';
 
 const EditProfile = () => {
     const [formData, setFormData] = useState({
-        name: '', age: '', gender: '', religion: '', caste: '',
-        location: '', education: '', profession: '', interests: '', aboutMe: '',
-        profilePicture: ''
+        name: '', age: '', gender: '', location: '',
+        education: '', profession: '', income: '', workLocation: '',
+        interests: '', aboutMe: '', profilePicture: ''
     });
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
@@ -23,11 +23,11 @@ const EditProfile = () => {
                     name: data.name || '',
                     age: data.age || '',
                     gender: data.gender || '',
-                    religion: data.religion || '',
-                    caste: data.caste || '',
                     location: data.location || '',
                     education: data.education || '',
                     profession: data.profession || '',
+                    income: data.income || '',
+                    workLocation: data.workLocation || '',
                     interests: data.interests?.join(', ') || '',
                     aboutMe: data.aboutMe || '',
                     profilePicture: data.profilePicture || ''
@@ -223,33 +223,13 @@ const EditProfile = () => {
                                 </div>
                             </div>
 
-                            {/* Background Details */}
+                            {/* Professional Information */}
                             <div className="space-y-10">
                                 <h3 className="text-[10px] font-black text-[#800020] uppercase tracking-[0.4em] flex items-center gap-4">
                                     <span className="w-12 h-0.5 bg-[#D4AF37] opacity-30 rounded-full"></span>
-                                    Background Info
+                                    Professional Info
                                 </h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                    <div className="flex flex-col gap-2">
-                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Religion</label>
-                                        <input
-                                            type="text"
-                                            className="form-input-premium"
-                                            value={formData.religion}
-                                            onChange={(e) => setFormData({ ...formData, religion: e.target.value })}
-                                            placeholder="Religion"
-                                        />
-                                    </div>
-                                    <div className="flex flex-col gap-2">
-                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Caste / Community</label>
-                                        <input
-                                            type="text"
-                                            className="form-input-premium"
-                                            value={formData.caste}
-                                            onChange={(e) => setFormData({ ...formData, caste: e.target.value })}
-                                            placeholder="Caste"
-                                        />
-                                    </div>
                                     <div className="flex flex-col gap-2">
                                         <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Education</label>
                                         <input
@@ -257,18 +237,43 @@ const EditProfile = () => {
                                             className="form-input-premium"
                                             value={formData.education}
                                             onChange={(e) => setFormData({ ...formData, education: e.target.value })}
-                                            placeholder="Education"
+                                            placeholder="Education (e.g. MBA, B.Tech)"
                                         />
                                     </div>
                                     <div className="flex flex-col gap-2">
                                         <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Profession</label>
-
                                         <input
                                             type="text"
                                             className="form-input-premium"
                                             value={formData.profession}
                                             onChange={(e) => setFormData({ ...formData, profession: e.target.value })}
-                                            placeholder="Profession"
+                                            placeholder="Profession (e.g. Doctor, Engineer)"
+                                        />
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Annual Income</label>
+                                        <select
+                                            className="form-input-premium appearance-none cursor-pointer"
+                                            value={formData.income}
+                                            onChange={(e) => setFormData({ ...formData, income: e.target.value })}
+                                        >
+                                            <option value="">Select Range</option>
+                                            <option>0 - 3 LPA</option>
+                                            <option>3 - 7 LPA</option>
+                                            <option>7 - 15 LPA</option>
+                                            <option>15 - 30 LPA</option>
+                                            <option>30+ LPA</option>
+                                            <option>Other</option>
+                                        </select>
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Work Location</label>
+                                        <input
+                                            type="text"
+                                            className="form-input-premium"
+                                            value={formData.workLocation}
+                                            onChange={(e) => setFormData({ ...formData, workLocation: e.target.value })}
+                                            placeholder="Work City, State"
                                         />
                                     </div>
                                 </div>

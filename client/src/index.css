@@ -53,6 +53,15 @@
   .section-padding {
     @apply py-16 px-6 md:px-12 lg:px-24;
   }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
 
 /* Override text selection color globally */

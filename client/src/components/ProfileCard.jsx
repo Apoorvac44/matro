@@ -81,74 +81,74 @@ const ProfileCard = ({ profile }) => {
             </div>
 
             {/* Profile Details */}
-            <div className="p-7">
+            <div className="p-4">
                 {/* Name */}
-                <div className="flex items-start justify-between mb-4">
-                    <h3 className="text-xl font-serif font-bold text-gray-900 italic">{profile.name}</h3>
-                    <div className="flex gap-0.5">
-                        <Star size={12} className="fill-[#D4AF37] text-[#D4AF37]" />
-                        <Star size={12} className="fill-[#D4AF37] text-[#D4AF37]" />
+                <div className="flex items-start justify-between mb-3">
+                    <h3 className="text-lg font-serif font-bold text-gray-900 italic leading-tight truncate">{profile.name}</h3>
+                    <div className="flex gap-0.5 shrink-0">
+                        <Star size={10} className="fill-[#D4AF37] text-[#D4AF37]" />
+                        <Star size={10} className="fill-[#D4AF37] text-[#D4AF37]" />
                     </div>
                 </div>
 
                 {/* Info Grid */}
-                <div className="grid grid-cols-2 gap-y-4 gap-x-3 mb-6">
+                <div className="grid grid-cols-2 gap-y-3 gap-x-2 mb-4">
                     {/* Age & Height */}
-                    <div className="flex items-center gap-2.5 text-gray-600 text-xs">
-                        <div className="w-7 h-7 bg-[#FFFDD0] rounded-lg flex items-center justify-center">
-                            <Calendar size={13} className="text-[#D4AF37]" />
+                    <div className="flex items-center gap-2 text-gray-600 text-[10px]">
+                        <div className="w-6 h-6 bg-[#FFFDD0] rounded-lg flex items-center justify-center shrink-0">
+                            <Calendar size={11} className="text-[#D4AF37]" />
                         </div>
                         <span className="font-semibold">{profile.age || '25'} yrs, 5'6"</span>
                     </div>
                     {/* Location */}
-                    <div className="flex items-center gap-2.5 text-gray-600 text-xs">
-                        <div className="w-7 h-7 bg-blue-50 rounded-lg flex items-center justify-center">
-                            <MapPin size={13} className="text-blue-400" />
+                    <div className="flex items-center gap-2 text-gray-600 text-[10px]">
+                        <div className="w-6 h-6 bg-blue-50 rounded-lg flex items-center justify-center shrink-0">
+                            <MapPin size={11} className="text-blue-400" />
                         </div>
                         <span className="font-semibold truncate">{profile.location || 'India'}</span>
                     </div>
                     {/* Education */}
-                    <div className="flex items-center gap-2.5 text-gray-600 text-xs">
-                        <div className="w-7 h-7 bg-green-50 rounded-lg flex items-center justify-center">
-                            <GraduationCap size={13} className="text-green-400" />
+                    <div className="flex items-center gap-2 text-gray-600 text-[10px]">
+                        <div className="w-6 h-6 bg-green-50 rounded-lg flex items-center justify-center shrink-0">
+                            <GraduationCap size={11} className="text-green-400" />
                         </div>
                         <span className="font-semibold truncate">{profile.education || 'Graduate'}</span>
                     </div>
                     {/* Profession */}
-                    <div className="flex items-center gap-2.5 text-gray-600 text-xs">
-                        <div className="w-7 h-7 bg-[#FFFDD0] rounded-lg flex items-center justify-center">
-                            <Briefcase size={13} className="text-[#800020]" />
+                    <div className="flex items-center gap-2 text-gray-600 text-[10px]">
+                        <div className="w-6 h-6 bg-[#FFFDD0] rounded-lg flex items-center justify-center shrink-0">
+                            <Briefcase size={11} className="text-[#800020]" />
                         </div>
                         <span className="font-semibold truncate">{profile.profession || 'Professional'}</span>
                     </div>
                 </div>
 
                 {/* Interest Section */}
-                <div className="border-t border-[#800020]/5 pt-6">
+                <div className="border-t border-[#800020]/5 pt-4">
                     {interestSent ? (
-                        <div className="text-center py-2.5 bg-green-50 rounded-2xl">
-                            <p className="text-sm font-bold text-green-600 flex items-center justify-center gap-2">
-                                <CheckCircle size={16} /> Interest Sent!
+                        <div className="text-center py-2 bg-green-50 rounded-xl">
+                            <p className="text-[11px] font-bold text-green-600 flex items-center justify-center gap-2">
+                                <CheckCircle size={14} /> Interest Sent!
                             </p>
                         </div>
                     ) : dismissed ? (
-                        <div className="text-center py-2.5 bg-gray-50 rounded-2xl">
-                            <p className="text-sm font-bold text-gray-400">Profile Skipped</p>
+                        <div className="text-center py-2 bg-gray-50 rounded-xl">
+                            <p className="text-[11px] font-bold text-gray-400">Profile Skipped</p>
                         </div>
                     ) : (
-                        <div className="flex gap-3">
+                        <div className="flex gap-2">
                             <button
                                 onClick={(e) => { e.preventDefault(); handleInterest(true); }}
                                 disabled={sending}
-                                className="flex items-center gap-2 px-6 py-2 bg-[#800020] text-[#D4AF37] rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-[#600318] transition-colors shadow-lg shadow-[#800020]/20 disabled:opacity-60"
+                                className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-[#800020] text-[#D4AF37] rounded-xl text-[10px] font-bold uppercase tracking-widest hover:bg-[#600318] transition-colors shadow-lg shadow-[#800020]/10 disabled:opacity-60"
                             >
-                                {sending ? <Loader2 size={16} className="animate-spin text-[#D4AF37]" /> : <Heart size={14} className="fill-[#D4AF37] text-[#D4AF37]" />}
-                                {sending ? 'Sending...' : 'Interested'}
+                                {sending ? <Loader2 size={14} className="animate-spin text-[#D4AF37]" /> : <Heart size={12} className="fill-[#D4AF37] text-[#D4AF37]" />}
+                                {sending ? '...' : 'Interested'}
                             </button>
                             <button
                                 onClick={(e) => { e.preventDefault(); handleInterest(false); }}
                                 disabled={sending}
-                                className="flex-1 py-3.5 rounded-2xl bg-gray-50 text-gray-400 text-xs font-bold uppercase tracking-widest hover:bg-gray-100 transition-all active:scale-95 disabled:opacity-60"
+                                className="px-4 py-2 rounded-xl bg-gray-50 text-gray-400 text-[10px] font-bold uppercase tracking-widest hover:bg-gray-100 transition-all active:scale-95 disabled:opacity-60"
                             >
                                 Skip
                             </button>
@@ -157,19 +157,19 @@ const ProfileCard = ({ profile }) => {
                 </div>
 
                 {/* Quick Actions */}
-                <div className="flex gap-4 mt-6">
+                <div className="flex gap-2 mt-4">
                     <Link
                         to={`/profile/${profileId}`}
-                        className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-[#FFFDD0]/50 text-[#800020] text-xs font-bold uppercase tracking-widest hover:bg-[#FFFDD0] transition-all active:scale-95 border border-[#D4AF37]/20"
+                        className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-[#FFFDD0]/50 text-[#800020] text-[10px] font-bold uppercase tracking-widest hover:bg-[#FFFDD0] transition-all active:scale-95 border border-[#D4AF37]/20"
                     >
-                        <Eye size={15} />
+                        <Eye size={13} />
                         Details
                     </Link>
                     <Link
                         to={`/chat/${profileId}`}
-                        className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-white border border-gray-100 text-gray-600 text-xs font-bold uppercase tracking-widest hover:bg-gray-50 transition-all active:scale-95"
+                        className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-white border border-gray-100 text-gray-600 text-[10px] font-bold uppercase tracking-widest hover:bg-gray-50 transition-all active:scale-95"
                     >
-                        <MessageSquare size={15} />
+                        <MessageSquare size={13} />
                         Message
                     </Link>
                 </div>

@@ -68,5 +68,8 @@ export const getDashboardStats = () => mockResolve({ viewedYou: 12, saved: 5, re
 export const getFavorites = () => mockResolve(DUMMY_PROFILES.slice(0, 2));
 export const getInterestsReceived = () => mockResolve(DUMMY_PROFILES.slice(2, 5));
 export const getInterestsSent = () => mockResolve(DUMMY_PROFILES.slice(4, 7));
+export const getGallery = () => mockResolve(DUMMY_PROFILES[0].photos || []);
+export const addGalleryPhoto = (base64) => mockResolve({ url: base64 });
+export const deleteGalleryPhoto = (id) => mockResolve({ message: 'Photo deleted' });
 
-export default { login, register, getProfile, updateProfile, getProfiles, sendInterest, toggleFavorite, sendMessage, getConversations, getMessages, getAdminUsers, toggleApproval, getDashboardStats, getFavorites, getInterestsReceived, getInterestsSent };
+export default { login, register, getProfile, updateProfile, getProfiles, sendInterest, toggleFavorite, sendMessage, getConversations, getMessages, getAdminUsers, toggleApproval, getDashboardStats, getFavorites, getInterestsReceived, getInterestsSent, getGallery, addGalleryPhoto, deleteGalleryPhoto };

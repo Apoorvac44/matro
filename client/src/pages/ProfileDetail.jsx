@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 import * as api from '../services/api';
-import { User, MapPin, CupSoda, Book, Briefcase, Heart, MessageSquare, Check, CheckCircle, X, Shield, Image as ImageIcon, ArrowLeft, Clock, GraduationCap, Send, Sparkles, Loader2 } from 'lucide-react';
+import { User, MapPin, CupSoda, Book, Briefcase, Heart, MessageSquare, Check, CheckCircle, X, Shield, Image as ImageIcon, ArrowLeft, Clock, GraduationCap, Send, Sparkles, Loader2, CreditCard, CalendarDays } from 'lucide-react';
 
 const ProfileDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { user: currentUser } = useContext(AuthContext);
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [interestSent, setInterestSent] = useState(false);
@@ -69,6 +71,22 @@ const ProfileDetail = () => {
                     <span>Back to Search</span>
                 </button>
 
+                {/* Photos Preview Overlay */}
+                {profile.photos && profile.photos.length > 0 && (
+                    <div className="flex overflow-x-auto md:grid md:grid-cols-4 gap-4 mb-20 no-scrollbar pb-4 md:pb-0 snap-x">
+                        {(profile.photos || []).map((photo, i) => (
+                            <motion.div
+                                key={i}
+                                whileHover={{ scale: 1.05 }}
+                                onClick={() => setSelectedPhoto(photo)}
+                                className="shrink-0 w-48 h-48 md:w-full md:h-auto aspect-square rounded-[2rem] overflow-hidden cursor-pointer shadow-lg border-4 border-white snap-center"
+                            >
+                                <img src={photo} alt={`Gallery ${i}`} className="w-full h-full object-cover" />
+                            </motion.div>
+                        ))}
+                    </div>
+                )}
+
                 <div className="flex flex-col lg:flex-row gap-12">
                     {/* Left Column: Photo & Actions */}
                     <div className="w-full lg:w-1/3">
@@ -103,8 +121,34 @@ const ProfileDetail = () => {
                         </div>
                     </div>
 
-                    {/* Right Column: Details */}
                     <div className="w-full lg:w-2/3 space-y-8">
+                        {/* Membership Status (Only for own profile) */}
+                        {currentUser?._id === id && (
+                            <motion.div
+                                initial={{ opacity: 0, y: -20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="bg-gradient-to-r from-[#800020] to-[#600318] p-8 rounded-[2.5rem] text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl shadow-[#800020]/20 border border-[#D4AF37]/20 relative overflow-hidden"
+                            >
+                                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')] opacity-10"></div>
+                                <div className="relative z-10 flex items-center gap-6">
+                                    <div className="w-16 h-16 bg-[#D4AF37]/20 rounded-2xl flex items-center justify-center border border-[#D4AF37]/30">
+                                        <Sparkles size={32} className="text-[#D4AF37]" />
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-black uppercase tracking-[0.3em] text-[#D4AF37] mb-1">Your Current Plan</p>
+                                        <h3 className="text-2xl font-serif font-black italic">{profile.membership || 'Premium'} Member</h3>
+                                    </div>
+                                </div>
+                                <div className="relative z-10 flex flex-col items-center md:items-end gap-1">
+                                    <div className="flex items-center gap-2 px-6 py-2 bg-white/10 backdrop-blur-md rounded-xl border border-white/20">
+                                        <CalendarDays size={16} className="text-[#D4AF37]" />
+                                        <span className="text-[10px] font-bold uppercase tracking-widest text-[#D4AF37]">24 Days Remaining</span>
+                                    </div>
+                                    <p className="text-white/40 text-[9px] font-medium uppercase tracking-tighter">Plan expires on 30 Mar 2026</p>
+                                </div>
+                            </motion.div>
+                        )}
+
                         <div>
                             <h1 className="text-4xl font-bold text-gray-900 mb-4">{profile.name}</h1>
                             <div className="flex flex-wrap items-center gap-6 text-sm font-semibold text-gray-500">
@@ -157,7 +201,7 @@ const ProfileDetail = () => {
                             {profile.photos && profile.photos.length > 0 && (
                                 <div>
                                     <h3 className="text-[10px] font-bold text-[#800020] uppercase tracking-[0.2em] mb-6 pb-2 border-b border-[#800020]/5">Photo Gallery</h3>
-                                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-5 gap-6 md:gap-8">
                                         {profile.photos.map((photo, index) => (
                                             <div key={index} className="aspect-[4/5] rounded-[2rem] overflow-hidden border-2 border-white shadow-md group cursor-pointer hover:shadow-xl transition-all">
                                                 <img
