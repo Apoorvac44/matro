@@ -1,7 +1,7 @@
 // FRONTEND-ONLY MOCK API
 const DUMMY_PROFILES = [
     {
-        _id: '1', name: 'Priya Sharma', age: 26, gender: 'Female', religion: 'Hindu', location: 'Mumbai',
+        _id: '1', name: 'Priya Sharma', email: 'priya.sharma@example.com', age: 26, gender: 'Female', religion: 'Hindu', location: 'Mumbai',
         profession: 'Software Engineer', education: 'B.Tech CS', income: '₹12 LPA', caste: 'Brahmin',
         profilePicture: 'https://randomuser.me/api/portraits/women/44.jpg',
         aboutMe: 'Passionate about technology and classical dance. Looking for someone with a modern soul and traditional roots.',
@@ -13,7 +13,7 @@ const DUMMY_PROFILES = [
         casteCertificate: 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&auto=format&fit=crop&q=60'
     },
     {
-        _id: '2', name: 'Amit Patel', age: 29, gender: 'Male', religion: 'Hindu', location: 'Ahmedabad',
+        _id: '2', name: 'Amit Patel', email: 'amit.patel@example.com', age: 29, gender: 'Male', religion: 'Hindu', location: 'Ahmedabad',
         profession: 'Doctor', education: 'MBBS, MD', income: '₹18 LPA', caste: 'Patel',
         profilePicture: 'https://randomuser.me/api/portraits/men/32.jpg',
         aboutMe: 'A dedicated physician who loves cricket and travel. Believe in simple living and high thinking.',
@@ -24,7 +24,7 @@ const DUMMY_PROFILES = [
         aadharCard: 'https://images.unsplash.com/photo-1544383333-5cf9833b378e?w=800&auto=format&fit=crop&q=60'
     },
     {
-        _id: '3', name: 'Anjali Reddy', age: 24, gender: 'Female', religion: 'Hindu', location: 'Hyderabad',
+        _id: '3', name: 'Anjali Reddy', email: 'anjali.reddy@example.com', age: 24, gender: 'Female', religion: 'Hindu', location: 'Hyderabad',
         profession: 'Data Analyst', education: 'MBA', income: '₹10 LPA', caste: 'Reddy',
         profilePicture: 'https://randomuser.me/api/portraits/women/68.jpg',
         aboutMe: 'Love cooking and exploring new cuisines. Looking for a partner who is adventurous.',
@@ -35,7 +35,7 @@ const DUMMY_PROFILES = [
         casteCertificate: 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&auto=format&fit=crop&q=60'
     },
     {
-        _id: '4', name: 'Rahul Mehta', age: 31, gender: 'Male', religion: 'Jain', location: 'Surat',
+        _id: '4', name: 'Rahul Mehta', email: 'rahul.mehta@example.com', age: 31, gender: 'Male', religion: 'Jain', location: 'Surat',
         profession: 'Chartered Accountant', education: 'CA, CS', income: '₹15 LPA', caste: 'Oswal',
         profilePicture: 'https://randomuser.me/api/portraits/men/45.jpg',
         aboutMe: 'Traditional values with a modern outlook. Family is my priority.',
@@ -45,7 +45,7 @@ const DUMMY_PROFILES = [
         aadharCard: 'https://images.unsplash.com/photo-1544383333-5cf9833b378e?w=800&auto=format&fit=crop&q=60'
     },
     {
-        _id: '5', name: 'Kavya Nair', age: 27, gender: 'Female', religion: 'Hindu', location: 'Kochi',
+        _id: '5', name: 'Kavya Nair', email: 'kavya.nair@example.com', age: 27, gender: 'Female', religion: 'Hindu', location: 'Kochi',
         profession: 'Architect', education: 'B.Arch', income: '₹14 LPA', caste: 'Nair',
         profilePicture: 'https://randomuser.me/api/portraits/women/55.jpg',
         aboutMe: 'Creative soul who loves design and music. I enjoy the serenity of nature.',
@@ -56,7 +56,7 @@ const DUMMY_PROFILES = [
         casteCertificate: 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&auto=format&fit=crop&q=60'
     },
     {
-        _id: '6', name: 'Vikram Singh', age: 33, gender: 'Male', religion: 'Sikh', location: 'Chandigarh',
+        _id: '6', name: 'Vikram Singh', email: 'vikram.singh@example.com', age: 33, gender: 'Male', religion: 'Sikh', location: 'Chandigarh',
         profession: 'Army Officer', education: 'B.Sc (NDA)', income: '₹20 LPA', caste: 'Jat',
         profilePicture: 'https://randomuser.me/api/portraits/men/60.jpg',
         aboutMe: 'Disciplined, adventurous and family-oriented. Love the mountains.',
@@ -66,7 +66,7 @@ const DUMMY_PROFILES = [
         aadharCard: 'https://images.unsplash.com/photo-1544383333-5cf9833b378e?w=800&auto=format&fit=crop&q=60'
     },
     {
-        _id: '7', name: 'Sneha Iyer', age: 25, gender: 'Female', religion: 'Hindu', location: 'Chennai',
+        _id: '7', name: 'Sneha Iyer', email: 'sneha.iyer@example.com', age: 25, gender: 'Female', religion: 'Hindu', location: 'Chennai',
         profession: 'Teacher', education: 'M.Ed', income: '₹7 LPA', caste: 'Iyer',
         profilePicture: 'https://randomuser.me/api/portraits/women/72.jpg',
         aboutMe: 'Passionate about education and classical music. I value honesty and integrity.',
@@ -75,7 +75,7 @@ const DUMMY_PROFILES = [
         workLocation: 'Chennai', prefAgeRange: '26-30', prefLocation: 'Chennai', prefEducation: 'Post Graduate', prefProfession: 'Teacher'
     },
     {
-        _id: '8', name: 'Rohan Deshmukh', age: 28, gender: 'Male', religion: 'Hindu', location: 'Pune',
+        _id: '8', name: 'Rohan Deshmukh', email: 'rohan.desh@example.com', age: 28, gender: 'Male', religion: 'Hindu', location: 'Pune',
         profession: 'Graphic Designer', education: 'BFA', income: '₹9 LPA', caste: 'Maratha',
         profilePicture: 'https://randomuser.me/api/portraits/men/15.jpg',
         aboutMe: 'Creative mind looking for a soulmate who appreciates art.',

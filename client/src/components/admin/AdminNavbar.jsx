@@ -1,7 +1,17 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Menu, Bell, User, LogOut, Search } from 'lucide-react';
+import { AuthContext } from '../../context/AuthContext';
 
 const AdminNavbar = ({ setIsSidebarOpen }) => {
+    const { logout } = useContext(AuthContext);
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        logout();
+        navigate('/login');
+    };
+
     return (
         <header className="h-20 bg-white/80 backdrop-blur-md border-b border-[#800020]/5 sticky top-0 z-30 px-6 lg:px-10">
             <div className="h-full flex items-center justify-between">
@@ -41,7 +51,11 @@ const AdminNavbar = ({ setIsSidebarOpen }) => {
                         <button className="w-12 h-12 rounded-2xl bg-[#FFFDD0] border border-[#D4AF37]/20 flex items-center justify-center text-[#800020] shadow-sm hover:shadow-md transition-all overflow-hidden group">
                             <User size={20} className="group-hover:scale-110 transition-transform" />
                         </button>
-                        <button className="p-2.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-2xl transition-all">
+                        <button
+                            onClick={handleLogout}
+                            className="p-2.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-2xl transition-all"
+                            title="Logout"
+                        >
                             <LogOut size={20} />
                         </button>
                     </div>

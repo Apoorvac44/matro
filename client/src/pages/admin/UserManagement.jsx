@@ -125,11 +125,13 @@ const UserManagement = () => {
     };
 
     const filteredUsers = users.filter(user => {
-        const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            user.email.toLowerCase().includes(searchTerm.toLowerCase());
+        const name = user?.name || '';
+        const email = user?.email || '';
+        const matchesSearch = name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            email.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesFilter = filterStatus === 'all' ||
-            (filterStatus === 'approved' && user.isApproved) ||
-            (filterStatus === 'pending' && !user.isApproved);
+            (filterStatus === 'approved' && user?.isApproved) ||
+            (filterStatus === 'pending' && !user?.isApproved);
         return matchesSearch && matchesFilter;
     });
 
@@ -261,10 +263,18 @@ const UserManagement = () => {
                                         <td className="px-8 py-6 text-right">
                                             <div className="flex items-center justify-end gap-2">
                                                 <button
-                                                    onClick={() => handleToggleApproval(user._id)}
-                                                    className={`p-2 rounded-xl transition-all shadow-sm active:scale-95 ${user.isApproved
-                                                        ? 'bg-red-50 text-red-600 hover:bg-red-600 hover:text-white'
-                                                        : 'bg-green-50 text-green-600 hover:bg-green-600 hover:text-white'
+                                                    onClick={(e) => { e.stopPropagation(); handleViewProfile(user._id); }}
+                                                    className="p-2.5 bg-[#800020] text-white hover:bg-[#600318] rounded-xl transition-all shadow-lg active:scale-95 border border-[#800020]/20"
+                                                    title="View Detailed Profile"
+                                                >
+                                                    <Eye size={18} />
+                                                </button>
+
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); handleToggleApproval(user._id); }}
+                                                    className={`p-2.5 rounded-xl transition-all shadow-sm active:scale-95 ${user.isApproved
+                                                        ? 'bg-red-50 text-red-600 hover:bg-red-600 hover:text-white border border-red-100'
+                                                        : 'bg-green-50 text-green-600 hover:bg-green-600 hover:text-white border border-green-100'
                                                         }`}
                                                     title={user.isApproved ? 'Revoke Approval' : 'Approve User'}
                                                 >
@@ -273,7 +283,7 @@ const UserManagement = () => {
 
                                                 <button
                                                     onClick={(e) => openMenu(user._id, e)}
-                                                    className={`p-2 rounded-xl transition-all shadow-sm active:scale-95 ${activeMenu === user._id ? 'bg-[#800020] text-[#D4AF37]' : 'bg-gray-50 text-gray-400 hover:bg-[#800020] hover:text-[#D4AF37]'}`}
+                                                    className={`p-2.5 rounded-xl transition-all shadow-sm active:scale-95 ${activeMenu === user._id ? 'bg-[#800020] text-[#D4AF37]' : 'bg-gray-50 text-gray-400 hover:bg-[#800020] hover:text-[#D4AF37] border border-gray-100'}`}
                                                 >
                                                     <MoreVertical size={18} />
                                                 </button>
@@ -298,7 +308,7 @@ const UserManagement = () => {
 
             {/* Dropdown Menu Portal */}
             {activeMenu && createPortal(
-                <div ref={menuRef} style={{ position: 'fixed', top: menuPos.top, left: menuPos.left, zIndex: 99999 }}>
+                <div ref={menuRef} style={{ position: 'fixed', top: menuPos.top, left: menuPos.left, zIndex: 200000 }}>
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9, y: -5 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -341,7 +351,7 @@ const UserManagement = () => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 bg-black/60 backdrop-blur-md z-[99999] flex items-center justify-center p-4 md:p-10"
+                        className="fixed inset-0 bg-black/90 backdrop-blur-2xl z-[999999] flex items-center justify-center p-4 md:p-10"
                         onClick={() => setSelectedUser(null)}
                     >
                         <motion.div
