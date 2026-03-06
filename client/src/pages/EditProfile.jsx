@@ -223,11 +223,11 @@ const EditProfile = () => {
                                 </div>
                             </div>
 
-                            {/* Professional Information */}
+                            {/* Education Information */}
                             <div className="space-y-10">
                                 <h3 className="text-[10px] font-black text-[#800020] uppercase tracking-[0.4em] flex items-center gap-4">
                                     <span className="w-12 h-0.5 bg-[#D4AF37] opacity-30 rounded-full"></span>
-                                    Professional Info
+                                    Education Info
                                 </h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     <div className="flex flex-col gap-2">

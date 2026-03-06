@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Search, SlidersHorizontal, Heart, Loader2, Home, MessageSquare, User, X } from 'lucide-react';
+import { Search, SlidersHorizontal, Heart, Loader2, Home, MessageSquare, User, X, ChevronDown, ChevronUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import ProfileCard from '../components/ProfileCard';
@@ -11,8 +11,15 @@ const Explore = () => {
     const [profiles, setProfiles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
-    const [activeFilter, setActiveFilter] = useState(null);
     const [error, setError] = useState(null);
+    const [sidebarOpen, setSidebarOpen] = useState(true);
+
+    // Collapsible sections
+    const [openSections, setOpenSections] = useState({
+        filters: true,
+        matchPreference: false,
+        basicDetails: false,
+    });
 
     // Filter states
     const [filters, setFilters] = useState({
@@ -27,6 +34,7 @@ const Explore = () => {
     });
 
     useEffect(() => {
+        window.scrollTo(0, 0);
         const fetchProfiles = async () => {
             try {
                 const { data } = await api.getProfiles();
@@ -49,10 +57,13 @@ const Explore = () => {
         setFilters({ gender: '', ageMin: '', ageMax: '', location: '', religion: '', profession: '', education: '', maritalStatus: '' });
     };
 
+    const toggleSection = (section) => {
+        setOpenSections(prev => ({ ...prev, [section]: !prev[section] }));
+    };
+
     const activeFilterCount = Object.values(filters).filter(v => v !== '').length;
 
     const filteredProfiles = profiles.filter(profile => {
-        // Search query
         const q = searchQuery.toLowerCase();
         const matchesSearch = !q ||
             profile.name?.toLowerCase().includes(q) ||
@@ -60,7 +71,6 @@ const Explore = () => {
             profile.location?.toLowerCase().includes(q) ||
             profile.religion?.toLowerCase().includes(q);
 
-        // Filter criteria
         const matchesGender = !filters.gender || profile.gender === filters.gender;
         const matchesAgeMin = !filters.ageMin || (profile.age && profile.age >= parseInt(filters.ageMin));
         const matchesAgeMax = !filters.ageMax || (profile.age && profile.age <= parseInt(filters.ageMax));
@@ -72,7 +82,8 @@ const Explore = () => {
         return matchesSearch && matchesGender && matchesAgeMin && matchesAgeMax && matchesLocation && matchesReligion && matchesProfession && matchesEducation;
     });
 
-    const filterTabs = ['Filters', 'Match Preference', 'Basic Details'];
+    const inputClass = "w-full px-4 py-3 rounded-xl bg-white border border-gray-200 text-sm font-medium outline-none focus:ring-2 focus:ring-[#800020]/10 focus:border-[#800020]/30 transition-all";
+    const labelClass = "text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5 block";
 
     return (
         <div className="min-h-screen bg-[#F0F2F5]/10 flex flex-col pb-20 md:pb-0">
@@ -104,172 +115,235 @@ const Explore = () => {
                 </div>
             </div>
 
-            {/* Filter Tabs */}
-            <div className="px-4 py-8 border-b border-[#800020]/5 bg-white/80 backdrop-blur-xl sticky top-20 z-20">
-                <div className="max-w-6xl mx-auto flex gap-4 overflow-x-auto justify-center md:justify-start no-scrollbar">
-                    {filterTabs.map(tab => (
-                        <button
-                            key={tab}
-                            onClick={() => setActiveFilter(activeFilter === tab ? null : tab)}
-                            className={`flex items-center gap-3 px-8 py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-all border group ${activeFilter === tab
-                                ? 'bg-[#800020] text-[#D4AF37] border-[#800020] shadow-lg shadow-[#800020]/20 scale-[1.02]'
-                                : 'bg-white text-gray-500 border-gray-100 hover:border-[#D4AF37]/50 hover:bg-[#800020]/5 hover:text-[#800020] hover:scale-[1.02]'
-                                }`}
-                        >
-                            {tab === 'Filters' && <SlidersHorizontal size={14} />}
-                            {tab}
-                            {tab === 'Filters' && activeFilterCount > 0 && (
-                                <span className="w-5 h-5 bg-[#D4AF37] text-[#800020] text-[10px] font-black rounded-lg flex items-center justify-center">{activeFilterCount}</span>
-                            )}
-                        </button>
-                    ))}
-                </div>
-            </div>
+            {/* Main Content Area with Sidebar */}
+            <div className="flex-1 flex">
+                {/* Sidebar - Toggle on mobile */}
+                <button
+                    onClick={() => setSidebarOpen(!sidebarOpen)}
+                    className="md:hidden fixed bottom-24 right-4 z-50 bg-[#800020] text-[#D4AF37] w-14 h-14 rounded-full shadow-2xl shadow-[#800020]/30 flex items-center justify-center active:scale-95 transition-all"
+                >
+                    <SlidersHorizontal size={22} />
+                    {activeFilterCount > 0 && (
+                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#D4AF37] text-[#800020] text-[10px] font-black rounded-full flex items-center justify-center">{activeFilterCount}</span>
+                    )}
+                </button>
 
-            {/* Filter Panels */}
-            <AnimatePresence>
-                {activeFilter && (
-                    <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        className="border-b border-gray-100 overflow-hidden bg-gray-50"
-                    >
-                        <div className="max-w-4xl mx-auto px-6 py-8">
-                            <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-sm font-bold text-gray-800">{activeFilter}</h3>
+                {/* Sidebar */}
+                <div className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'} fixed md:sticky top-0 md:top-20 left-0 z-40 md:z-10 w-80 h-screen md:h-[calc(100vh-5rem)] bg-white border-r border-gray-100 overflow-y-auto transition-transform duration-300 shadow-2xl md:shadow-none pt-20 md:pt-0`}>
+                    {/* Sidebar Header */}
+                    <div className="p-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
+                        <div>
+                            <h3 className="text-sm font-black text-[#800020] uppercase tracking-[0.2em]">Refine Search</h3>
+                            <p className="text-[10px] text-gray-400 font-bold mt-1">{filteredProfiles.length} matches found</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            {activeFilterCount > 0 && (
+                                <button onClick={clearFilters} className="text-[10px] font-bold text-red-500 hover:text-red-600 uppercase tracking-wider">Clear</button>
+                            )}
+                            <button onClick={() => setSidebarOpen(false)} className="md:hidden p-2 text-gray-400 hover:text-[#800020]">
+                                <X size={20} />
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Filters Section */}
+                    <div className="border-b border-gray-50">
+                        <button
+                            onClick={() => toggleSection('filters')}
+                            className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50/50 transition-colors"
+                        >
+                            <div className="flex items-center gap-3">
+                                <SlidersHorizontal size={16} className="text-[#D4AF37]" />
+                                <span className="text-xs font-bold text-[#800020] uppercase tracking-[0.2em]">Filters</span>
+                            </div>
+                            {openSections.filters ? <ChevronUp size={16} className="text-gray-400" /> : <ChevronDown size={16} className="text-gray-400" />}
+                        </button>
+                        <AnimatePresence>
+                            {openSections.filters && (
+                                <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: 'auto', opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    className="overflow-hidden"
+                                >
+                                    <div className="px-6 pb-6 space-y-4">
+                                        <div>
+                                            <label className={labelClass}>Gender</label>
+                                            <select value={filters.gender} onChange={e => handleFilterChange('gender', e.target.value)} className={inputClass}>
+                                                <option value="">All</option>
+                                                <option value="Male">Male</option>
+                                                <option value="Female">Female</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className={labelClass}>Religion</label>
+                                            <select value={filters.religion} onChange={e => handleFilterChange('religion', e.target.value)} className={inputClass}>
+                                                <option value="">All</option>
+                                                <option value="hindu">Hindu</option>
+                                                <option value="muslim">Muslim</option>
+                                                <option value="christian">Christian</option>
+                                                <option value="sikh">Sikh</option>
+                                                <option value="jain">Jain</option>
+                                                <option value="buddhist">Buddhist</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label className={labelClass}>Age Min</label>
+                                                <input type="number" placeholder="18" value={filters.ageMin} onChange={e => handleFilterChange('ageMin', e.target.value)} className={inputClass} />
+                                            </div>
+                                            <div>
+                                                <label className={labelClass}>Age Max</label>
+                                                <input type="number" placeholder="60" value={filters.ageMax} onChange={e => handleFilterChange('ageMax', e.target.value)} className={inputClass} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+
+                    {/* Match Preferences Section */}
+                    <div className="border-b border-gray-50">
+                        <button
+                            onClick={() => toggleSection('matchPreference')}
+                            className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50/50 transition-colors"
+                        >
+                            <div className="flex items-center gap-3">
+                                <Heart size={16} className="text-[#D4AF37]" />
+                                <span className="text-xs font-bold text-[#800020] uppercase tracking-[0.2em]">Match Preferences</span>
+                            </div>
+                            {openSections.matchPreference ? <ChevronUp size={16} className="text-gray-400" /> : <ChevronDown size={16} className="text-gray-400" />}
+                        </button>
+                        <AnimatePresence>
+                            {openSections.matchPreference && (
+                                <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: 'auto', opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    className="overflow-hidden"
+                                >
+                                    <div className="px-6 pb-6 space-y-4">
+                                        <div>
+                                            <label className={labelClass}>Location</label>
+                                            <input type="text" placeholder="e.g. Mumbai" value={filters.location} onChange={e => handleFilterChange('location', e.target.value)} className={inputClass} />
+                                        </div>
+                                        <div>
+                                            <label className={labelClass}>Profession</label>
+                                            <input type="text" placeholder="e.g. Engineer" value={filters.profession} onChange={e => handleFilterChange('profession', e.target.value)} className={inputClass} />
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+
+                    {/* Basic Details Section */}
+                    <div className="border-b border-gray-50">
+                        <button
+                            onClick={() => toggleSection('basicDetails')}
+                            className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50/50 transition-colors"
+                        >
+                            <div className="flex items-center gap-3">
+                                <User size={16} className="text-[#D4AF37]" />
+                                <span className="text-xs font-bold text-[#800020] uppercase tracking-[0.2em]">Basic Details</span>
+                            </div>
+                            {openSections.basicDetails ? <ChevronUp size={16} className="text-gray-400" /> : <ChevronDown size={16} className="text-gray-400" />}
+                        </button>
+                        <AnimatePresence>
+                            {openSections.basicDetails && (
+                                <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: 'auto', opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    className="overflow-hidden"
+                                >
+                                    <div className="px-6 pb-6 space-y-4">
+                                        <div>
+                                            <label className={labelClass}>Education</label>
+                                            <input type="text" placeholder="e.g. B.Tech, MBA" value={filters.education} onChange={e => handleFilterChange('education', e.target.value)} className={inputClass} />
+                                        </div>
+                                        <div>
+                                            <label className={labelClass}>Gender</label>
+                                            <select value={filters.gender} onChange={e => handleFilterChange('gender', e.target.value)} className={inputClass}>
+                                                <option value="">All</option>
+                                                <option value="Male">Male</option>
+                                                <option value="Female">Female</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className={labelClass}>Religion</label>
+                                            <select value={filters.religion} onChange={e => handleFilterChange('religion', e.target.value)} className={inputClass}>
+                                                <option value="">All</option>
+                                                <option value="hindu">Hindu</option>
+                                                <option value="muslim">Muslim</option>
+                                                <option value="christian">Christian</option>
+                                                <option value="sikh">Sikh</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+                </div>
+
+                {/* Overlay for mobile sidebar */}
+                {sidebarOpen && (
+                    <div
+                        className="fixed inset-0 bg-black/30 z-30 md:hidden"
+                        onClick={() => setSidebarOpen(false)}
+                    ></div>
+                )}
+
+                {/* Profile Cards */}
+                <div className="flex-1 overflow-y-auto bg-gray-50/50">
+                    <div className="max-w-7xl mx-auto px-6 py-16">
+                        {loading ? (
+                            <div className="flex flex-col items-center justify-center py-40">
+                                <motion.div
+                                    animate={{ rotate: 360 }}
+                                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                                    className="mb-6"
+                                >
+                                    <Heart size={48} className="text-[#D4AF37] fill-[#D4AF37]/20" />
+                                </motion.div>
+                                <p className="text-gray-400 text-xs font-bold uppercase tracking-[0.4em]">Curating matches...</p>
+                            </div>
+                        ) : error ? (
+                            <div className="text-center py-20 bg-red-50 rounded-[3rem] border border-red-100 italic">
+                                <p className="text-red-600 font-serif">{error}</p>
+                            </div>
+                        ) : filteredProfiles.length === 0 ? (
+                            <div className="text-center py-32 bg-white rounded-[4rem] border border-gray-100 shadow-inner">
+                                <div className="w-24 h-24 bg-[#F0F2F5] rounded-full flex items-center justify-center mx-auto mb-8">
+                                    <Heart className="text-[#D4AF37]" size={40} />
+                                </div>
+                                <h2 className="text-3xl font-serif italic text-gray-900 mb-2">No Matches Found</h2>
+                                <p className="text-gray-400 text-sm font-medium mb-8">Refine your search to discover our diverse community.</p>
                                 {activeFilterCount > 0 && (
-                                    <button onClick={clearFilters} className="text-xs font-semibold text-red-500 hover:text-red-600">Clear All</button>
+                                    <button onClick={clearFilters} className="px-10 py-4 rounded-2xl bg-[#800020] text-[#D4AF37] text-xs font-bold uppercase tracking-widest hover:bg-[#600318] transition-all">Reset Filters</button>
                                 )}
                             </div>
-
-                            {activeFilter === 'Filters' && (
-                                <div className="grid grid-cols-2 gap-3">
-                                    <div>
-                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1 block">Gender</label>
-                                        <select value={filters.gender} onChange={e => handleFilterChange('gender', e.target.value)} className="w-full px-3 py-2.5 rounded-xl bg-white border border-gray-200 text-sm font-medium outline-none focus:ring-2 focus:ring-orange-200">
-                                            <option value="">All</option>
-                                            <option value="Male">Male</option>
-                                            <option value="Female">Female</option>
-                                            <option value="Other">Other</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1 block">Religion</label>
-                                        <select value={filters.religion} onChange={e => handleFilterChange('religion', e.target.value)} className="w-full px-3 py-2.5 rounded-xl bg-white border border-gray-200 text-sm font-medium outline-none focus:ring-2 focus:ring-orange-200">
-                                            <option value="">All</option>
-                                            <option value="hindu">Hindu</option>
-                                            <option value="muslim">Muslim</option>
-                                            <option value="christian">Christian</option>
-                                            <option value="sikh">Sikh</option>
-                                            <option value="jain">Jain</option>
-                                            <option value="buddhist">Buddhist</option>
-                                            <option value="Other">Other</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1 block">Age Min</label>
-                                        <input type="number" placeholder="18" value={filters.ageMin} onChange={e => handleFilterChange('ageMin', e.target.value)} className="w-full px-3 py-2.5 rounded-xl bg-white border border-gray-200 text-sm font-medium outline-none focus:ring-2 focus:ring-orange-200" />
-                                    </div>
-                                    <div>
-                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1 block">Age Max</label>
-                                        <input type="number" placeholder="60" value={filters.ageMax} onChange={e => handleFilterChange('ageMax', e.target.value)} className="w-full px-3 py-2.5 rounded-xl bg-white border border-gray-200 text-sm font-medium outline-none focus:ring-2 focus:ring-orange-200" />
-                                    </div>
-                                </div>
-                            )}
-
-                            {activeFilter === 'Match Preference' && (
-                                <div className="grid grid-cols-2 gap-3">
-                                    <div className="col-span-2">
-                                        <label className="text-[10px] font-bold text-[#800020] uppercase tracking-widest px-6">Location</label>
-                                        <input type="text" placeholder="e.g. Mumbai" value={filters.location} onChange={e => handleFilterChange('location', e.target.value)} className="w-full px-3 py-2.5 rounded-xl bg-white border border-gray-200 text-sm font-medium outline-none focus:ring-2 focus:ring-orange-200" />
-                                    </div>
-                                    <div className="col-span-2">
-                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1 block">Profession</label>
-                                        <input type="text" placeholder="e.g. Engineer" value={filters.profession} onChange={e => handleFilterChange('profession', e.target.value)} className="w-full px-3 py-2.5 rounded-xl bg-white border border-gray-200 text-sm font-medium outline-none focus:ring-2 focus:ring-orange-200" />
-                                    </div>
-                                </div>
-                            )}
-
-                            {activeFilter === 'Basic Details' && (
-                                <div className="grid grid-cols-2 gap-3">
-                                    <div className="col-span-2">
-                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1 block">Education</label>
-                                        <input type="text" placeholder="e.g. B.Tech, MBA" value={filters.education} onChange={e => handleFilterChange('education', e.target.value)} className="w-full px-3 py-2.5 rounded-xl bg-white border border-gray-200 text-sm font-medium outline-none focus:ring-2 focus:ring-orange-200" />
-                                    </div>
-                                    <div>
-                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1 block">Gender</label>
-                                        <select value={filters.gender} onChange={e => handleFilterChange('gender', e.target.value)} className="w-full px-3 py-2.5 rounded-xl bg-white border border-gray-200 text-sm font-medium outline-none focus:ring-2 focus:ring-orange-200">
-                                            <option value="">All</option>
-                                            <option value="Male">Male</option>
-                                            <option value="Female">Female</option>
-                                            <option value="Other">Other</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1 block">Religion</label>
-                                        <select value={filters.religion} onChange={e => handleFilterChange('religion', e.target.value)} className="w-full px-3 py-2.5 rounded-xl bg-white border border-gray-200 text-sm font-medium outline-none focus:ring-2 focus:ring-orange-200">
-                                            <option value="">All</option>
-                                            <option value="hindu">Hindu</option>
-                                            <option value="muslim">Muslim</option>
-                                            <option value="christian">Christian</option>
-                                            <option value="sikh">Sikh</option>
-                                            <option value="Other">Other</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Results count */}
-                            <p className="text-xs text-[#800020]/40 font-bold uppercase tracking-widest mt-6">{filteredProfiles.length} matches found</p>
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-            {/* Profile Cards */}
-            <div className="flex-1 overflow-y-auto bg-gray-50/50">
-                <div className="max-w-7xl mx-auto px-6 py-16">
-                    {loading ? (
-                        <div className="flex flex-col items-center justify-center py-40">
-                            <motion.div
-                                animate={{ rotate: 360 }}
-                                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                                className="mb-6"
-                            >
-                                <Heart size={48} className="text-[#D4AF37] fill-[#D4AF37]/20" />
-                            </motion.div>
-                            <p className="text-gray-400 text-xs font-bold uppercase tracking-[0.4em]">Curating matches...</p>
-                        </div>
-                    ) : error ? (
-                        <div className="text-center py-20 bg-red-50 rounded-[3rem] border border-red-100 italic">
-                            <p className="text-red-600 font-serif">{error}</p>
-                        </div>
-                    ) : filteredProfiles.length === 0 ? (
-                        <div className="text-center py-32 bg-white rounded-[4rem] border border-gray-100 shadow-inner">
-                            <div className="w-24 h-24 bg-[#F0F2F5] rounded-full flex items-center justify-center mx-auto mb-8">
-                                <Heart className="text-[#D4AF37]" size={40} />
+                        ) : (
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+                                {filteredProfiles.map((profile, i) => (
+                                    <motion.div
+                                        key={profile._id || profile.id}
+                                        initial={{ opacity: 0, y: 30 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: i * 0.05, duration: 0.8 }}
+                                    >
+                                        <ProfileCard profile={profile} />
+                                    </motion.div>
+                                ))}
                             </div>
-                            <h2 className="text-3xl font-serif italic text-gray-900 mb-2">No Matches Found</h2>
-                            <p className="text-gray-400 text-sm font-medium mb-8">Refine your search to discover our diverse community.</p>
-                            {activeFilterCount > 0 && (
-                                <button onClick={clearFilters} className="px-10 py-4 rounded-2xl bg-[#800020] text-[#D4AF37] text-xs font-bold uppercase tracking-widest hover:bg-[#600318] transition-all">Reset Filters</button>
-                            )}
-                        </div>
-                    ) : (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-5 gap-6 md:gap-8">
-                            {filteredProfiles.map((profile, i) => (
-                                <motion.div
-                                    key={profile._id || profile.id}
-                                    initial={{ opacity: 0, y: 30 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: i * 0.05, duration: 0.8 }}
-                                >
-                                    <ProfileCard profile={profile} />
-                                </motion.div>
-                            ))}
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
             </div>
 

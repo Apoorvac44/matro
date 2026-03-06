@@ -26,6 +26,7 @@ const Login = () => {
             name: 'Demo User',
             email: data.email,
             token: 'mock_token_frontend_only',
+            isAdmin: true,
         };
         login(mockUser);
         navigate('/dashboard');

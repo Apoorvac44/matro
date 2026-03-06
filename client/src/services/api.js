@@ -1,12 +1,95 @@
 // FRONTEND-ONLY MOCK API
 const DUMMY_PROFILES = [
-    { _id: '1', name: 'Priya Sharma', age: 26, gender: 'Female', religion: 'Hindu', location: 'Mumbai', profession: 'Software Engineer', education: 'B.Tech CS', income: '₹12 LPA', caste: 'Brahmin', profilePicture: 'https://randomuser.me/api/portraits/women/44.jpg', aboutMe: 'Passionate about technology and classical dance. Looking for someone with a modern soul and traditional roots.', isApproved: true, interests: ['Tech', 'Salsa', 'Travel', 'Reading'], photos: ['https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=60'] },
-    { _id: '2', name: 'Amit Patel', age: 29, gender: 'Male', religion: 'Hindu', location: 'Ahmedabad', profession: 'Doctor', education: 'MBBS, MD', income: '₹18 LPA', caste: 'Patel', profilePicture: 'https://randomuser.me/api/portraits/men/32.jpg', aboutMe: 'A dedicated physician who loves cricket and travel. Believe in simple living and high thinking.', isApproved: true, interests: ['Fitness', 'Reading', 'Music', 'Hiking'], photos: ['https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=500&auto=format&fit=crop&q=60'] },
-    { _id: '3', name: 'Anjali Reddy', age: 24, gender: 'Female', religion: 'Hindu', location: 'Hyderabad', profession: 'Data Analyst', education: 'MBA', income: '₹10 LPA', caste: 'Reddy', profilePicture: 'https://randomuser.me/api/portraits/women/68.jpg', aboutMe: 'Love cooking and exploring new cuisines. Looking for a partner who is adventurous.', isApproved: true, interests: ['Cooking', 'Cinema', 'Yoga'] },
-    { _id: '4', name: 'Rahul Mehta', age: 31, gender: 'Male', religion: 'Jain', location: 'Surat', profession: 'Chartered Accountant', education: 'CA, CS', income: '₹15 LPA', caste: 'Oswal', profilePicture: 'https://randomuser.me/api/portraits/men/45.jpg', aboutMe: 'Traditional values with a modern outlook. Family is my priority.', isApproved: true, interests: ['Investment', 'Social Work', 'Music'] },
-    { _id: '5', name: 'Kavya Nair', age: 27, gender: 'Female', religion: 'Hindu', location: 'Kochi', profession: 'Architect', education: 'B.Arch', income: '₹14 LPA', caste: 'Nair', profilePicture: 'https://randomuser.me/api/portraits/women/55.jpg', aboutMe: 'Creative soul who loves design and music. I enjoy the serenity of nature.', isApproved: true, interests: ['Design', 'Photography', 'Music'] },
-    { _id: '6', name: 'Vikram Singh', age: 33, gender: 'Male', religion: 'Sikh', location: 'Chandigarh', profession: 'Army Officer', education: 'B.Sc (NDA)', income: '₹20 LPA', caste: 'Jat', profilePicture: 'https://randomuser.me/api/portraits/men/60.jpg', aboutMe: 'Disciplined, adventurous and family-oriented. Love the mountains.', isApproved: true, interests: ['Sports', 'Trekking', 'Pets'] },
-    { _id: '7', name: 'Sneha Iyer', age: 25, gender: 'Female', religion: 'Hindu', location: 'Chennai', profession: 'Teacher', education: 'M.Ed', income: '₹7 LPA', caste: 'Iyer', profilePicture: 'https://randomuser.me/api/portraits/women/72.jpg', aboutMe: 'Passionate about education and classical music. I value honesty and integrity.', isApproved: true, interests: ['Teaching', 'Karnatik Music', 'Books'] },
+    {
+        _id: '1', name: 'Priya Sharma', age: 26, gender: 'Female', religion: 'Hindu', location: 'Mumbai',
+        profession: 'Software Engineer', education: 'B.Tech CS', income: '₹12 LPA', caste: 'Brahmin',
+        profilePicture: 'https://randomuser.me/api/portraits/women/44.jpg',
+        aboutMe: 'Passionate about technology and classical dance. Looking for someone with a modern soul and traditional roots.',
+        isApproved: true, interests: ['Tech', 'Salsa', 'Travel', 'Reading'],
+        photos: ['https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=60'],
+        mobile: '9876543210', dob: '1998-05-15', motherTongue: 'Hindi', maritalStatus: 'Single', height: "5'4\"",
+        workLocation: 'Pune', prefAgeRange: '27-32', prefLocation: 'Mumbai/Pune', prefEducation: 'Masters', prefProfession: 'IT Professional',
+        aadharCard: 'https://images.unsplash.com/photo-1544383333-5cf9833b378e?w=800&auto=format&fit=crop&q=60',
+        casteCertificate: 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&auto=format&fit=crop&q=60'
+    },
+    {
+        _id: '2', name: 'Amit Patel', age: 29, gender: 'Male', religion: 'Hindu', location: 'Ahmedabad',
+        profession: 'Doctor', education: 'MBBS, MD', income: '₹18 LPA', caste: 'Patel',
+        profilePicture: 'https://randomuser.me/api/portraits/men/32.jpg',
+        aboutMe: 'A dedicated physician who loves cricket and travel. Believe in simple living and high thinking.',
+        isApproved: true, interests: ['Fitness', 'Reading', 'Music', 'Hiking'],
+        photos: ['https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=500&auto=format&fit=crop&q=60'],
+        mobile: '9123456789', dob: '1995-10-20', motherTongue: 'Gujarati', maritalStatus: 'Single', height: "5'11\"",
+        workLocation: 'Ahmedabad', prefAgeRange: '24-28', prefLocation: 'Anywhere', prefEducation: 'Medical', prefProfession: 'Healthcare',
+        aadharCard: 'https://images.unsplash.com/photo-1544383333-5cf9833b378e?w=800&auto=format&fit=crop&q=60'
+    },
+    {
+        _id: '3', name: 'Anjali Reddy', age: 24, gender: 'Female', religion: 'Hindu', location: 'Hyderabad',
+        profession: 'Data Analyst', education: 'MBA', income: '₹10 LPA', caste: 'Reddy',
+        profilePicture: 'https://randomuser.me/api/portraits/women/68.jpg',
+        aboutMe: 'Love cooking and exploring new cuisines. Looking for a partner who is adventurous.',
+        isApproved: true, interests: ['Cooking', 'Cinema', 'Yoga'],
+        mobile: '9988776655', dob: '2000-01-12', motherTongue: 'Telugu', maritalStatus: 'Single', height: "5'6\"",
+        workLocation: 'Hyderabad', prefAgeRange: '25-30', prefLocation: 'Hyderabad', prefEducation: 'Bachelors/Masters', prefProfession: 'Analyst',
+        aadharCard: 'https://images.unsplash.com/photo-1544383333-5cf9833b378e?w=800&auto=format&fit=crop&q=60',
+        casteCertificate: 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&auto=format&fit=crop&q=60'
+    },
+    {
+        _id: '4', name: 'Rahul Mehta', age: 31, gender: 'Male', religion: 'Jain', location: 'Surat',
+        profession: 'Chartered Accountant', education: 'CA, CS', income: '₹15 LPA', caste: 'Oswal',
+        profilePicture: 'https://randomuser.me/api/portraits/men/45.jpg',
+        aboutMe: 'Traditional values with a modern outlook. Family is my priority.',
+        isApproved: true, interests: ['Investment', 'Social Work', 'Music'],
+        mobile: '9443322110', dob: '1993-07-08', motherTongue: 'Gujarati', maritalStatus: 'Single', height: "5'9\"",
+        workLocation: 'Surat', prefAgeRange: '25-29', prefLocation: 'Gujarat', prefEducation: 'Professional Degree', prefProfession: 'Finance',
+        aadharCard: 'https://images.unsplash.com/photo-1544383333-5cf9833b378e?w=800&auto=format&fit=crop&q=60'
+    },
+    {
+        _id: '5', name: 'Kavya Nair', age: 27, gender: 'Female', religion: 'Hindu', location: 'Kochi',
+        profession: 'Architect', education: 'B.Arch', income: '₹14 LPA', caste: 'Nair',
+        profilePicture: 'https://randomuser.me/api/portraits/women/55.jpg',
+        aboutMe: 'Creative soul who loves design and music. I enjoy the serenity of nature.',
+        isApproved: true, interests: ['Design', 'Photography', 'Music'],
+        mobile: '9008007006', dob: '1997-12-04', motherTongue: 'Malayalam', maritalStatus: 'Single', height: "5'5\"",
+        workLocation: 'Kochi', prefAgeRange: '28-33', prefLocation: 'Kerala', prefEducation: 'Bachelors/Masters', prefProfession: 'Architect',
+        aadharCard: 'https://images.unsplash.com/photo-1544383333-5cf9833b378e?w=800&auto=format&fit=crop&q=60',
+        casteCertificate: 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&auto=format&fit=crop&q=60'
+    },
+    {
+        _id: '6', name: 'Vikram Singh', age: 33, gender: 'Male', religion: 'Sikh', location: 'Chandigarh',
+        profession: 'Army Officer', education: 'B.Sc (NDA)', income: '₹20 LPA', caste: 'Jat',
+        profilePicture: 'https://randomuser.me/api/portraits/men/60.jpg',
+        aboutMe: 'Disciplined, adventurous and family-oriented. Love the mountains.',
+        isApproved: true, interests: ['Sports', 'Trekking', 'Pets'],
+        mobile: '9556677889', dob: '1991-03-22', motherTongue: 'Punjabi', maritalStatus: 'Single', height: "6'1\"",
+        workLocation: 'Border Area', prefAgeRange: '24-29', prefLocation: 'North India', prefEducation: 'Graduate', prefProfession: 'Any',
+        aadharCard: 'https://images.unsplash.com/photo-1544383333-5cf9833b378e?w=800&auto=format&fit=crop&q=60'
+    },
+    {
+        _id: '7', name: 'Sneha Iyer', age: 25, gender: 'Female', religion: 'Hindu', location: 'Chennai',
+        profession: 'Teacher', education: 'M.Ed', income: '₹7 LPA', caste: 'Iyer',
+        profilePicture: 'https://randomuser.me/api/portraits/women/72.jpg',
+        aboutMe: 'Passionate about education and classical music. I value honesty and integrity.',
+        isApproved: false, interests: ['Teaching', 'Karnatik Music', 'Books'],
+        mobile: '9112233445', dob: '1999-09-09', motherTongue: 'Tamil', maritalStatus: 'Single', height: "5'3\"",
+        workLocation: 'Chennai', prefAgeRange: '26-30', prefLocation: 'Chennai', prefEducation: 'Post Graduate', prefProfession: 'Teacher'
+    },
+    {
+        _id: '8', name: 'Rohan Deshmukh', age: 28, gender: 'Male', religion: 'Hindu', location: 'Pune',
+        profession: 'Graphic Designer', education: 'BFA', income: '₹9 LPA', caste: 'Maratha',
+        profilePicture: 'https://randomuser.me/api/portraits/men/15.jpg',
+        aboutMe: 'Creative mind looking for a soulmate who appreciates art.',
+        isApproved: false,
+        mobile: '9334455667', dob: '1996-05-30', motherTongue: 'Marathi', maritalStatus: 'Single', height: "5'10\"",
+        workLocation: 'Pune', prefAgeRange: '23-27', prefLocation: 'Pune', prefEducation: 'Bachelors', prefProfession: 'Creative'
+    },
+];
+
+const DUMMY_PLANS = [
+    { _id: 'p1', name: 'Free', price: 0, duration: 'Lifetime', features: ['View Profiles', 'Send 5 Interests/Day'], color: '#9CA3AF' },
+    { _id: 'p2', name: 'Silver', price: 1999, duration: '3 Months', features: ['Unlimited Interests', 'Basic Support', 'View Contact Details (10)'], color: '#C0C0C0' },
+    { _id: 'p3', name: 'Gold', price: 4999, duration: '6 Months', features: ['Priority Listing', 'Standard Support', 'View Contact Details (50)'], color: '#D4AF37' },
+    { _id: 'p4', name: 'Premium', price: 9999, duration: '12 Months', features: ['Profile Highlight', 'Premium Support', 'Unlimited Contact Views', 'Personal Matchmaker'], color: '#800020' },
 ];
 
 const MOCK_MESSAGES = {
@@ -62,8 +145,14 @@ export const getConversations = () => mockResolve([
     { _id: '5', name: 'Kavya Nair', profilePicture: 'https://randomuser.me/api/portraits/women/55.jpg', lastMessage: 'I loved your profile!', lastMessageDate: new Date(Date.now() - 86400000).toISOString(), unreadCount: 0 },
 ]);
 export const getMessages = (userId) => mockResolve(MOCK_MESSAGES[userId] || []);
-export const getAdminUsers = () => mockResolve([]);
-export const toggleApproval = (id) => mockResolve({ isApproved: true });
+export const getAdminUsers = () => mockResolve(DUMMY_PROFILES);
+export const toggleApproval = (id) => {
+    const user = DUMMY_PROFILES.find(u => u._id === id);
+    if (user) user.isApproved = !user.isApproved;
+    return mockResolve({ isApproved: user ? user.isApproved : true });
+};
+export const getMembershipPlans = () => mockResolve(DUMMY_PLANS);
+export const updateMembershipPlan = (id, data) => mockResolve(data);
 export const getDashboardStats = () => mockResolve({ viewedYou: 12, saved: 5, receivedInterested: 3, sentInterests: 8, gallery: 4 });
 export const getFavorites = () => mockResolve(DUMMY_PROFILES.slice(0, 2));
 export const getInterestsReceived = () => mockResolve(DUMMY_PROFILES.slice(2, 5));

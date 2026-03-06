@@ -11,6 +11,7 @@ const ProfileDetail = () => {
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [interestSent, setInterestSent] = useState(false);
+    const [selectedPhoto, setSelectedPhoto] = useState(null);
 
     useEffect(() => {
         window.scrollTo(0, 0);

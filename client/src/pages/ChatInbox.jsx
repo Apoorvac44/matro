@@ -48,7 +48,7 @@ const ChatInbox = () => {
             {/* Tabs */}
             <div className="px-4 py-8 border-b border-gray-100 bg-white/80 backdrop-blur-md sticky top-0 z-20">
                 <div className="max-w-4xl mx-auto flex gap-4">
-                    {['All Messages', 'Unread Messages', 'Calls'].map(tab => (
+                    {['All Messages', 'Unread Messages'].map(tab => (
                         <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}

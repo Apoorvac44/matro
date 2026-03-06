@@ -1,11 +1,11 @@
 import React, { useContext } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { Heart, User, MessageSquare, Compass, Home, LogOut, Menu, X } from 'lucide-react';
+import { Heart, User, MessageSquare, Compass, Home, Menu, X, Shield } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Navbar = () => {
-    const { user, logout } = useContext(AuthContext);
+    const { user } = useContext(AuthContext);
     const location = useLocation();
     const [isOpen, setIsOpen] = React.useState(false);
 
@@ -48,17 +48,18 @@ const Navbar = () => {
                             {link.name}
                         </Link>
                     ))}
-                    {user && (
-                        <button
-                            onClick={() => { logout(); setIsOpen(false); }}
-                            className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] transition-all text-[#800020]/60 hover:text-[#D4AF37]"
+                    {user?.isAdmin && (
+                        <Link
+                            to="/admin"
+                            className={`flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] transition-all hover:text-[#D4AF37] ${location.pathname.startsWith('/admin') ? 'text-[#800020]' : 'text-[#800020]/60'}`}
                         >
-                            <span className="transition-colors text-[#D4AF37]/60 hover:text-[#D4AF37]">
-                                <LogOut size={18} />
+                            <span className={`transition-colors ${location.pathname.startsWith('/admin') ? 'text-[#D4AF37]' : 'text-[#D4AF37]/60'}`}>
+                                <Shield size={18} />
                             </span>
-                            Logout
-                        </button>
+                            Admin
+                        </Link>
                     )}
+
                 </div>
 
                 {/* Mobile Menu Button */}
@@ -101,19 +102,27 @@ const Navbar = () => {
                                     </span>
                                 </Link>
                             ))}
-                            {user && (
-                                <button
-                                    onClick={() => { logout(); setIsOpen(false); }}
-                                    className="flex items-center gap-5 text-xl font-serif italic transition-all group text-gray-500 hover:text-[#800020]"
+                            {user?.isAdmin && (
+                                <Link
+                                    to="/admin"
+                                    onClick={() => setIsOpen(false)}
+                                    className={`flex items-center gap-5 text-xl font-serif italic transition-all group ${location.pathname.startsWith('/admin')
+                                        ? 'text-[#800020]'
+                                        : 'text-gray-500 hover:text-[#800020]'
+                                        }`}
                                 >
-                                    <span className="p-4 rounded-2xl shadow-sm transition-all duration-300 bg-gray-50 text-gray-400 group-hover:bg-[#800020]/5 group-hover:text-[#800020] group-hover:scale-105">
-                                        <LogOut size={28} />
+                                    <span className={`p-4 rounded-2xl shadow-sm transition-all duration-300 ${location.pathname.startsWith('/admin')
+                                        ? 'bg-[#800020] text-[#D4AF37] shadow-[#800020]/20 scale-110'
+                                        : 'bg-gray-50 text-gray-400 group-hover:bg-[#800020]/5 group-hover:text-[#800020] group-hover:scale-105'
+                                        }`}>
+                                        <Shield size={28} />
                                     </span>
                                     <span className="group-hover:translate-x-2 transition-transform duration-300">
-                                        Logout
+                                        Admin
                                     </span>
-                                </button>
+                                </Link>
                             )}
+
                         </div>
                     </motion.div>
                 )}
