@@ -85,7 +85,7 @@ const DUMMY_PROFILES = [
     },
 ];
 
-const DUMMY_PLANS = [
+let DUMMY_PLANS = [
     { _id: 'p1', name: 'Free', price: 0, duration: 'Lifetime', features: ['View Profiles', 'Send 5 Interests/Day'], color: '#9CA3AF' },
     { _id: 'p2', name: 'Silver', price: 1999, duration: '3 Months', features: ['Unlimited Interests', 'Basic Support', 'View Contact Details (10)'], color: '#C0C0C0' },
     { _id: 'p3', name: 'Gold', price: 4999, duration: '6 Months', features: ['Priority Listing', 'Standard Support', 'View Contact Details (50)'], color: '#D4AF37' },
@@ -107,7 +107,11 @@ const SENT_INTERESTS = [];
 const mockResolve = (data) => Promise.resolve({ data });
 
 export const login = (formData) => mockResolve({
-    _id: 'mock_user_1', name: 'Demo User', email: formData.email, token: 'mock_token'
+    _id: formData.email === 'admin@milana.com' ? 'admin_001' : 'mock_user_1',
+    name: formData.email === 'admin@milana.com' ? 'Admin User' : 'Demo User',
+    email: formData.email,
+    token: 'mock_token',
+    isAdmin: formData.email === 'admin@milana.com'
 });
 export const register = (formData) => mockResolve({
     _id: 'mock_user_1', name: formData.name, email: formData.email, token: 'mock_token'
@@ -152,7 +156,27 @@ export const toggleApproval = (id) => {
     return mockResolve({ isApproved: user ? user.isApproved : true });
 };
 export const getMembershipPlans = () => mockResolve(DUMMY_PLANS);
-export const updateMembershipPlan = (id, data) => mockResolve(data);
+export const createMembershipPlan = (data) => {
+    const newPlan = { ...data, _id: 'p' + Date.now() };
+    DUMMY_PLANS.push(newPlan);
+    return mockResolve(newPlan);
+};
+export const updateMembershipPlan = (id, data) => {
+    const index = DUMMY_PLANS.findIndex(p => p._id === id);
+    if (index > -1) {
+        DUMMY_PLANS[index] = { ...DUMMY_PLANS[index], ...data };
+        return mockResolve(DUMMY_PLANS[index]);
+    }
+    return Promise.reject(new Error('Plan not found'));
+};
+export const deleteMembershipPlan = (id) => {
+    const index = DUMMY_PLANS.findIndex(p => p._id === id);
+    if (index > -1) {
+        DUMMY_PLANS.splice(index, 1);
+        return mockResolve({ message: 'Plan deleted' });
+    }
+    return Promise.reject(new Error('Plan not found'));
+};
 export const getDashboardStats = () => mockResolve({ viewedYou: 12, saved: 5, receivedInterested: 3, sentInterests: 8, gallery: 4 });
 export const getFavorites = () => mockResolve(DUMMY_PROFILES.slice(0, 2));
 export const getInterestsReceived = () => mockResolve(DUMMY_PROFILES.slice(2, 5));
@@ -160,5 +184,24 @@ export const getInterestsSent = () => mockResolve(DUMMY_PROFILES.slice(4, 7));
 export const getGallery = () => mockResolve(DUMMY_PROFILES[0].photos || []);
 export const addGalleryPhoto = (base64) => mockResolve({ url: base64 });
 export const deleteGalleryPhoto = (id) => mockResolve({ message: 'Photo deleted' });
+export const updateSettings = (data) => {
+    localStorage.setItem('siteSettings', JSON.stringify(data));
+    return mockResolve(data);
+};
+export const getSettings = () => {
+    const settings = localStorage.getItem('siteSettings');
+    return mockResolve(settings ? JSON.parse(settings) : {
+        siteName: 'Milana',
+        siteEmail: 'admin@milana.com',
+        autoApprove: false,
+        emailNotifications: true,
+        smsNotifications: false,
+        maintenanceMode: false,
+        maxPhotos: 5,
+        minAge: 18,
+        maxAge: 60,
+        darkMode: false,
+    });
+};
 
-export default { login, register, getProfile, updateProfile, getProfiles, sendInterest, toggleFavorite, sendMessage, getConversations, getMessages, getAdminUsers, toggleApproval, getDashboardStats, getFavorites, getInterestsReceived, getInterestsSent, getGallery, addGalleryPhoto, deleteGalleryPhoto };
+export default { login, register, getProfile, updateProfile, getProfiles, sendInterest, toggleFavorite, sendMessage, getConversations, getMessages, getAdminUsers, toggleApproval, getDashboardStats, getFavorites, getInterestsReceived, getInterestsSent, getGallery, addGalleryPhoto, deleteGalleryPhoto, createMembershipPlan, updateMembershipPlan, deleteMembershipPlan, getMembershipPlans, updateSettings, getSettings };

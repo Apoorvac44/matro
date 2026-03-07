@@ -89,11 +89,18 @@ const Register = () => {
         if (step === 5) fieldsToValidate = ['casteCertificate', 'aadharCard'];
 
         const isValid = await trigger(fieldsToValidate);
+        console.log(`Step ${step} validation - isValid:`, isValid);
+
+        if (!isValid) {
+            console.log("Validation errors:", errors);
+        }
+
         if (isValid) {
             if (step === 1 && !otpVerified) {
                 alert('Please verify your mobile number first');
                 return;
             }
+            console.log(`Transitioning from step ${step} to ${step + 1}`);
             setStep(step + 1);
             window.scrollTo(0, 0);
         }
@@ -495,9 +502,13 @@ const Register = () => {
                                                 <input
                                                     type="file"
                                                     accept=".pdf"
+                                                    {...register('aadharCard')}
                                                     onChange={(e) => {
                                                         const file = e.target.files[0];
-                                                        if (file) setAadharFileName(file.name);
+                                                        if (file) {
+                                                            setAadharFileName(file.name);
+                                                            setValue('aadharCard', file);
+                                                        }
                                                     }}
                                                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                                 />
@@ -521,9 +532,13 @@ const Register = () => {
                                                 <input
                                                     type="file"
                                                     accept=".pdf"
+                                                    {...register('casteCertificate')}
                                                     onChange={(e) => {
                                                         const file = e.target.files[0];
-                                                        if (file) setCasteFileName(file.name);
+                                                        if (file) {
+                                                            setCasteFileName(file.name);
+                                                            setValue('casteCertificate', file);
+                                                        }
                                                     }}
                                                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                                 />

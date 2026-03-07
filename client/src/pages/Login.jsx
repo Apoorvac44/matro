@@ -23,10 +23,10 @@ const Login = () => {
         // Frontend-only mock login
         const mockUser = {
             _id: 'mock_user_001',
-            name: 'Demo User',
+            name: data.email === 'admin@milana.com' ? 'Admin User' : 'Demo User',
             email: data.email,
             token: 'mock_token_frontend_only',
-            isAdmin: true,
+            isAdmin: data.email === 'admin@milana.com',
         };
         login(mockUser);
         navigate('/dashboard');

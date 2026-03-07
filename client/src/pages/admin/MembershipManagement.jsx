@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import * as api from '../../services/api';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
     Plus,
     Edit2,
@@ -10,12 +10,22 @@ import {
     DollarSign,
     Clock,
     Zap,
-    ShieldCheck
+    ShieldCheck,
+    X
 } from 'lucide-react';
 
 const MembershipManagement = () => {
     const [plans, setPlans] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingPlan, setEditingPlan] = useState(null);
+    const [formData, setFormData] = useState({
+        name: '',
+        price: 0,
+        duration: '',
+        features: '',
+        color: '#800020'
+    });
 
     useEffect(() => {
         fetchPlans();
@@ -32,6 +42,60 @@ const MembershipManagement = () => {
         }
     };
 
+    const handleOpenModal = (plan = null) => {
+        if (plan) {
+            setEditingPlan(plan);
+            setFormData({
+                name: plan.name,
+                price: plan.price,
+                duration: plan.duration,
+                features: plan.features.join('\n'),
+                color: plan.color || '#800020'
+            });
+        } else {
+            setEditingPlan(null);
+            setFormData({
+                name: '',
+                price: 0,
+                duration: '',
+                features: '',
+                color: '#800020'
+            });
+        }
+        setIsModalOpen(true);
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const planData = {
+            ...formData,
+            features: formData.features.split('\n').filter(f => f.trim() !== '')
+        };
+
+        try {
+            if (editingPlan) {
+                await api.updateMembershipPlan(editingPlan._id, planData);
+            } else {
+                await api.createMembershipPlan(planData);
+            }
+            fetchPlans();
+            setIsModalOpen(false);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const handleDelete = async (id) => {
+        if (window.confirm('Are you sure you want to delete this plan?')) {
+            try {
+                await api.deleteMembershipPlan(id);
+                fetchPlans();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+    };
+
     if (loading) return <div className="h-96 flex items-center justify-center font-bold text-[#800020] italic">Loading Treasury...</div>;
 
     return (
@@ -43,7 +107,10 @@ const MembershipManagement = () => {
                     <h1 className="text-4xl font-serif font-black text-gray-900 tracking-tighter italic">Membership Plans</h1>
                 </div>
 
-                <button className="flex items-center gap-2 px-8 py-4 bg-[#800020] text-[#D4AF37] rounded-3xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-[#800020]/20 hover:scale-105 active:scale-95 transition-all">
+                <button
+                    onClick={() => handleOpenModal()}
+                    className="flex items-center gap-2 px-8 py-4 bg-[#800020] text-[#D4AF37] rounded-3xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-[#800020]/20 hover:scale-105 active:scale-95 transition-all"
+                >
                     <Plus size={16} /> Forge New Plan
                 </button>
             </div>
@@ -87,10 +154,16 @@ const MembershipManagement = () => {
 
                         {/* Action Buttons */}
                         <div className="p-8 pt-0 flex gap-2">
-                            <button className="flex-1 py-4.5 bg-[#F8F9FA] text-[#800020] rounded-2xl flex items-center justify-center hover:bg-[#FFFDD0] transition-colors active:scale-95">
+                            <button
+                                onClick={() => handleOpenModal(plan)}
+                                className="flex-1 py-4.5 bg-[#F8F9FA] text-[#800020] rounded-2xl flex items-center justify-center hover:bg-[#FFFDD0] transition-colors active:scale-95"
+                            >
                                 <Edit2 size={16} />
                             </button>
-                            <button className="flex-1 py-4.5 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center hover:bg-red-600 hover:text-white transition-all active:scale-95">
+                            <button
+                                onClick={() => handleDelete(plan._id)}
+                                className="flex-1 py-4.5 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center hover:bg-red-600 hover:text-white transition-all active:scale-95"
+                            >
                                 <Trash2 size={16} />
                             </button>
                         </div>
@@ -104,6 +177,74 @@ const MembershipManagement = () => {
                     </motion.div>
                 ))}
             </div>
+
+            {/* Modal */}
+            <AnimatePresence>
+                {isModalOpen && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="bg-white rounded-[2.5rem] w-full max-w-lg overflow-hidden shadow-2xl"
+                        >
+                            <div className="p-8 border-b border-gray-100 flex justify-between items-center">
+                                <h2 className="text-2xl font-serif font-black italic">{editingPlan ? 'Refine Plan' : 'Forge New Plan'}</h2>
+                                <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-gray-100 rounded-xl transition-colors">
+                                    <X size={20} />
+                                </button>
+                            </div>
+
+                            <form onSubmit={handleSubmit} className="p-8 space-y-6">
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-1.5">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-[#800020]">Plan Name</label>
+                                        <input
+                                            required
+                                            className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none text-sm font-bold outline-none focus:ring-2 focus:ring-[#800020]/20 transition-all"
+                                            value={formData.name}
+                                            onChange={e => setFormData({ ...formData, name: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <label className="text-[10px] font-black uppercase tracking-widest text-[#800020]">Price (₹)</label>
+                                        <input
+                                            type="number"
+                                            required
+                                            className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none text-sm font-bold outline-none focus:ring-2 focus:ring-[#800020]/20 transition-all"
+                                            value={formData.price}
+                                            onChange={e => setFormData({ ...formData, price: parseInt(e.target.value) })}
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-[#800020]">Duration (e.g., 3 Months)</label>
+                                    <input
+                                        required
+                                        className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none text-sm font-bold outline-none focus:ring-2 focus:ring-[#800020]/20 transition-all"
+                                        value={formData.duration}
+                                        onChange={e => setFormData({ ...formData, duration: e.target.value })}
+                                    />
+                                </div>
+
+                                <div className="space-y-1.5">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-[#800020]">Features (One per line)</label>
+                                    <textarea
+                                        className="w-full px-4 py-3 rounded-xl bg-gray-50 border-none text-sm font-bold outline-none focus:ring-2 focus:ring-[#800020]/20 transition-all min-h-[120px]"
+                                        value={formData.features}
+                                        onChange={e => setFormData({ ...formData, features: e.target.value })}
+                                    />
+                                </div>
+
+                                <button className="w-full py-5 bg-[#800020] text-[#D4AF37] rounded-3xl font-black text-[10px] uppercase tracking-[0.3em] shadow-xl shadow-[#800020]/20 hover:scale-[1.02] active:scale-95 transition-all">
+                                    {editingPlan ? 'Update Plan' : 'Forge Plan'}
+                                </button>
+                            </form>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
 
             {/* Subscription Stats Mini Card */}
             <div className="bg-[#800020] rounded-[3rem] p-10 text-[#D4AF37] flex flex-col lg:flex-row items-center justify-between gap-10 shadow-2xl">

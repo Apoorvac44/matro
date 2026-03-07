@@ -1,5 +1,5 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
     BarChart,
     Bar,
@@ -12,9 +12,12 @@ import {
     Pie,
     Cell
 } from 'recharts';
-import { Download, Filter, FileText, Share2 } from 'lucide-react';
+import { Download, Filter, FileText, Share2, CheckCircle } from 'lucide-react';
 
 const Reports = () => {
+    const [showToast, setShowToast] = useState(false);
+    const [toastMsg, setToastMsg] = useState('');
+
     const genderData = [
         { name: 'Male', value: 742, color: '#800020' },
         { name: 'Female', value: 542, color: '#D4AF37' },
@@ -29,8 +32,43 @@ const Reports = () => {
         { name: 'Jun', amount: 72000 },
     ];
 
+    const handleExport = () => {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({ monthlyRev, genderData }));
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", "milana_intelligence_report.json");
+        document.body.appendChild(downloadAnchorNode);
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+
+        setToastMsg('Dossier exported effectively');
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
+    };
+
+    const handleShare = () => {
+        navigator.clipboard.writeText(window.location.href);
+        setToastMsg('Report link copied to clipboard');
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
+    };
+
     return (
         <div className="space-y-8">
+            <AnimatePresence>
+                {showToast && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 50 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 50 }}
+                        className="fixed bottom-10 right-10 z-50 bg-[#800020] text-[#D4AF37] px-8 py-4 rounded-2xl shadow-2xl flex items-center gap-3 border border-[#D4AF37]/20"
+                    >
+                        <CheckCircle size={18} />
+                        <span className="text-[10px] font-black uppercase tracking-widest">{toastMsg}</span>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
                     <p className="text-[#800020] font-black uppercase tracking-[0.4em] text-[10px] mb-2">Intelligence</p>
@@ -38,10 +76,16 @@ const Reports = () => {
                 </div>
 
                 <div className="flex gap-3">
-                    <button className="p-4 bg-white border border-[#800020]/5 rounded-2xl text-[#800020] hover:bg-[#800020] hover:text-white transition-all shadow-xl">
+                    <button
+                        onClick={handleShare}
+                        className="p-4 bg-white border border-[#800020]/5 rounded-2xl text-[#800020] hover:bg-[#800020] hover:text-white transition-all shadow-xl"
+                    >
                         <Share2 size={20} />
                     </button>
-                    <button className="flex items-center gap-2 px-8 py-4 bg-[#800020] text-[#D4AF37] rounded-3xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all">
+                    <button
+                        onClick={handleExport}
+                        className="flex items-center gap-2 px-8 py-4 bg-[#800020] text-[#D4AF37] rounded-3xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl hover:scale-105 active:scale-95 transition-all"
+                    >
                         <Download size={16} /> Export Dossier
                     </button>
                 </div>

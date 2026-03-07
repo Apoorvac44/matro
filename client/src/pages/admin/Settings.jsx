@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Settings as SettingsIcon, Bell, Shield, Globe, Moon, Sun, Save, CheckCircle, Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
+import * as api from '../../services/api';
 
 const Settings = () => {
     const [saved, setSaved] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [settings, setSettings] = useState({
         siteName: 'Milana',
         siteEmail: 'admin@milana.com',
@@ -17,13 +19,32 @@ const Settings = () => {
         darkMode: false,
     });
 
+    useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                const { data } = await api.getSettings();
+                setSettings(data);
+                setLoading(false);
+            } catch (err) {
+                console.error('Failed to fetch settings:', err);
+                setLoading(false);
+            }
+        };
+        fetchSettings();
+    }, []);
+
     const handleChange = (key, value) => {
         setSettings(prev => ({ ...prev, [key]: value }));
     };
 
-    const handleSave = () => {
-        setSaved(true);
-        setTimeout(() => setSaved(false), 3000);
+    const handleSave = async () => {
+        try {
+            await api.updateSettings(settings);
+            setSaved(true);
+            setTimeout(() => setSaved(false), 3000);
+        } catch (err) {
+            console.error('Failed to save settings:', err);
+        }
     };
 
     const ToggleSwitch = ({ enabled, onChange, label }) => (
@@ -37,6 +58,8 @@ const Settings = () => {
             </button>
         </div>
     );
+
+    if (loading) return <div className="h-96 flex items-center justify-center font-bold text-[#800020] italic text-xs uppercase tracking-widest">Accessing Archives...</div>;
 
     return (
         <div className="space-y-8">
