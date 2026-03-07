@@ -112,6 +112,13 @@ const Register = () => {
     };
 
     const onSubmit = (data) => {
+        console.log("Submission attempt at step:", step);
+        if (step < 6) {
+            console.log("Safeguard triggered: Redirecting to nextStep instead of dashboard.");
+            nextStep();
+            return;
+        }
+
         // Frontend-only mock registration
         const mockUser = {
             _id: 'mock_user_' + Date.now(),
@@ -119,7 +126,9 @@ const Register = () => {
             email: data.email,
             membership: data.membership || 'Basic',
             token: 'mock_token_frontend_only',
+            isAdmin: false // Ensure registered users are not admins
         };
+        console.log("Registration successful, navigating to dashboard.");
         login(mockUser);
         navigate('/dashboard');
     };
