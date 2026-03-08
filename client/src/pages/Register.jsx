@@ -44,8 +44,8 @@ const registrationSchema = z.object({
     income: z.string().optional(),
     workLocation: z.string().min(1, 'Work location is required'),
     // Step 4
-    prefAgeMin: z.string().optional(),
-    prefAgeMax: z.string().optional(),
+    prefAgeMin: z.string().optional().refine(val => !val || /^[0-9]+$/.test(val), "Must be a number").refine(val => !val || parseInt(val) >= 18, "Min age is 18"),
+    prefAgeMax: z.string().optional().refine(val => !val || /^[0-9]+$/.test(val), "Must be a number").refine(val => !val || parseInt(val) >= 18, "Min age is 18"),
     prefLocation: z.string().optional(),
     prefEducation: z.string().optional(),
     prefProfession: z.string().optional(),
@@ -57,6 +57,14 @@ const registrationSchema = z.object({
 }).refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
     path: ["confirmPassword"],
+}).refine((data) => {
+    if (data.prefAgeMin && data.prefAgeMax) {
+        return parseInt(data.prefAgeMax) >= parseInt(data.prefAgeMin);
+    }
+    return true;
+}, {
+    message: "Maximum age cannot be less than minimum age",
+    path: ["prefAgeMax"],
 });
 
 const Register = () => {
@@ -499,11 +507,17 @@ const Register = () => {
                                         <div className="space-y-1.5">
                                             <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Preferred partner Age Range (Years)</label>
                                             <div className="grid grid-cols-2 gap-4">
-                                                <div className="relative group">
-                                                    <input type="number" {...register('prefAgeMin')} className="form-input-premium" placeholder="Min Age (e.g. 21)" />
+                                                <div className="space-y-1">
+                                                    <div className="relative group">
+                                                        <input type="number" {...register('prefAgeMin')} className="form-input-premium" placeholder="Min Age (e.g. 21)" />
+                                                    </div>
+                                                    {errors.prefAgeMin && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.prefAgeMin.message}</p>}
                                                 </div>
-                                                <div className="relative group">
-                                                    <input type="number" {...register('prefAgeMax')} className="form-input-premium" placeholder="Max Age (e.g. 30)" />
+                                                <div className="space-y-1">
+                                                    <div className="relative group">
+                                                        <input type="number" {...register('prefAgeMax')} className="form-input-premium" placeholder="Max Age (e.g. 30)" />
+                                                    </div>
+                                                    {errors.prefAgeMax && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.prefAgeMax.message}</p>}
                                                 </div>
                                             </div>
                                         </div>

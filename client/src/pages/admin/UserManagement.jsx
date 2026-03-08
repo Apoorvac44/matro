@@ -345,199 +345,207 @@ const UserManagement = () => {
             )}
 
             {/* View Profile Modal - Comprehensive Registration Data */}
-            <AnimatePresence>
-                {selectedUser && createPortal(
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 bg-black/90 backdrop-blur-2xl z-[999999] flex items-center justify-center p-4 md:p-10"
-                        onClick={() => setSelectedUser(null)}
-                    >
+            {createPortal(
+                <AnimatePresence>
+                    {selectedUser && (
                         <motion.div
-                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
-                            animate={{ scale: 1, opacity: 1, y: 0 }}
-                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                            onClick={(e) => e.stopPropagation()}
-                            className="bg-white rounded-[3rem] shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col border border-[#D4AF37]/20"
+                            key="modal-overlay"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 bg-black/90 backdrop-blur-2xl z-[999999] flex items-center justify-center p-4 md:p-10"
+                            onClick={() => setSelectedUser(null)}
                         >
-                            {/* Modal Header */}
-                            <div className="bg-gradient-to-br from-[#800020] via-[#4a0404] to-[#2a0101] p-10 text-center relative shrink-0">
-                                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')] opacity-10"></div>
-                                <button
-                                    onClick={() => setSelectedUser(null)}
-                                    className="absolute top-6 right-8 p-3 bg-white/10 hover:bg-white/20 text-white rounded-full transition-all z-10"
-                                >
-                                    <X size={24} />
-                                </button>
+                            <motion.div
+                                key="modal-content"
+                                initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                                animate={{ scale: 1, opacity: 1, y: 0 }}
+                                exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                                onClick={(e) => e.stopPropagation()}
+                                className="bg-white rounded-[3rem] shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col border border-[#D4AF37]/20"
+                            >
+                                {/* Modal Header */}
+                                <div className="bg-gradient-to-br from-[#800020] via-[#4a0404] to-[#2a0101] p-10 relative shrink-0">
+                                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')] opacity-10"></div>
+                                    <button
+                                        onClick={() => setSelectedUser(null)}
+                                        className="absolute top-6 right-8 p-3 bg-white/10 hover:bg-white/20 text-white rounded-full transition-all z-50 cursor-pointer"
+                                    >
+                                        <X size={24} />
+                                    </button>
 
-                                <div className="relative inline-block mb-6">
-                                    <div className="w-32 h-32 rounded-[2.5rem] bg-white/10 border-4 border-[#D4AF37]/40 overflow-hidden mx-auto shadow-2xl transform hover:scale-105 transition-transform duration-500">
-                                        {selectedUser?.profilePicture ? (
-                                            <img src={selectedUser.profilePicture} alt="" className="w-full h-full object-cover" />
-                                        ) : (
-                                            <div className="w-full h-full flex items-center justify-center text-white/30">
-                                                <User size={50} />
+                                    <div className="flex items-center gap-6 relative z-10">
+                                        <div className="relative inline-block">
+                                            <div className="w-32 h-32 rounded-[2.5rem] bg-white/10 border-4 border-[#D4AF37]/40 overflow-hidden shadow-2xl transform hover:scale-105 transition-transform duration-500">
+                                                {selectedUser?.profilePicture ? (
+                                                    <img src={selectedUser.profilePicture} alt="" className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center text-white/30">
+                                                        <User size={50} />
+                                                    </div>
+                                                )}
                                             </div>
-                                        )}
+                                            {selectedUser?.isAdmin && (
+                                                <div className="absolute -bottom-2 -right-2 bg-[#D4AF37] text-[#800020] p-2 rounded-xl shadow-lg border-2 border-[#800020]">
+                                                    <Shield size={16} />
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <div className="flex flex-col justify-center">
+                                            <h2 className="text-4xl font-serif font-black text-white italic tracking-tight">{selectedUser?.name}</h2>
+                                            <div className="flex items-center gap-2 mt-2">
+                                                <Mail size={14} className="text-[#D4AF37]" />
+                                                <p className="text-[#D4AF37] text-sm font-bold">{selectedUser?.email}</p>
+                                            </div>
+
+                                            <div className="flex gap-3 mt-4">
+                                                {selectedUser?.isApproved ? (
+                                                    <span className="px-5 py-2 bg-green-500/10 text-green-400 border border-green-500/20 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] backdrop-blur-sm">Approved Profile</span>
+                                                ) : (
+                                                    <span className="px-5 py-2 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] backdrop-blur-sm">Awaiting Review</span>
+                                                )}
+                                                {selectedUser?.isBlocked && (
+                                                    <span className="px-5 py-2 bg-red-500/10 text-red-400 border border-red-500/20 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] backdrop-blur-sm">Blocked Access</span>
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
-                                    {selectedUser?.isAdmin && (
-                                        <div className="absolute -bottom-2 -right-2 bg-[#D4AF37] text-[#800020] p-2 rounded-xl shadow-lg border-2 border-[#800020]">
-                                            <Shield size={16} />
-                                        </div>
-                                    )}
                                 </div>
 
-                                <h2 className="text-4xl font-serif font-black text-white italic tracking-tight">{selectedUser?.name}</h2>
-                                <div className="flex items-center justify-center gap-2 mt-2">
-                                    <Mail size={14} className="text-[#D4AF37]" />
-                                    <p className="text-[#D4AF37] text-sm font-bold">{selectedUser?.email}</p>
+                                {/* Modal Content - Scrollable */}
+                                <div className="overflow-y-auto flex-1 p-10 scrollbar-hide">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+
+                                        {/* Section: Personal Identity */}
+                                        <section className="space-y-6">
+                                            <div className="flex items-center gap-3 pb-3 border-b border-[#800020]/10">
+                                                <div className="w-10 h-10 bg-[#FFFDD0] rounded-xl flex items-center justify-center text-[#800020]">
+                                                    <User size={20} />
+                                                </div>
+                                                <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[#800020]">Personal Identity</h3>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-6">
+                                                <DetailItem label="Date of Birth" value={selectedUser?.dob} icon={<Calendar size={14} />} />
+                                                <DetailItem label="Age" value={`${selectedUser?.age || 'N/A'} Years`} />
+                                                <DetailItem label="Gender" value={selectedUser?.gender} />
+                                                <DetailItem label="Marital Status" value={selectedUser?.maritalStatus || 'Single'} />
+                                                <DetailItem label="Height" value={selectedUser?.height || 'N/A'} />
+                                                <DetailItem label="Mobile" value={selectedUser?.mobile || 'N/A'} icon={<Phone size={14} />} />
+                                            </div>
+                                        </section>
+
+                                        {/* Section: Professional Context */}
+                                        <section className="space-y-6">
+                                            <div className="flex items-center gap-3 pb-3 border-b border-[#800020]/10">
+                                                <div className="w-10 h-10 bg-[#FFFDD0] rounded-xl flex items-center justify-center text-[#800020]">
+                                                    <Briefcase size={20} />
+                                                </div>
+                                                <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[#800020]">Professional Path</h3>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-6">
+                                                <DetailItem label="Highest Education" value={selectedUser?.education} icon={<GraduationCap size={14} />} />
+                                                <DetailItem label="Profession" value={selectedUser?.profession} />
+                                                <DetailItem label="Annual Income" value={selectedUser?.income || 'Not disclosed'} />
+                                                <DetailItem label="Work Location" value={selectedUser?.workLocation || selectedUser?.location} icon={<MapPin size={14} />} />
+                                            </div>
+                                        </section>
+
+                                        {/* Section: Cultural & Background */}
+                                        <section className="space-y-6">
+                                            <div className="flex items-center gap-3 pb-3 border-b border-[#800020]/10">
+                                                <div className="w-10 h-10 bg-[#FFFDD0] rounded-xl flex items-center justify-center text-[#800020]">
+                                                    <Shield size={20} />
+                                                </div>
+                                                <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[#800020]">Roots & Beliefs</h3>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-6">
+                                                <DetailItem label="Religion" value={selectedUser?.religion} />
+                                                <DetailItem label="Caste" value={selectedUser?.caste || 'Open'} />
+                                                <DetailItem label="Mother Tongue" value={selectedUser?.motherTongue || 'N/A'} />
+                                                <DetailItem label="Resident Location" value={selectedUser?.location} icon={<MapPin size={14} />} />
+                                            </div>
+                                        </section>
+
+                                        {/* Section: Partner Preferences */}
+                                        <section className="space-y-6">
+                                            <div className="flex items-center gap-3 pb-3 border-b border-[#800020]/10">
+                                                <div className="w-10 h-10 bg-[#FFFDD0] rounded-xl flex items-center justify-center text-[#800020]">
+                                                    <Heart size={20} />
+                                                </div>
+                                                <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[#800020]">Vision for Partner</h3>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-6">
+                                                <DetailItem label="Preferred Age" value={selectedUser?.prefAgeRange || 'Any'} />
+                                                <DetailItem label="Preferred Location" value={selectedUser?.prefLocation || 'Flexible'} />
+                                                <DetailItem label="Preferred Education" value={selectedUser?.prefEducation || 'Any'} />
+                                                <DetailItem label="Preferred Profession" value={selectedUser?.prefProfession || 'Any'} />
+                                            </div>
+                                        </section>
+
+                                        {/* Section: Verification Documents */}
+                                        <section className="space-y-6 md:col-span-2">
+                                            <div className="flex items-center gap-3 pb-3 border-b border-[#800020]/10">
+                                                <div className="w-10 h-10 bg-[#FFFDD0] rounded-xl flex items-center justify-center text-[#800020]">
+                                                    <CheckCircle size={20} />
+                                                </div>
+                                                <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[#800020]">Verification Documents</h3>
+                                            </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                                <DocumentItem
+                                                    label="Aadhar Card"
+                                                    status={selectedUser?.aadharCard ? "Uploaded" : "Pending"}
+                                                    imageUrl={selectedUser?.aadharCard}
+                                                />
+                                                <DocumentItem
+                                                    label="Caste Certificate"
+                                                    status={selectedUser?.casteCertificate ? "Uploaded" : (selectedUser?.caste ? "Pending" : "Not Required")}
+                                                    imageUrl={selectedUser?.casteCertificate}
+                                                />
+                                            </div>
+                                        </section>
+
+                                        {/* Section: About Me */}
+                                        <section className="space-y-6 md:col-span-2">
+                                            <div className="flex justify-between items-center pb-3 border-b border-[#800020]/10">
+                                                <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[#800020]">In Their Own Words</h3>
+                                            </div>
+                                            <div className="bg-gray-50/50 p-8 rounded-[2rem] border border-[#800020]/5 italic font-serif text-gray-600 leading-relaxed">
+                                                "{selectedUser?.aboutMe || "No detailed introduction provided by the seeker."}"
+                                            </div>
+                                        </section>
+                                    </div>
                                 </div>
 
-                                <div className="flex justify-center gap-3 mt-6">
-                                    {selectedUser?.isApproved ? (
-                                        <span className="px-5 py-2 bg-green-500/10 text-green-400 border border-green-500/20 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] backdrop-blur-sm">Approved Profile</span>
-                                    ) : (
-                                        <span className="px-5 py-2 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] backdrop-blur-sm">Awaiting Review</span>
-                                    )}
-                                    {selectedUser?.isBlocked && (
-                                        <span className="px-5 py-2 bg-red-500/10 text-red-400 border border-red-500/20 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] backdrop-blur-sm">Blocked Access</span>
-                                    )}
+                                {/* Modal Footer - Actions */}
+                                <div className="p-8 bg-gray-50/80 backdrop-blur-sm border-t border-[#800020]/5 shrink-0 flex gap-4">
+                                    <button
+                                        onClick={() => { handleToggleApproval(selectedUser?._id); setSelectedUser(null); }}
+                                        className={`flex-1 py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] transition-all active:scale-95 shadow-xl ${selectedUser?.isApproved
+                                            ? 'bg-white text-red-600 border-2 border-red-100 hover:bg-red-600 hover:text-white hover:border-red-600'
+                                            : 'bg-[#800020] text-[#D4AF37] hover:bg-[#600318] shadow-[#800020]/20'}`}
+                                    >
+                                        {selectedUser?.isApproved ? 'Revoke Approval' : 'Approve Global Visibility'}
+                                    </button>
+                                    <button
+                                        onClick={() => { handleBlockUser(selectedUser?._id); setSelectedUser(null); }}
+                                        className="px-8 py-4 rounded-2xl bg-white text-gray-500 font-black text-[10px] uppercase tracking-[0.3em] border-2 border-gray-100 hover:border-[#800020] hover:text-[#800020] transition-all active:scale-95 shadow-lg"
+                                    >
+                                        {selectedUser?.isBlocked ? 'Unblock' : 'Block User'}
+                                    </button>
+                                    <button
+                                        onClick={() => { handleDeleteUser(selectedUser?._id); setSelectedUser(null); }}
+                                        className="px-8 py-4 rounded-2xl bg-white text-red-500 font-black text-[10px] uppercase tracking-[0.3em] border-2 border-red-50 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all active:scale-95 shadow-lg"
+                                    >
+                                        Delete Account
+                                    </button>
                                 </div>
-                            </div>
-
-                            {/* Modal Content - Scrollable */}
-                            <div className="overflow-y-auto flex-1 p-10 scrollbar-hide">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-
-                                    {/* Section: Personal Identity */}
-                                    <section className="space-y-6">
-                                        <div className="flex items-center gap-3 pb-3 border-b border-[#800020]/10">
-                                            <div className="w-10 h-10 bg-[#FFFDD0] rounded-xl flex items-center justify-center text-[#800020]">
-                                                <User size={20} />
-                                            </div>
-                                            <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[#800020]">Personal Identity</h3>
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-6">
-                                            <DetailItem label="Date of Birth" value={selectedUser?.dob} icon={<Calendar size={14} />} />
-                                            <DetailItem label="Age" value={`${selectedUser?.age || 'N/A'} Years`} />
-                                            <DetailItem label="Gender" value={selectedUser?.gender} />
-                                            <DetailItem label="Marital Status" value={selectedUser?.maritalStatus || 'Single'} />
-                                            <DetailItem label="Height" value={selectedUser?.height || 'N/A'} />
-                                            <DetailItem label="Mobile" value={selectedUser?.mobile || 'N/A'} icon={<Phone size={14} />} />
-                                        </div>
-                                    </section>
-
-                                    {/* Section: Professional Context */}
-                                    <section className="space-y-6">
-                                        <div className="flex items-center gap-3 pb-3 border-b border-[#800020]/10">
-                                            <div className="w-10 h-10 bg-[#FFFDD0] rounded-xl flex items-center justify-center text-[#800020]">
-                                                <Briefcase size={20} />
-                                            </div>
-                                            <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[#800020]">Professional Path</h3>
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-6">
-                                            <DetailItem label="Highest Education" value={selectedUser?.education} icon={<GraduationCap size={14} />} />
-                                            <DetailItem label="Profession" value={selectedUser?.profession} />
-                                            <DetailItem label="Annual Income" value={selectedUser?.income || 'Not disclosed'} />
-                                            <DetailItem label="Work Location" value={selectedUser?.workLocation || selectedUser?.location} icon={<MapPin size={14} />} />
-                                        </div>
-                                    </section>
-
-                                    {/* Section: Cultural & Background */}
-                                    <section className="space-y-6">
-                                        <div className="flex items-center gap-3 pb-3 border-b border-[#800020]/10">
-                                            <div className="w-10 h-10 bg-[#FFFDD0] rounded-xl flex items-center justify-center text-[#800020]">
-                                                <Shield size={20} />
-                                            </div>
-                                            <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[#800020]">Roots & Beliefs</h3>
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-6">
-                                            <DetailItem label="Religion" value={selectedUser?.religion} />
-                                            <DetailItem label="Caste" value={selectedUser?.caste || 'Open'} />
-                                            <DetailItem label="Mother Tongue" value={selectedUser?.motherTongue || 'N/A'} />
-                                            <DetailItem label="Resident Location" value={selectedUser?.location} icon={<MapPin size={14} />} />
-                                        </div>
-                                    </section>
-
-                                    {/* Section: Partner Preferences */}
-                                    <section className="space-y-6">
-                                        <div className="flex items-center gap-3 pb-3 border-b border-[#800020]/10">
-                                            <div className="w-10 h-10 bg-[#FFFDD0] rounded-xl flex items-center justify-center text-[#800020]">
-                                                <Heart size={20} />
-                                            </div>
-                                            <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[#800020]">Vision for Partner</h3>
-                                        </div>
-                                        <div className="grid grid-cols-2 gap-6">
-                                            <DetailItem label="Preferred Age" value={selectedUser?.prefAgeRange || 'Any'} />
-                                            <DetailItem label="Preferred Location" value={selectedUser?.prefLocation || 'Flexible'} />
-                                            <DetailItem label="Preferred Education" value={selectedUser?.prefEducation || 'Any'} />
-                                            <DetailItem label="Preferred Profession" value={selectedUser?.prefProfession || 'Any'} />
-                                        </div>
-                                    </section>
-
-                                    {/* Section: Verification Documents */}
-                                    <section className="space-y-6 md:col-span-2">
-                                        <div className="flex items-center gap-3 pb-3 border-b border-[#800020]/10">
-                                            <div className="w-10 h-10 bg-[#FFFDD0] rounded-xl flex items-center justify-center text-[#800020]">
-                                                <CheckCircle size={20} />
-                                            </div>
-                                            <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[#800020]">Verification Documents</h3>
-                                        </div>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                            <DocumentItem
-                                                label="Aadhar Card"
-                                                status={selectedUser?.aadharCard ? "Uploaded" : "Pending"}
-                                                imageUrl={selectedUser?.aadharCard}
-                                            />
-                                            <DocumentItem
-                                                label="Caste Certificate"
-                                                status={selectedUser?.casteCertificate ? "Uploaded" : (selectedUser?.caste ? "Pending" : "Not Required")}
-                                                imageUrl={selectedUser?.casteCertificate}
-                                            />
-                                        </div>
-                                    </section>
-
-                                    {/* Section: About Me */}
-                                    <section className="space-y-6 md:col-span-2">
-                                        <div className="flex justify-between items-center pb-3 border-b border-[#800020]/10">
-                                            <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[#800020]">In Their Own Words</h3>
-                                        </div>
-                                        <div className="bg-gray-50/50 p-8 rounded-[2rem] border border-[#800020]/5 italic font-serif text-gray-600 leading-relaxed">
-                                            "{selectedUser?.aboutMe || "No detailed introduction provided by the seeker."}"
-                                        </div>
-                                    </section>
-                                </div>
-                            </div>
-
-                            {/* Modal Footer - Actions */}
-                            <div className="p-8 bg-gray-50/80 backdrop-blur-sm border-t border-[#800020]/5 shrink-0 flex gap-4">
-                                <button
-                                    onClick={() => { handleToggleApproval(selectedUser?._id); setSelectedUser(null); }}
-                                    className={`flex-1 py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] transition-all active:scale-95 shadow-xl ${selectedUser?.isApproved
-                                        ? 'bg-white text-red-600 border-2 border-red-100 hover:bg-red-600 hover:text-white hover:border-red-600'
-                                        : 'bg-[#800020] text-[#D4AF37] hover:bg-[#600318] shadow-[#800020]/20'}`}
-                                >
-                                    {selectedUser?.isApproved ? 'Revoke Approval' : 'Approve Global Visibility'}
-                                </button>
-                                <button
-                                    onClick={() => { handleBlockUser(selectedUser?._id); setSelectedUser(null); }}
-                                    className="px-8 py-4 rounded-2xl bg-white text-gray-500 font-black text-[10px] uppercase tracking-[0.3em] border-2 border-gray-100 hover:border-[#800020] hover:text-[#800020] transition-all active:scale-95 shadow-lg"
-                                >
-                                    {selectedUser?.isBlocked ? 'Unblock' : 'Block User'}
-                                </button>
-                                <button
-                                    onClick={() => { handleDeleteUser(selectedUser?._id); setSelectedUser(null); }}
-                                    className="px-8 py-4 rounded-2xl bg-white text-red-500 font-black text-[10px] uppercase tracking-[0.3em] border-2 border-red-50 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all active:scale-95 shadow-lg"
-                                >
-                                    Delete Account
-                                </button>
-                            </div>
+                            </motion.div>
                         </motion.div>
-                    </motion.div>,
-                    document.body
-                )}
-            </AnimatePresence>
+                    )}
+                </AnimatePresence>,
+                document.body
+            )}
         </div>
     );
 };

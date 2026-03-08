@@ -1,5 +1,5 @@
 // FRONTEND-ONLY MOCK API
-const DUMMY_PROFILES = [
+const INITIAL_PROFILES = [
     {
         _id: '1', name: 'Priya Sharma', email: 'priya.sharma@example.com', age: 26, gender: 'Female', religion: 'Hindu', location: 'Mumbai',
         profession: 'Software Engineer', education: 'B.Tech CS', income: '₹12 LPA', caste: 'Brahmin',
@@ -85,6 +85,21 @@ const DUMMY_PROFILES = [
     },
 ];
 
+// Helper to get profiles from LocalStorage or use initial data
+const getStoredProfiles = () => {
+    const stored = localStorage.getItem('dummy_profiles');
+    if (stored) return JSON.parse(stored);
+    localStorage.setItem('dummy_profiles', JSON.stringify(INITIAL_PROFILES));
+    return INITIAL_PROFILES;
+};
+
+let DUMMY_PROFILES = getStoredProfiles();
+
+const updateStoredProfiles = (profiles) => {
+    DUMMY_PROFILES = profiles;
+    localStorage.setItem('dummy_profiles', JSON.stringify(profiles));
+};
+
 let DUMMY_PLANS = [
     { _id: 'p1', name: 'Free', price: 0, duration: 'Lifetime', features: ['View Profiles', 'Send 5 Interests/Day'], color: '#9CA3AF' },
     { _id: 'p2', name: 'Silver', price: 1999, duration: '3 Months', features: ['Unlimited Interests', 'Basic Support', 'View Contact Details (10)'], color: '#C0C0C0' },
@@ -113,9 +128,29 @@ export const login = (formData) => mockResolve({
     token: 'mock_token',
     isAdmin: formData.email === 'admin@milana.com'
 });
-export const register = (formData) => mockResolve({
-    _id: 'mock_user_1', name: formData.name, email: formData.email, token: 'mock_token'
-});
+export const register = (formData) => {
+    const newUser = {
+        ...formData,
+        _id: 'u_' + Date.now(),
+        isApproved: false,
+        isBlocked: false,
+        interests: [],
+        photos: [],
+        createdAt: new Date().toISOString()
+    };
+
+    // Convert age Min/Max to a single range for display if applicable
+    if (formData.prefAgeMin && formData.prefAgeMax) {
+        newUser.prefAgeRange = `${formData.prefAgeMin}-${formData.prefAgeMax}`;
+    }
+
+    const updatedProfiles = [...getStoredProfiles(), newUser];
+    updateStoredProfiles(updatedProfiles);
+
+    return mockResolve({
+        _id: newUser._id, name: formData.name, email: formData.email, token: 'mock_token'
+    });
+};
 export const getProfile = (id) => {
     if (id) {
         return mockResolve(DUMMY_PROFILES.find(p => p._id === id || p.id === id) || DUMMY_PROFILES[0]);
@@ -125,7 +160,7 @@ export const getProfile = (id) => {
     });
 };
 export const updateProfile = (formData) => mockResolve(formData);
-export const getProfiles = () => mockResolve(DUMMY_PROFILES);
+export const getProfiles = () => mockResolve(getStoredProfiles());
 export const sendInterest = (id) => {
     if (!SENT_INTERESTS.includes(id)) SENT_INTERESTS.push(id);
     return mockResolve({ message: 'Interest sent' });
@@ -149,11 +184,16 @@ export const getConversations = () => mockResolve([
     { _id: '5', name: 'Kavya Nair', profilePicture: 'https://randomuser.me/api/portraits/women/55.jpg', lastMessage: 'I loved your profile!', lastMessageDate: new Date(Date.now() - 86400000).toISOString(), unreadCount: 0 },
 ]);
 export const getMessages = (userId) => mockResolve(MOCK_MESSAGES[userId] || []);
-export const getAdminUsers = () => mockResolve(DUMMY_PROFILES);
+export const getAdminUsers = () => mockResolve(getStoredProfiles());
 export const toggleApproval = (id) => {
-    const user = DUMMY_PROFILES.find(u => u._id === id);
-    if (user) user.isApproved = !user.isApproved;
-    return mockResolve({ isApproved: user ? user.isApproved : true });
+    const profiles = getStoredProfiles();
+    const userIndex = profiles.findIndex(u => u._id === id);
+    if (userIndex > -1) {
+        profiles[userIndex].isApproved = !profiles[userIndex].isApproved;
+        updateStoredProfiles(profiles);
+        return mockResolve({ isApproved: profiles[userIndex].isApproved });
+    }
+    return mockResolve({ isApproved: true });
 };
 export const getMembershipPlans = () => mockResolve(DUMMY_PLANS);
 export const createMembershipPlan = (data) => {
