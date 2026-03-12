@@ -148,7 +148,7 @@ const Home = () => {
                         <h2 className="text-4xl md:text-5xl font-serif font-black italic">Beautiful Success Stories</h2>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                    <div className="flex overflow-x-auto md:grid md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10 pb-8 no-scrollbar snap-x">
                         {[
                             { name: "Aditi & Rahul", story: "Finding someone who shared the same spiritual values was important. Milana made it happen.", city: "Mumbai" },
                             { name: "Priya & Vikram", story: "The verification process gave me the confidence to meet people. I found my best friend here.", city: "Delhi" },
@@ -159,20 +159,29 @@ const Home = () => {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 transition={{ delay: i * 0.1 }}
                                 key={i}
-                                className="bg-white/5 backdrop-blur-xl p-10 rounded-[3rem] border border-white/10 text-white group hover:bg-white/10 transition-all cursor-default"
+                                className="bg-white/5 backdrop-blur-xl p-8 md:p-10 rounded-[2.5rem] md:rounded-[3rem] border border-white/10 text-white group hover:bg-white/10 transition-all cursor-default shrink-0 w-[280px] sm:w-[350px] md:w-auto snap-center"
                             >
-                                <div className="w-12 h-12 bg-[#D4AF37]/20 rounded-full flex items-center justify-center text-[#D4AF37] mb-8">
-                                    <Heart size={20} fill="currentColor" />
+                                <div className="w-10 h-10 md:w-12 md:h-12 bg-[#D4AF37]/20 rounded-full flex items-center justify-center text-[#D4AF37] mb-6 md:mb-8">
+                                    <Heart size={18} fill="currentColor" />
                                 </div>
-                                <p className="text-lg font-light leading-relaxed mb-10 italic">"{story.story}"</p>
+                                <p className="text-base md:text-lg font-light leading-relaxed mb-8 md:mb-10 italic">"{story.story}"</p>
                                 <div>
-                                    <h4 className="font-serif font-black text-xl text-[#D4AF37] italic">{story.name}</h4>
+                                    <h4 className="font-serif font-black text-lg md:text-xl text-[#D4AF37] italic">{story.name}</h4>
                                     <p className="text-[10px] uppercase font-bold tracking-[0.3em] opacity-40">{story.city}</p>
                                 </div>
                             </motion.div>
                         ))}
                     </div>
                 </div>
+                <style>{`
+                    .no-scrollbar::-webkit-scrollbar {
+                        display: none;
+                    }
+                    .no-scrollbar {
+                        -ms-overflow-style: none;
+                        scrollbar-width: none;
+                    }
+                `}</style>
             </section>
 
         </div>
