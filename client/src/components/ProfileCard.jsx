@@ -104,60 +104,66 @@ const ProfileCard = ({ profile }) => {
             </div>
 
             {/* Info Section */}
-            <div className="p-2 relative bg-white pb-16 flex-1 flex flex-col min-h-0">
-                <div className="flex justify-between items-start mb-1">
-                    <div>
-                        <h3 className="font-bold text-gray-900 text-sm group-hover:text-[#ed5a5a] transition-colors truncate">
+            <div className="p-3 relative bg-white pb-16 flex-1 flex flex-col min-h-0">
+                <div className="flex justify-between items-start mb-2">
+                    <div className="flex-1 min-w-0 pr-2">
+                        <h3 className="font-bold text-gray-900 text-base group-hover:text-[#800020] transition-colors truncate leading-tight">
                             {profile.name}
                         </h3>
-                        <p className="text-[10px] text-gray-500 mt-0.5 truncate">
+                        <p className="text-[11px] text-gray-500 mt-0.5 truncate font-medium">
                             {shortId} | Last seen few hours ago
                         </p>
                     </div>
-                    {/* Circular Action Icons */}
-                    <div className="flex gap-1">
+                    {/* Circular Action Icons - Side by Side on Right */}
+                    <div className="flex gap-2 shrink-0 pt-0.5">
+                        <button
+                            onClick={(e) => { e.stopPropagation(); e.preventDefault(); }}
+                            className="w-8 h-8 rounded-full border border-orange-200 flex items-center justify-center text-orange-500 hover:bg-orange-50 transition-colors z-20 shadow-sm bg-white"
+                        >
+                            <Phone size={14} />
+                        </button>
                         <button
                             onClick={(e) => { e.stopPropagation(); e.preventDefault(); navigate(`/chat/${profileId}`); }}
-                            className="w-7 h-7 rounded-full border border-green-400 flex items-center justify-center text-green-500 hover:bg-green-50 transition-colors z-20"
+                            className="w-8 h-8 rounded-full border border-green-200 flex items-center justify-center text-green-500 hover:bg-green-50 transition-colors z-20 shadow-sm bg-white"
                         >
-                            <MessageSquare size={12} />
+                            <MessageSquare size={14} />
                         </button>
                     </div>
                 </div>
 
-                <div className="mt-1 mb-1 text-[11px] text-gray-700 leading-snug line-clamp-2">
+                <div className="text-[12px] text-gray-700 leading-snug line-clamp-2 mb-2 font-medium">
                     {profile.age || '26'} Yrs • 5'4" • {profile.education || 'MCA'} • {profile.profession || 'Software Professional'} • {profile.location || 'Mysuru'}
                 </div>
 
-                {/* Bottom Floating Action Buttons */}
-                <div className="absolute bottom-3 left-3 right-3 flex justify-between gap-2.5 z-20">
+                {/* Bottom Action Buttons - Side by Side */}
+                <div className="absolute bottom-3 left-3 right-3 flex justify-between gap-3 z-20">
                     <button
                         onClick={(e) => { e.stopPropagation(); e.preventDefault(); handleInterest(false); }}
-                        className="flex-1 py-2 px-2 flex items-center justify-center gap-2 bg-white rounded-full border border-gray-200 text-gray-500 font-bold transition-colors hover:bg-gray-50 shadow-sm"
+                        className="flex-1 py-2.5 px-3 flex items-center justify-center gap-2 bg-white rounded-full border border-gray-200 text-gray-600 font-bold transition-all hover:bg-gray-50 shadow-sm active:scale-95"
                     >
-                        <span className="text-gray-400 font-light text-xs"><X size={14} /></span>
-                        <span className="text-[10px] leading-[1.1] text-left">Don't<br />Show</span>
+                        <X size={16} className="text-gray-400" />
+                        <span className="text-[12px]">Don't Show</span>
                     </button>
 
                     <button
                         onClick={(e) => { e.stopPropagation(); e.preventDefault(); handleInterest(true); }}
                         disabled={sending || interestSent}
-                        className={`flex-[1.2] py-2 px-2 rounded-full flex items-center justify-center gap-2 font-bold transition-all shadow-sm ${interestSent
+                        className={`flex-[1.3] py-2.5 px-3 rounded-full flex items-center justify-center gap-2 font-bold transition-all shadow-md active:scale-95 ${interestSent
                             ? 'bg-green-50 text-green-600 border border-green-100'
                             : 'bg-[#800020] text-[#D4AF37] hover:bg-[#600318] cursor-pointer'
                             }`}
                     >
                         {sending ? (
-                            <div className="w-3 h-3 border-2 border-[#D4AF37]/30 border-t-[#D4AF37] rounded-full animate-spin" />
+                            <div className="w-4 h-4 border-2 border-[#D4AF37]/30 border-t-[#D4AF37] rounded-full animate-spin" />
                         ) : interestSent ? (
                             <>
-                                <CheckCircle size={14} />
-                                <span className="text-[10px] leading-[1.1] text-left text-green-700">Interest<br />Sent</span>
+                                <CheckCircle size={16} />
+                                <span className="text-[12px]">Interest Sent</span>
                             </>
                         ) : (
                             <>
-                                <Heart size={14} className="fill-[#D4AF37]" />
-                                <span className="text-[10px] leading-[1.1] text-left text-[#D4AF37] tracking-wide">Send<br />Interest</span>
+                                <Heart size={16} className="fill-[#D4AF37]" />
+                                <span className="text-[12px] text-[#D4AF37]">Send Interest</span>
                             </>
                         )}
                     </button>

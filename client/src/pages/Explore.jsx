@@ -205,7 +205,7 @@ const Explore = () => {
         <div className="min-h-screen bg-white flex flex-col pb-20 md:pb-0 font-sans">
 
             {/* Top Navigation Bar - App Header Area */}
-            <div className="bg-[#EF5350] px-4 py-3 flex items-center justify-between sticky top-0 z-30">
+            <div className="bg-[#EF5350] px-4 py-3 flex items-center justify-between z-30">
                 {/* Mock OS Status Bar area visually integrated */}
                 <div className="w-full flex justify-between items-center">
                     <div className="flex gap-2">
@@ -216,12 +216,6 @@ const Explore = () => {
                             <div className="w-3/4 h-0.5 bg-white rounded"></div>
                         </div>
                     </div>
-                    <div className="flex items-center bg-white/20 rounded-full p-1 border border-white/30 hidden md:flex">
-                        <button className="px-5 py-1.5 rounded-full bg-white text-[#EF5350] text-xs font-bold shadow-sm">Regular</button>
-                        <button className="px-5 py-1.5 rounded-full text-white text-xs font-bold flex items-center gap-1">
-                            PRIME <span className="text-yellow-300 text-[10px] leading-none">★</span>
-                        </button>
-                    </div>
                     <div className="flex items-center gap-4">
                         <Search size={20} className="text-white" />
                         <div className="w-8 h-8 rounded-full bg-white/20 border border-white/40 flex items-center justify-center">
@@ -229,6 +223,28 @@ const Explore = () => {
                         </div>
                     </div>
                 </div>
+            </div>
+
+            {/* Mobile Top Tabs */}
+            <div className="bg-white border-b border-gray-100 flex justify-between px-6 sticky top-0 z-30">
+                {['All matches', 'Newly joined', 'More'].map(tab => (
+                    <button
+                        key={tab}
+                        onClick={() => setActiveTab(tab)}
+                        className={`py-3 px-1 text-[13px] font-bold transition-all relative ${activeTab === tab ? 'text-[#EF5350]' : 'text-gray-500'
+                            }`}
+                    >
+                        {tab === 'More' ? (
+                            <span className="flex items-center gap-1">{tab} <ChevronDown size={14} /></span>
+                        ) : tab}
+                        {activeTab === tab && (
+                            <motion.div
+                                layoutId="activeTab"
+                                className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#EF5350]"
+                            />
+                        )}
+                    </button>
+                ))}
             </div>
 
 
@@ -242,12 +258,12 @@ const Explore = () => {
             </div>
 
             {/* Quick Filter Pills Row (Side-scrolling) */}
-            <div className="px-4 md:px-6 py-3 bg-white border-b border-gray-100 flex gap-2 overflow-x-auto no-scrollbar whitespace-nowrap z-10 shadow-sm">
+            <div className="px-4 md:px-6 py-3 bg-white border-b border-gray-100 flex gap-2 overflow-x-auto no-scrollbar whitespace-nowrap z-10">
                 <button
                     onClick={() => setShowFilterModal(true)}
-                    className="flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-gray-300 text-[11px] font-semibold text-gray-700 hover:bg-gray-50 shrink-0"
+                    className="flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-gray-200 bg-white text-[12px] font-medium text-gray-700 hover:bg-gray-50 shrink-0 shadow-sm"
                 >
-                    <SlidersHorizontal size={12} /> Filter
+                    <SlidersHorizontal size={12} className="text-gray-500" /> Filter
                 </button>
 
                 <div className="relative shrink-0">
@@ -261,22 +277,22 @@ const Explore = () => {
                         <option value="Age (High to Low)">Age (High to Low)</option>
                     </select>
                     <button
-                        className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full border text-[11px] font-semibold transition-colors ${sortBy !== 'Relevance' ? 'border-[#EF5350] bg-red-50 text-[#EF5350]' : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'}`}
+                        className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full border text-[12px] font-medium transition-colors shadow-sm ${sortBy !== 'Relevance' ? 'border-[#EF5350] bg-red-50 text-[#EF5350]' : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'}`}
                     >
-                        {sortBy === 'Relevance' ? 'Sort by' : sortBy} <ChevronDown size={12} />
+                        Sort by <ChevronDown size={14} className="text-gray-400" />
                     </button>
                 </div>
 
                 <button
                     onClick={() => setShowNewlyJoined(!showNewlyJoined)}
-                    className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full border text-[11px] font-semibold shrink-0 transition-colors ${showNewlyJoined ? 'border-[#EF5350] bg-red-50 text-[#EF5350]' : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'}`}
+                    className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full border text-[12px] font-medium shrink-0 transition-colors shadow-sm ${showNewlyJoined ? 'border-[#EF5350] bg-red-50 text-[#EF5350]' : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'}`}
                 >
                     Newly joined
                 </button>
 
                 <button
                     onClick={() => setShowNotSeen(!showNotSeen)}
-                    className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full border text-[11px] font-semibold shrink-0 transition-colors ${showNotSeen ? 'border-[#EF5350] bg-red-50 text-[#EF5350]' : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'}`}
+                    className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full border text-[12px] font-medium shrink-0 transition-colors shadow-sm ${showNotSeen ? 'border-[#EF5350] bg-red-50 text-[#EF5350]' : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'}`}
                 >
                     Not seen
                 </button>
