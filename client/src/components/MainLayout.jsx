@@ -10,10 +10,12 @@ const MainLayout = () => {
         window.scrollTo(0, 0);
     }, [pathname]);
 
+    const hideNavbar = pathname === '/explore' || pathname.startsWith('/profile/');
+
     return (
         <div className="flex flex-col min-h-screen">
-            <Navbar />
-            <main className="flex-grow">
+            {!hideNavbar && <Navbar />}
+            <main className={`flex-grow ${!hideNavbar ? 'pt-16 md:pt-20' : ''}`}>
                 <Outlet />
             </main>
             <Footer />

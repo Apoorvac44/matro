@@ -125,9 +125,9 @@ const INITIAL_PROFILES = [
 
 // Helper to get profiles from LocalStorage or use initial data
 const getStoredProfiles = () => {
-    const stored = localStorage.getItem('dummy_profiles_v2');
+    const stored = localStorage.getItem('dummy_profiles_v3');
     if (stored) return JSON.parse(stored);
-    localStorage.setItem('dummy_profiles_v2', JSON.stringify(INITIAL_PROFILES));
+    localStorage.setItem('dummy_profiles_v3', JSON.stringify(INITIAL_PROFILES));
     return INITIAL_PROFILES;
 };
 
