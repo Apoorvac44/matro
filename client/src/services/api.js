@@ -6,7 +6,11 @@ const INITIAL_PROFILES = [
         profilePicture: 'https://randomuser.me/api/portraits/women/44.jpg',
         aboutMe: 'Passionate about technology and classical dance. Looking for someone with a modern soul and traditional roots.',
         isApproved: true, interests: ['Tech', 'Salsa', 'Travel', 'Reading'],
-        photos: ['https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=60'],
+        photos: [
+            'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=60',
+            'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=60',
+            'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=500&auto=format&fit=crop&q=60'
+        ],
         mobile: '9876543210', dob: '1998-05-15', motherTongue: 'Hindi', maritalStatus: 'Single', height: "5'4\"",
         workLocation: 'Pune', prefAgeRange: '27-32', prefLocation: 'Mumbai/Pune', prefEducation: 'Masters', prefProfession: 'IT Professional',
         aadharCard: 'https://images.unsplash.com/photo-1544383333-5cf9833b378e?w=800&auto=format&fit=crop&q=60',
@@ -18,7 +22,11 @@ const INITIAL_PROFILES = [
         profilePicture: 'https://randomuser.me/api/portraits/men/32.jpg',
         aboutMe: 'A dedicated physician who loves cricket and travel. Believe in simple living and high thinking.',
         isApproved: true, interests: ['Fitness', 'Reading', 'Music', 'Hiking'],
-        photos: ['https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=500&auto=format&fit=crop&q=60'],
+        photos: [
+            'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=500&auto=format&fit=crop&q=60',
+            'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=60',
+            'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=500&auto=format&fit=crop&q=60'
+        ],
         mobile: '9123456789', dob: '1995-10-20', motherTongue: 'Gujarati', maritalStatus: 'Single', height: "5'11\"",
         workLocation: 'Ahmedabad', prefAgeRange: '24-28', prefLocation: 'Anywhere', prefEducation: 'Medical', prefProfession: 'Healthcare',
         aadharCard: 'https://images.unsplash.com/photo-1544383333-5cf9833b378e?w=800&auto=format&fit=crop&q=60'
@@ -29,6 +37,11 @@ const INITIAL_PROFILES = [
         profilePicture: 'https://randomuser.me/api/portraits/women/68.jpg',
         aboutMe: 'Love cooking and exploring new cuisines. Looking for a partner who is adventurous.',
         isApproved: true, interests: ['Cooking', 'Cinema', 'Yoga'],
+        photos: [
+            'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=500&auto=format&fit=crop&q=60',
+            'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=500&auto=format&fit=crop&q=60',
+            'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=500&auto=format&fit=crop&q=60'
+        ],
         mobile: '9988776655', dob: '2000-01-12', motherTongue: 'Telugu', maritalStatus: 'Single', height: "5'6\"",
         workLocation: 'Hyderabad', prefAgeRange: '25-30', prefLocation: 'Hyderabad', prefEducation: 'Bachelors/Masters', prefProfession: 'Analyst',
         aadharCard: 'https://images.unsplash.com/photo-1544383333-5cf9833b378e?w=800&auto=format&fit=crop&q=60',
@@ -40,6 +53,12 @@ const INITIAL_PROFILES = [
         profilePicture: 'https://randomuser.me/api/portraits/men/45.jpg',
         aboutMe: 'Traditional values with a modern outlook. Family is my priority.',
         isApproved: true, interests: ['Investment', 'Social Work', 'Music'],
+        photos: [
+            'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=500&auto=format&fit=crop&q=60',
+            'https://images.unsplash.com/photo-1492447105260-2e947425b5cc?w=500&auto=format&fit=crop&q=60',
+            'https://images.unsplash.com/photo-1533038590840-1c798b14a275?w=500&auto=format&fit=crop&q=60',
+            'https://plus.unsplash.com/premium_photo-1663045437877-6bcfc7fd0952?w=500&auto=format&fit=crop&q=60'
+        ],
         mobile: '9443322110', dob: '1993-07-08', motherTongue: 'Gujarati', maritalStatus: 'Single', height: "5'9\"",
         workLocation: 'Surat', prefAgeRange: '25-29', prefLocation: 'Gujarat', prefEducation: 'Professional Degree', prefProfession: 'Finance',
         aadharCard: 'https://images.unsplash.com/photo-1544383333-5cf9833b378e?w=800&auto=format&fit=crop&q=60'
@@ -50,6 +69,11 @@ const INITIAL_PROFILES = [
         profilePicture: 'https://randomuser.me/api/portraits/women/55.jpg',
         aboutMe: 'Creative soul who loves design and music. I enjoy the serenity of nature.',
         isApproved: true, interests: ['Design', 'Photography', 'Music'],
+        photos: [
+            'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=500&auto=format&fit=crop&q=60',
+            'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=500&auto=format&fit=crop&q=60',
+            'https://images.unsplash.com/photo-1517365830460-955ce3ccd263?w=500&auto=format&fit=crop&q=60'
+        ],
         mobile: '9008007006', dob: '1997-12-04', motherTongue: 'Malayalam', maritalStatus: 'Single', height: "5'5\"",
         workLocation: 'Kochi', prefAgeRange: '28-33', prefLocation: 'Kerala', prefEducation: 'Bachelors/Masters', prefProfession: 'Architect',
         aadharCard: 'https://images.unsplash.com/photo-1544383333-5cf9833b378e?w=800&auto=format&fit=crop&q=60',
@@ -61,6 +85,11 @@ const INITIAL_PROFILES = [
         profilePicture: 'https://randomuser.me/api/portraits/men/60.jpg',
         aboutMe: 'Disciplined, adventurous and family-oriented. Love the mountains.',
         isApproved: true, interests: ['Sports', 'Trekking', 'Pets'],
+        photos: [
+            'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=500&auto=format&fit=crop&q=60',
+            'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&auto=format&fit=crop&q=60',
+            'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=500&auto=format&fit=crop&q=60'
+        ],
         mobile: '9556677889', dob: '1991-03-22', motherTongue: 'Punjabi', maritalStatus: 'Single', height: "6'1\"",
         workLocation: 'Border Area', prefAgeRange: '24-29', prefLocation: 'North India', prefEducation: 'Graduate', prefProfession: 'Any',
         aadharCard: 'https://images.unsplash.com/photo-1544383333-5cf9833b378e?w=800&auto=format&fit=crop&q=60'
@@ -71,6 +100,11 @@ const INITIAL_PROFILES = [
         profilePicture: 'https://randomuser.me/api/portraits/women/72.jpg',
         aboutMe: 'Passionate about education and classical music. I value honesty and integrity.',
         isApproved: false, interests: ['Teaching', 'Karnatik Music', 'Books'],
+        photos: [
+            'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=60',
+            'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=500&auto=format&fit=crop&q=60',
+            'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=500&auto=format&fit=crop&q=60'
+        ],
         mobile: '9112233445', dob: '1999-09-09', motherTongue: 'Tamil', maritalStatus: 'Single', height: "5'3\"",
         workLocation: 'Chennai', prefAgeRange: '26-30', prefLocation: 'Chennai', prefEducation: 'Post Graduate', prefProfession: 'Teacher'
     },
@@ -79,7 +113,12 @@ const INITIAL_PROFILES = [
         profession: 'Graphic Designer', education: 'BFA', income: '₹9 LPA', caste: 'Maratha',
         profilePicture: 'https://randomuser.me/api/portraits/men/15.jpg',
         aboutMe: 'Creative mind looking for a soulmate who appreciates art.',
-        isApproved: false,
+        isApproved: false, interests: ['Art', 'Design', 'Reading'],
+        photos: [
+            'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=500&auto=format&fit=crop&q=60',
+            'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&auto=format&fit=crop&q=60',
+            'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=60'
+        ],
         mobile: '9334455667', dob: '1996-05-30', motherTongue: 'Marathi', maritalStatus: 'Single', height: "5'10\"",
         workLocation: 'Pune', prefAgeRange: '23-27', prefLocation: 'Pune', prefEducation: 'Bachelors', prefProfession: 'Creative'
     },
@@ -87,9 +126,9 @@ const INITIAL_PROFILES = [
 
 // Helper to get profiles from LocalStorage or use initial data
 const getStoredProfiles = () => {
-    const stored = localStorage.getItem('dummy_profiles');
+    const stored = localStorage.getItem('dummy_profiles_v2');
     if (stored) return JSON.parse(stored);
-    localStorage.setItem('dummy_profiles', JSON.stringify(INITIAL_PROFILES));
+    localStorage.setItem('dummy_profiles_v2', JSON.stringify(INITIAL_PROFILES));
     return INITIAL_PROFILES;
 };
 
@@ -97,7 +136,7 @@ let DUMMY_PROFILES = getStoredProfiles();
 
 const updateStoredProfiles = (profiles) => {
     DUMMY_PROFILES = profiles;
-    localStorage.setItem('dummy_profiles', JSON.stringify(profiles));
+    localStorage.setItem('dummy_profiles_v2', JSON.stringify(profiles));
 };
 
 let DUMMY_PLANS = [

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import * as api from '../services/api';
 import { User, MapPin, CupSoda, Book, Briefcase, Heart, MessageSquare, Check, CheckCircle, X, Shield, Image as ImageIcon, ArrowLeft, Clock, GraduationCap, Send, Sparkles, Loader2, CreditCard, CalendarDays } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const ProfileDetail = () => {
     const { id } = useParams();
@@ -72,21 +73,7 @@ const ProfileDetail = () => {
                     <span>Back to Search</span>
                 </button>
 
-                {/* Photos Preview Overlay */}
-                {profile.photos && profile.photos.length > 0 && (
-                    <div className="flex overflow-x-auto md:grid md:grid-cols-4 gap-4 mb-20 no-scrollbar pb-4 md:pb-0 snap-x">
-                        {(profile.photos || []).map((photo, i) => (
-                            <motion.div
-                                key={i}
-                                whileHover={{ scale: 1.05 }}
-                                onClick={() => setSelectedPhoto(photo)}
-                                className="shrink-0 w-48 h-48 md:w-full md:h-auto aspect-square rounded-[2rem] overflow-hidden cursor-pointer shadow-lg border-4 border-white snap-center"
-                            >
-                                <img src={photo} alt={`Gallery ${i}`} className="w-full h-full object-cover" />
-                            </motion.div>
-                        ))}
-                    </div>
-                )}
+
 
                 <div className="flex flex-col lg:flex-row gap-12">
                     {/* Left Column: Photo & Actions */}
@@ -94,7 +81,12 @@ const ProfileDetail = () => {
                         <div className="bg-white p-4 rounded-3xl shadow-lg mb-8">
                             <div className="aspect-[4/5] rounded-2xl overflow-hidden bg-gray-100">
                                 {profile.profilePicture ? (
-                                    <img src={profile.profilePicture} alt={profile.name} className="w-full h-full object-cover" />
+                                    <img
+                                        src={profile.profilePicture}
+                                        alt={profile.name}
+                                        className="w-full h-full object-cover cursor-pointer"
+                                        onClick={() => setSelectedPhoto(profile.profilePicture)}
+                                    />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center text-gray-300">
                                         <User size={80} />
@@ -204,7 +196,11 @@ const ProfileDetail = () => {
                                     <h3 className="text-[10px] font-bold text-[#800020] uppercase tracking-[0.2em] mb-6 pb-2 border-b border-[#800020]/5">Photo Gallery</h3>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-5 gap-6 md:gap-8">
                                         {profile.photos.map((photo, index) => (
-                                            <div key={index} className="aspect-[4/5] rounded-[2rem] overflow-hidden border-2 border-white shadow-md group cursor-pointer hover:shadow-xl transition-all">
+                                            <div
+                                                key={index}
+                                                onClick={() => setSelectedPhoto(photo)}
+                                                className="aspect-[4/5] rounded-[2rem] overflow-hidden border-2 border-white shadow-md group cursor-pointer hover:shadow-xl transition-all"
+                                            >
                                                 <img
                                                     src={photo}
                                                     alt={`Gallery ${index + 1}`}
@@ -220,6 +216,35 @@ const ProfileDetail = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Lightbox / Full Photo View */}
+            <AnimatePresence>
+                {selectedPhoto && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center p-4 md:p-10 backdrop-blur-sm"
+                        onClick={() => setSelectedPhoto(null)}
+                    >
+                        <button
+                            className="absolute top-6 right-6 text-white/70 hover:text-white transition-colors bg-white/10 p-2 rounded-full backdrop-blur-md"
+                            onClick={() => setSelectedPhoto(null)}
+                        >
+                            <X size={32} />
+                        </button>
+                        <motion.img
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            src={selectedPhoto}
+                            alt="Full view"
+                            className="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl border border-white/10"
+                            onClick={(e) => e.stopPropagation()}
+                        />
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

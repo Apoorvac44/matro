@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { X, Heart, Bookmark, Phone, MessageCircle, Camera, CheckCircle, User } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { X, Heart, Bookmark, Phone, MessageCircle, MessageSquare, Camera, CheckCircle, User } from 'lucide-react';
 import * as api from '../services/api';
 
 const ProfileCard = ({ profile }) => {
-    if (!profile) return null;
-    const profileId = profile._id || profile.id;
+    const navigate = useNavigate();
     const [interestSent, setInterestSent] = useState(false);
     const [imgError, setImgError] = useState(false);
     const [dismissed, setDismissed] = useState(false);
     const [sending, setSending] = useState(false);
-    const imgSrc = profile.profilePicture || profile.image;
 
+    const profileId = profile?._id || profile?.id;
+
+    // Move hooks to top
     React.useEffect(() => {
         const checkInterestStatus = async () => {
             if (!profileId) return;
@@ -26,6 +27,10 @@ const ProfileCard = ({ profile }) => {
         };
         checkInterestStatus();
     }, [profileId]);
+
+    if (!profile || dismissed) return null;
+
+    const imgSrc = profile.profilePicture || profile.image;
 
     const handleInterest = async (interested) => {
         if (!interested) {
@@ -54,9 +59,12 @@ const ProfileCard = ({ profile }) => {
         : 'MTR' + profileId.slice(0, 6).toUpperCase();
 
     return (
-        <div className="bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm mb-4 relative z-0 flex flex-col">
+        <div
+            onClick={() => navigate(`/profile/${profileId}`)}
+            className="bg-white rounded-lg overflow-hidden border border-gray-200 shadow-sm mb-3 relative z-0 flex flex-col group transition-all hover:shadow-md h-[340px] max-h-[340px] cursor-pointer"
+        >
             {/* Image Section */}
-            <Link to={`/profile/${profileId}`} className="relative block aspect-[4/5] bg-gray-100 shrink-0">
+            <div className="relative block aspect-[4/4] bg-gray-100 shrink-0 pointer-events-none">
                 {imgSrc && !imgError ? (
                     <img
                         src={imgSrc}
@@ -80,7 +88,7 @@ const ProfileCard = ({ profile }) => {
                 {/* Top-right Shortlist pill */}
                 <button
                     className="absolute top-3 right-3 bg-black/70 backdrop-blur-sm text-white text-[11px] font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5 hover:bg-black transition z-20"
-                    onClick={(e) => { e.preventDefault(); console.log('Shortlisted'); }}
+                    onClick={(e) => { e.stopPropagation(); e.preventDefault(); console.log('Shortlisted'); }}
                 >
                     <Bookmark size={12} className="fill-transparent" />
                     Shortlist
@@ -92,62 +100,73 @@ const ProfileCard = ({ profile }) => {
                 </div>
 
                 {/* Subtle gradient overlay at bottom for better text contrast if we had text over image */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity"></div>
-            </Link>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            </div>
 
             {/* Info Section */}
-            <div className="p-4 flex flex-col flex-1">
+            <div className="p-2 relative bg-white pb-14 flex-1 flex flex-col">
                 <div className="flex justify-between items-start mb-1">
-                    <Link to={`/profile/${profileId}`} className="group max-w-[70%]">
-                        <h3 className="text-[17px] font-bold text-gray-900 group-hover:text-[#ed5a5a] transition-colors truncate">
+                    <div>
+                        <h3 className="font-bold text-gray-900 text-sm group-hover:text-[#ed5a5a] transition-colors truncate">
                             {profile.name}
                         </h3>
-                        <p className="text-[11px] text-gray-500 mt-0.5 truncate">
+                        <p className="text-[10px] text-gray-500 mt-0.5 truncate">
                             {shortId} | Last seen few hours ago
                         </p>
-                    </Link>
-                    <div className="flex gap-2 shrink-0">
-                        <button className="w-8 h-8 rounded-full border border-orange-400 text-orange-400 flex items-center justify-center hover:bg-orange-50 transition-colors">
-                            <Phone size={14} />
+                    </div>
+                    {/* Circular Action Icons */}
+                    <div className="flex gap-1">
+                        <button
+                            onClick={(e) => { e.stopPropagation(); e.preventDefault(); }}
+                            className="w-7 h-7 rounded-full border border-orange-300 flex items-center justify-center text-orange-400 hover:bg-orange-50 transition-colors z-20"
+                        >
+                            <Phone size={12} />
                         </button>
-                        <button className="w-8 h-8 rounded-full border border-green-500 text-green-500 flex items-center justify-center hover:bg-green-50 transition-colors">
-                            <MessageCircle size={14} />
+                        <button
+                            onClick={(e) => { e.stopPropagation(); e.preventDefault(); navigate(`/chat/${profileId}`); }}
+                            className="w-7 h-7 rounded-full border border-green-400 flex items-center justify-center text-green-500 hover:bg-green-50 transition-colors z-20"
+                        >
+                            <MessageSquare size={12} />
                         </button>
                     </div>
                 </div>
 
-                <div className="mt-2 mb-4 text-[13px] text-gray-700 leading-snug">
+                <div className="mt-1 mb-3 text-[11px] text-gray-700 leading-snug">
                     {profile.age || '26'} Yrs • 5'4" • {profile.education || 'MCA'} • {profile.profession || 'Software Professional'} • {profile.location || 'Mysuru'}
                 </div>
 
-                {/* Actions */}
-                <div className="mt-auto">
-                    {interestSent ? (
-                        <div className="py-3 bg-green-50 rounded-full flex items-center justify-center gap-2 text-green-600 font-semibold text-sm border border-green-100">
-                            <CheckCircle size={16} /> Interest Sent
-                        </div>
-                    ) : (
-                        <div className="flex gap-2 w-full">
-                            <button
-                                onClick={(e) => { e.preventDefault(); handleInterest(false); }}
-                                className="flex-[0.45] py-2.5 rounded-full border border-gray-300 text-gray-600 flex items-center justify-center gap-1.5 text-sm font-semibold hover:bg-gray-50 transition-colors active:scale-95"
-                            >
-                                <X size={16} /> Don't Show
-                            </button>
-                            <button
-                                onClick={(e) => { e.preventDefault(); handleInterest(true); }}
-                                disabled={sending}
-                                className="flex-[0.55] py-2.5 rounded-full bg-[#ed5a5a] text-white flex items-center justify-center gap-1.5 text-sm font-semibold hover:bg-[#e04848] transition-colors shadow-md shadow-red-500/20 active:scale-95 disabled:opacity-70"
-                            >
-                                {sending ? (
-                                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                ) : (
-                                    <Heart size={16} className="fill-transparent stroke-white stroke-2" />
-                                )}
-                                Send Interest
-                            </button>
-                        </div>
-                    )}
+                {/* Bottom Floating Action Buttons */}
+                <div className="absolute bottom-3 left-3 right-3 flex justify-between gap-2.5 z-20">
+                    <button
+                        onClick={(e) => { e.stopPropagation(); e.preventDefault(); handleInterest(false); }}
+                        className="flex-1 py-2 px-2 flex items-center justify-center gap-2 bg-white rounded-full border border-gray-200 text-gray-500 font-bold transition-colors hover:bg-gray-50 shadow-sm"
+                    >
+                        <span className="text-gray-400 font-light text-xs"><X size={14} /></span>
+                        <span className="text-[10px] leading-[1.1] text-left">Don't<br />Show</span>
+                    </button>
+
+                    <button
+                        onClick={(e) => { e.stopPropagation(); e.preventDefault(); handleInterest(true); }}
+                        disabled={sending || interestSent}
+                        className={`flex-[1.2] py-2 px-2 rounded-full flex items-center justify-center gap-2 font-bold transition-all shadow-sm ${interestSent
+                            ? 'bg-green-50 text-green-600 border border-green-100'
+                            : 'bg-[#EF5350] text-white hover:bg-[#e04848] cursor-pointer'
+                            }`}
+                    >
+                        {sending ? (
+                            <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                        ) : interestSent ? (
+                            <>
+                                <CheckCircle size={14} />
+                                <span className="text-[10px] leading-[1.1] text-left text-green-700">Interest<br />Sent</span>
+                            </>
+                        ) : (
+                            <>
+                                <Heart size={14} />
+                                <span className="text-[10px] leading-[1.1] text-left text-white tracking-wide">Send<br />Interest</span>
+                            </>
+                        )}
+                    </button>
                 </div>
             </div>
         </div>

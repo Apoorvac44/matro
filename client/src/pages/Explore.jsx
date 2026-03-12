@@ -241,23 +241,6 @@ const Explore = () => {
                 </div>
             </div>
 
-            {/* Tabs */}
-            <div className="flex border-b border-gray-200 sticky md:top-14 top-[5.5rem] bg-white z-20">
-                {['All matches', 'Newly joined', 'More'].map(tab => (
-                    <button
-                        key={tab}
-                        onClick={() => setActiveTab(tab)}
-                        className={`flex-1 py-3 text-sm font-semibold flex items-center justify-center gap-1 transition-colors relative ${activeTab === tab ? 'text-[#EF5350]' : 'text-gray-500 hover:text-gray-800'}`}
-                    >
-                        {tab}
-                        {tab === 'More' && <ChevronDown size={14} />}
-                        {activeTab === tab && (
-                            <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#EF5350]" />
-                        )}
-                    </button>
-                ))}
-            </div>
-
             {/* Filter Stats Bar */}
             <div className="px-4 md:px-6 py-3 bg-white border-b border-gray-100 flex items-center justify-between sticky md:top-[6.5rem] top-[8.5rem] z-20">
                 <h2 className="text-[13px] md:text-sm font-bold text-gray-900">
@@ -309,33 +292,33 @@ const Explore = () => {
 
             {/* Main Content Area: Profiles - Responsive Grid */}
             <div className="flex-1 overflow-y-auto bg-gray-50 px-3 sm:px-6 py-6 border-t md:border-none border-gray-200">
-                <div className="max-w-7xl mx-auto">
+                {/* Grid Layout - denser for smaller cards */}
+                <div className="flex-1 overflow-y-auto px-4 md:px-6 py-6 pb-24 md:pb-6">
                     {loading ? (
-                        <div className="flex flex-col items-center justify-center py-40">
-                            <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: "linear" }} className="mb-6">
-                                <Loader2 size={32} className="text-[#EF5350]" />
-                            </motion.div>
-                            <p className="text-gray-400 text-xs font-bold uppercase tracking-[0.2em]">Finding matches...</p>
+                        <div className="flex items-center justify-center p-12">
+                            <Loader2 size={32} className="animate-spin text-[#EF5350]" />
                         </div>
                     ) : error ? (
-                        <div className="text-center py-20 bg-red-50 rounded-2xl border border-red-100 max-w-lg mx-auto">
-                            <p className="text-[#EF5350] text-sm font-semibold">{error}</p>
-                        </div>
+                        <div className="text-center p-8 bg-red-50 text-red-500 rounded-xl font-medium border border-red-100">{error}</div>
                     ) : filteredProfiles.length === 0 ? (
-                        <div className="text-center py-32 bg-white rounded-2xl shadow-sm border border-gray-100 max-w-lg mx-auto">
-                            <Heart className="text-gray-300 mx-auto mb-4" size={40} />
-                            <h2 className="text-xl font-bold text-gray-900 mb-2">No Matches Found</h2>
-                            <p className="text-gray-500 text-sm mb-6">Try adjusting your filters to see more results.</p>
-                            <button onClick={() => setShowFilterModal(true)} className="px-8 py-3 rounded-full bg-[#EF5350] text-white text-sm font-bold shadow-md hover:bg-[#E53935] transition-colors active:scale-95">Modify Filters</button>
+                        <div className="text-center p-12 bg-gray-50 text-gray-500 rounded-xl border border-gray-100">
+                            <h3 className="text-lg font-bold text-gray-900 mb-2">No matches found</h3>
+                            <p>Try adjusting your search criteria</p>
+                            <button
+                                onClick={() => {
+                                    setFilters({ ...filters, maritalStatus: 'Any', occupation: 'Any', photosOnly: false });
+                                    setShowNewlyJoined(false);
+                                    setShowNotSeen(false);
+                                }}
+                                className="mt-4 px-6 py-2 bg-[#EF5350] text-white rounded-lg font-bold hover:bg-[#e04848] transition-colors"
+                            >
+                                Reset Filters
+                            </button>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+                        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-4 px-1 md:px-2">
                             {filteredProfiles.map((profile, i) => (
-                                <motion.div key={profile._id || profile.id + i} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i * 0.05, 0.5), duration: 0.4 }} className="h-full">
-                                    <div className="h-full flex flex-col">
-                                        <ProfileCard profile={profile} />
-                                    </div>
-                                </motion.div>
+                                <ProfileCard key={profile._id || i} profile={profile} />
                             ))}
                         </div>
                     )}
