@@ -80,7 +80,7 @@ const ProfileCard = ({ profile }) => {
 
                 {/* Top-left Sash (Newly Joined) - Styled like screenshot corner */}
                 <div className="absolute top-0 left-0 w-20 h-20 overflow-hidden pointer-events-none z-10">
-                    <div className="absolute top-0 left-0 bg-[#EF5350] text-white text-[8px] font-bold py-1 w-28 text-center -rotate-45 origin-bottom-right -translate-x-10 translate-y-2 shadow-sm uppercase tracking-tighter">
+                    <div className="absolute top-0 left-0 bg-[#800020] text-[#D4AF37] text-[8px] font-bold py-1 w-28 text-center -rotate-45 origin-bottom-right -translate-x-10 translate-y-2 shadow-sm uppercase tracking-tighter">
                         Newly<br />Joined
                     </div>
                 </div>
@@ -104,7 +104,7 @@ const ProfileCard = ({ profile }) => {
             <div className="p-2.5 relative bg-white pb-14 flex-1 flex flex-col min-h-0">
                 <div className="flex justify-between items-start mb-1.5">
                     <div className="flex-1 min-w-0 pr-2">
-                        <h3 className="font-bold text-gray-900 text-[15px] group-hover:text-[#EF5350] transition-colors truncate leading-tight">
+                        <h3 className="font-bold text-gray-900 text-[15px] group-hover:text-[#800020] transition-colors truncate leading-tight">
                             {profile.name}
                         </h3>
                         <p className="text-[10px] text-gray-500 mt-0.5 truncate font-medium">
@@ -147,11 +147,11 @@ const ProfileCard = ({ profile }) => {
                         disabled={sending || interestSent}
                         className={`flex-[1.4] py-1.5 px-3 rounded-full flex items-center justify-center gap-1.5 font-bold transition-all shadow-md active:scale-95 ${interestSent
                             ? 'bg-green-50 text-green-600 border border-green-100'
-                            : 'bg-[#EF5350] text-white hover:bg-[#e04848] cursor-pointer'
+                            : 'bg-[#800020] text-[#D4AF37] hover:bg-[#600318] cursor-pointer'
                             }`}
                     >
                         {sending ? (
-                            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            <div className="w-4 h-4 border-2 border-[#D4AF37]/30 border-t-[#D4AF37] rounded-full animate-spin" />
                         ) : interestSent ? (
                             <>
                                 <CheckCircle size={14} />
@@ -159,8 +159,8 @@ const ProfileCard = ({ profile }) => {
                             </>
                         ) : (
                             <>
-                                <Heart size={14} className="fill-white" />
-                                <span className="text-[11px]">Send Interest</span>
+                                <Heart size={14} className="fill-[#D4AF37]" />
+                                <span className="text-[11px] text-[#D4AF37]">Send Interest</span>
                             </>
                         )}
                     </button>

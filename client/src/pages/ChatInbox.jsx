@@ -123,29 +123,6 @@ const ChatInbox = () => {
                         </div>
                     )}
                 </div>
-
-                {/* Bottom Navigation for Mobile */}
-                <div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-100 px-8 py-4 flex justify-between items-center z-50 md:hidden">
-                    <Link to="/" className="flex flex-col items-center gap-1 text-gray-400">
-                        <Home size={24} />
-                        <span className="text-[10px] font-bold">Home</span>
-                    </Link>
-                    <Link to="/explore" className="flex flex-col items-center gap-1 text-gray-400">
-                        <Heart size={24} />
-                        <span className="text-[10px] font-bold">Matches</span>
-                    </Link>
-                    <Link to="/chat/inbox" className="flex flex-col items-center gap-1 text-[#800020]">
-                        <div className="relative">
-                            <MessageSquare size={24} />
-                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-white shadow-sm"></div>
-                        </div>
-                        <span className="text-[10px] font-bold">Chat</span>
-                    </Link>
-                    <Link to="/dashboard" className="flex flex-col items-center gap-1 text-gray-400">
-                        <User size={24} />
-                        <span className="text-[10px] font-bold">Profile</span>
-                    </Link>
-                </div>
             </div>
         </div>
     );

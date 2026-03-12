@@ -329,34 +329,6 @@ const Dashboard = () => {
                 </div>
             </div>
 
-            {/* Bottom Navigation for Mobile */}
-            <div className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-100 px-8 py-3 flex justify-between items-center z-50 md:hidden">
-                <Link to="/" className="flex flex-col items-center gap-1 text-[#FFBD8C]">
-                    <Home size={22} />
-                    <span className="text-[10px] font-bold">Home</span>
-                </Link>
-                <Link to="/explore" className="flex flex-col items-center gap-1 text-gray-400">
-                    <Heart size={22} />
-                    <span className="text-[10px] font-semibold">Matches</span>
-                </Link>
-                <Link to="/chat/inbox" className="flex flex-col items-center gap-1 text-gray-400">
-                    <MessageSquare size={22} />
-                    <span className="text-[10px] font-semibold">Chat</span>
-                </Link>
-                <Link to="/dashboard" className="flex flex-col items-center gap-1 text-gray-400">
-                    <User size={22} />
-                    <span className="text-[10px] font-semibold">Profile</span>
-                </Link>
-            </div>
-            <style>{`
-                .no-scrollbar::-webkit-scrollbar {
-                    display: none;
-                }
-                .no-scrollbar {
-                    -ms-overflow-style: none;
-                    scrollbar-width: none;
-                }
-            `}</style>
         </div >
     );
 };
