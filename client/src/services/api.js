@@ -1,126 +1,125 @@
-// FRONTEND-ONLY MOCK API
 const INITIAL_PROFILES = [
     {
-        _id: '1', name: 'Priya Sharma', email: 'priya.sharma@example.com', age: 26, gender: 'Female', religion: 'Hindu', location: 'Mumbai',
-        profession: 'Software Engineer', education: 'B.Tech CS', income: '₹12 LPA', caste: 'Brahmin',
+        _id: '1', name: 'Priya Hegde', email: 'priya.hegde@example.com', age: 26, gender: 'Female', religion: 'Hindu', location: 'Mysuru',
+        profession: 'Software Engineer', education: 'B.E CS', income: '₹12 LPA', caste: 'Brahmin',
         profilePicture: 'https://randomuser.me/api/portraits/women/44.jpg',
-        aboutMe: 'Passionate about technology and classical dance. Looking for someone with a modern soul and traditional roots.',
-        isApproved: true, interests: ['Tech', 'Salsa', 'Travel', 'Reading'],
+        aboutMe: 'Passionate about technology and classical music. Looking for someone with a modern soul and traditional roots.',
+        isApproved: true, interests: ['Veena', 'Yoga', 'Travel', 'Reading'],
         photos: [
             'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=500&auto=format&fit=crop&q=60',
             'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=60',
             'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=500&auto=format&fit=crop&q=60'
         ],
-        mobile: '9876543210', dob: '1998-05-15', motherTongue: 'Hindi', maritalStatus: 'Single', height: "5'4\"",
-        workLocation: 'Pune', prefAgeRange: '27-32', prefLocation: 'Mumbai/Pune', prefEducation: 'Masters', prefProfession: 'IT Professional',
+        mobile: '9876543210', dob: '1998-05-15', motherTongue: 'Kannada', maritalStatus: 'Single', height: "5'4\"",
+        workLocation: 'Bengaluru', prefAgeRange: '27-32', prefLocation: 'Mysuru/Bengaluru', prefEducation: 'Masters', prefProfession: 'IT Professional',
         aadharCard: 'https://images.unsplash.com/photo-1544383333-5cf9833b378e?w=800&auto=format&fit=crop&q=60',
         casteCertificate: 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&auto=format&fit=crop&q=60'
     },
     {
-        _id: '2', name: 'Amit Patel', email: 'amit.patel@example.com', age: 29, gender: 'Male', religion: 'Hindu', location: 'Ahmedabad',
-        profession: 'Doctor', education: 'MBBS, MD', income: '₹18 LPA', caste: 'Patel',
+        _id: '2', name: 'Rahul Gowda', email: 'rahul.gowda@example.com', age: 29, gender: 'Male', religion: 'Hindu', location: 'Bengaluru',
+        profession: 'Business Owner', education: 'MBA', income: '₹25 LPA', caste: 'Vokkaliga',
         profilePicture: 'https://randomuser.me/api/portraits/men/32.jpg',
-        aboutMe: 'A dedicated physician who loves cricket and travel. Believe in simple living and high thinking.',
-        isApproved: true, interests: ['Fitness', 'Reading', 'Music', 'Hiking'],
+        aboutMe: 'Dedicated to my family business. Love exploring the temples and nature of Karnataka.',
+        isApproved: true, interests: ['Cricket', 'Travel', 'Music', 'Hiking'],
         photos: [
             'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=500&auto=format&fit=crop&q=60',
             'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=60',
             'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=500&auto=format&fit=crop&q=60'
         ],
-        mobile: '9123456789', dob: '1995-10-20', motherTongue: 'Gujarati', maritalStatus: 'Single', height: "5'11\"",
-        workLocation: 'Ahmedabad', prefAgeRange: '24-28', prefLocation: 'Anywhere', prefEducation: 'Medical', prefProfession: 'Healthcare',
+        mobile: '9123456789', dob: '1995-10-20', motherTongue: 'Kannada', maritalStatus: 'Single', height: "5'11\"",
+        workLocation: 'Bengaluru', prefAgeRange: '24-28', prefLocation: 'Anywhere', prefEducation: 'Post Graduate', prefProfession: 'Professional',
         aadharCard: 'https://images.unsplash.com/photo-1544383333-5cf9833b378e?w=800&auto=format&fit=crop&q=60'
     },
     {
-        _id: '3', name: 'Anjali Reddy', email: 'anjali.reddy@example.com', age: 24, gender: 'Female', religion: 'Hindu', location: 'Hyderabad',
-        profession: 'Data Analyst', education: 'MBA', income: '₹10 LPA', caste: 'Reddy',
+        _id: '3', name: 'Sindhu Bhat', email: 'sindhu.bhat@example.com', age: 27, gender: 'Female', religion: 'Hindu', location: 'Hubballi',
+        profession: 'Doctor', education: 'MBBS', income: '₹15 LPA', caste: 'Brahmin',
         profilePicture: 'https://randomuser.me/api/portraits/women/68.jpg',
-        aboutMe: 'Love cooking and exploring new cuisines. Looking for a partner who is adventurous.',
-        isApproved: true, interests: ['Cooking', 'Cinema', 'Yoga'],
+        aboutMe: 'Love cooking traditional dishes and helping others. Looking for a partner with similar values.',
+        isApproved: true, interests: ['Classical Music', 'Cooking', 'Yoga'],
         photos: [
             'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=500&auto=format&fit=crop&q=60',
             'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=500&auto=format&fit=crop&q=60',
             'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?w=500&auto=format&fit=crop&q=60'
         ],
-        mobile: '9988776655', dob: '2000-01-12', motherTongue: 'Telugu', maritalStatus: 'Single', height: "5'6\"",
-        workLocation: 'Hyderabad', prefAgeRange: '25-30', prefLocation: 'Hyderabad', prefEducation: 'Bachelors/Masters', prefProfession: 'Analyst',
+        mobile: '9988776655', dob: '1997-01-12', motherTongue: 'Kannada', maritalStatus: 'Single', height: "5'6\"",
+        workLocation: 'Hubballi', prefAgeRange: '28-33', prefLocation: 'Karnataka', prefEducation: 'Medical', prefProfession: 'Doctor/Professional',
         aadharCard: 'https://images.unsplash.com/photo-1544383333-5cf9833b378e?w=800&auto=format&fit=crop&q=60',
         casteCertificate: 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&auto=format&fit=crop&q=60'
     },
     {
-        _id: '4', name: 'Rahul Mehta', email: 'rahul.mehta@example.com', age: 31, gender: 'Male', religion: 'Jain', location: 'Surat',
-        profession: 'Chartered Accountant', education: 'CA, CS', income: '₹15 LPA', caste: 'Oswal',
+        _id: '4', name: 'Karthik Rao', email: 'karthik.rao@example.com', age: 31, gender: 'Male', religion: 'Hindu', location: 'Mangaluru',
+        profession: 'Chartered Accountant', education: 'CA', income: '₹18 LPA', caste: 'Brahmin',
         profilePicture: 'https://randomuser.me/api/portraits/men/45.jpg',
-        aboutMe: 'Traditional values with a modern outlook. Family is my priority.',
-        isApproved: true, interests: ['Investment', 'Social Work', 'Music'],
+        aboutMe: 'Focused on career with deep respect for our heritage. Enjoy the coastal lifestyle.',
+        isApproved: true, interests: ['Investment', 'Beach Walks', 'Yakshagana'],
         photos: [
             'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=500&auto=format&fit=crop&q=60',
             'https://images.unsplash.com/photo-1492447105260-2e947425b5cc?w=500&auto=format&fit=crop&q=60',
             'https://images.unsplash.com/photo-1533038590840-1c798b14a275?w=500&auto=format&fit=crop&q=60',
             'https://plus.unsplash.com/premium_photo-1663045437877-6bcfc7fd0952?w=500&auto=format&fit=crop&q=60'
         ],
-        mobile: '9443322110', dob: '1993-07-08', motherTongue: 'Gujarati', maritalStatus: 'Single', height: "5'9\"",
-        workLocation: 'Surat', prefAgeRange: '25-29', prefLocation: 'Gujarat', prefEducation: 'Professional Degree', prefProfession: 'Finance',
+        mobile: '9443322110', dob: '1993-07-08', motherTongue: 'Kannada', maritalStatus: 'Single', height: "5'9\"",
+        workLocation: 'Mangaluru', prefAgeRange: '25-29', prefLocation: 'Coastal Karnataka', prefEducation: 'CA/Professional', prefProfession: 'Finance',
         aadharCard: 'https://images.unsplash.com/photo-1544383333-5cf9833b378e?w=800&auto=format&fit=crop&q=60'
     },
     {
-        _id: '5', name: 'Kavya Nair', email: 'kavya.nair@example.com', age: 27, gender: 'Female', religion: 'Hindu', location: 'Kochi',
-        profession: 'Architect', education: 'B.Arch', income: '₹14 LPA', caste: 'Nair',
+        _id: '5', name: 'Deepa Kulkarni', email: 'deepa.k@example.com', age: 27, gender: 'Female', religion: 'Hindu', location: 'Belagavi',
+        profession: 'Teacher', education: 'M.Sc, B.Ed', income: '₹8 LPA', caste: 'Brahmin',
         profilePicture: 'https://randomuser.me/api/portraits/women/55.jpg',
-        aboutMe: 'Creative soul who loves design and music. I enjoy the serenity of nature.',
-        isApproved: true, interests: ['Design', 'Photography', 'Music'],
+        aboutMe: 'Passionate about education. I value simple living and honest conversations.',
+        isApproved: true, interests: ['Teaching', 'Literature', 'Classical Music'],
         photos: [
             'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=500&auto=format&fit=crop&q=60',
             'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=500&auto=format&fit=crop&q=60',
             'https://images.unsplash.com/photo-1517365830460-955ce3ccd263?w=500&auto=format&fit=crop&q=60'
         ],
-        mobile: '9008007006', dob: '1997-12-04', motherTongue: 'Malayalam', maritalStatus: 'Single', height: "5'5\"",
-        workLocation: 'Kochi', prefAgeRange: '28-33', prefLocation: 'Kerala', prefEducation: 'Bachelors/Masters', prefProfession: 'Architect',
+        mobile: '9008007006', dob: '1997-12-04', motherTongue: 'Kannada', maritalStatus: 'Single', height: "5'5\"",
+        workLocation: 'Belagavi', prefAgeRange: '28-33', prefLocation: 'North Karnataka', prefEducation: 'Post Graduate', prefProfession: 'Any Professional',
         aadharCard: 'https://images.unsplash.com/photo-1544383333-5cf9833b378e?w=800&auto=format&fit=crop&q=60',
         casteCertificate: 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&auto=format&fit=crop&q=60'
     },
     {
-        _id: '6', name: 'Vikram Singh', email: 'vikram.singh@example.com', age: 33, gender: 'Male', religion: 'Sikh', location: 'Chandigarh',
-        profession: 'Army Officer', education: 'B.Sc (NDA)', income: '₹20 LPA', caste: 'Jat',
+        _id: '6', name: 'Manoj Patil', email: 'manoj.patil@example.com', age: 33, gender: 'Male', religion: 'Hindu', location: 'Dharwad',
+        profession: 'Farmer & Entrepreneur', education: 'B.Sc Agriculture', income: '₹12 LPA', caste: 'Lingayat',
         profilePicture: 'https://randomuser.me/api/portraits/men/60.jpg',
-        aboutMe: 'Disciplined, adventurous and family-oriented. Love the mountains.',
-        isApproved: true, interests: ['Sports', 'Trekking', 'Pets'],
+        aboutMe: 'Grounded in our soil with a vision for modern agriculture. Looking for a family-oriented partner.',
+        isApproved: true, interests: ['Agriculture', 'Nature Walks', 'Socializing'],
         photos: [
             'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=500&auto=format&fit=crop&q=60',
             'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&auto=format&fit=crop&q=60',
             'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?w=500&auto=format&fit=crop&q=60'
         ],
-        mobile: '9556677889', dob: '1991-03-22', motherTongue: 'Punjabi', maritalStatus: 'Single', height: "6'1\"",
-        workLocation: 'Border Area', prefAgeRange: '24-29', prefLocation: 'North India', prefEducation: 'Graduate', prefProfession: 'Any',
+        mobile: '9556677889', dob: '1991-03-22', motherTongue: 'Kannada', maritalStatus: 'Single', height: "6'1\"",
+        workLocation: 'Dharwad', prefAgeRange: '24-29', prefLocation: 'North Karnataka', prefEducation: 'Graduate', prefProfession: 'Homemaker/Professional',
         aadharCard: 'https://images.unsplash.com/photo-1544383333-5cf9833b378e?w=800&auto=format&fit=crop&q=60'
     },
     {
-        _id: '7', name: 'Sneha Iyer', email: 'sneha.iyer@example.com', age: 25, gender: 'Female', religion: 'Hindu', location: 'Chennai',
-        profession: 'Teacher', education: 'M.Ed', income: '₹7 LPA', caste: 'Iyer',
+        _id: '7', name: 'Rakshitha Shet', email: 'rakshitha.s@example.com', age: 25, gender: 'Female', religion: 'Hindu', location: 'Udupi',
+        profession: 'UI/UX Designer', education: 'B.Des', income: '₹9 LPA', caste: 'Shet',
         profilePicture: 'https://randomuser.me/api/portraits/women/72.jpg',
-        aboutMe: 'Passionate about education and classical music. I value honesty and integrity.',
-        isApproved: false, interests: ['Teaching', 'Karnatik Music', 'Books'],
+        aboutMe: 'Creative mind with a love for our coastal traditions. I enjoy design and folk arts.',
+        isApproved: false, interests: ['Design', 'Coastal Cuisine', 'Photography'],
         photos: [
             'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=60',
             'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=500&auto=format&fit=crop&q=60',
             'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=500&auto=format&fit=crop&q=60'
         ],
-        mobile: '9112233445', dob: '1999-09-09', motherTongue: 'Tamil', maritalStatus: 'Single', height: "5'3\"",
-        workLocation: 'Chennai', prefAgeRange: '26-30', prefLocation: 'Chennai', prefEducation: 'Post Graduate', prefProfession: 'Teacher'
+        mobile: '9112233445', dob: '1999-09-09', motherTongue: 'Kannada', maritalStatus: 'Single', height: "5'3\"",
+        workLocation: 'Mangaluru', prefAgeRange: '26-30', prefLocation: 'Udupi/Mangaluru', prefEducation: 'Bachelors', prefProfession: 'Creative'
     },
     {
-        _id: '8', name: 'Rohan Deshmukh', email: 'rohan.desh@example.com', age: 28, gender: 'Male', religion: 'Hindu', location: 'Pune',
-        profession: 'Graphic Designer', education: 'BFA', income: '₹9 LPA', caste: 'Maratha',
+        _id: '8', name: 'Abhishek Nayak', email: 'abhishek.n@example.com', age: 28, gender: 'Male', religion: 'Hindu', location: 'Shivamogga',
+        profession: 'Marketing Manager', education: 'MBA', income: '₹14 LPA', caste: 'Nayak',
         profilePicture: 'https://randomuser.me/api/portraits/men/15.jpg',
-        aboutMe: 'Creative mind looking for a soulmate who appreciates art.',
-        isApproved: false, interests: ['Art', 'Design', 'Reading'],
+        aboutMe: 'Dynamic professional who values our cultural roots. Looking for a partner who is balanced.',
+        isApproved: false, interests: ['Marketing', 'Travel', 'Classical Dance'],
         photos: [
             'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=500&auto=format&fit=crop&q=60',
             'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&auto=format&fit=crop&q=60',
             'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=60'
         ],
-        mobile: '9334455667', dob: '1996-05-30', motherTongue: 'Marathi', maritalStatus: 'Single', height: "5'10\"",
-        workLocation: 'Pune', prefAgeRange: '23-27', prefLocation: 'Pune', prefEducation: 'Bachelors', prefProfession: 'Creative'
+        mobile: '9334455667', dob: '1996-05-30', motherTongue: 'Kannada', maritalStatus: 'Single', height: "5'10\"",
+        workLocation: 'Bengaluru', prefAgeRange: '23-27', prefLocation: 'Karnataka', prefEducation: 'Masters', prefProfession: 'Professional'
     },
 ];
 

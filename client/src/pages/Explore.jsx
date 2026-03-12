@@ -231,18 +231,10 @@ const Explore = () => {
                 </div>
             </div>
 
-            {/* Mobile-only toggle */}
-            <div className="md:hidden flex justify-center bg-white border-b border-gray-100 py-2 sticky top-12 z-20">
-                <div className="flex items-center bg-gray-100 rounded-full p-1 border border-gray-200">
-                    <button className="px-6 py-1.5 rounded-full bg-white text-[#EF5350] text-xs font-bold shadow border border-gray-100">Regular</button>
-                    <button className="px-6 py-1.5 rounded-full text-gray-600 text-xs font-bold flex items-center gap-1">
-                        PRIME <span className="text-yellow-500 text-[10px] leading-none">★</span>
-                    </button>
-                </div>
-            </div>
+
 
             {/* Filter Stats Bar */}
-            <div className="px-4 md:px-6 py-3 bg-white border-b border-gray-100 flex items-center justify-between sticky md:top-[6.5rem] top-[8.5rem] z-20">
+            <div className="px-4 md:px-6 py-3 bg-white border-b border-gray-100 flex items-center justify-between z-20">
                 <h2 className="text-[13px] md:text-sm font-bold text-gray-900">
                     {filteredProfiles.length} Matches based on your <span className="text-[#EF5350]">preferences</span>
                 </h2>
@@ -250,7 +242,7 @@ const Explore = () => {
             </div>
 
             {/* Quick Filter Pills Row (Side-scrolling) */}
-            <div className="px-4 md:px-6 py-3 bg-white border-b border-gray-100 flex gap-2 overflow-x-auto no-scrollbar whitespace-nowrap sticky md:top-[9.5rem] top-[11.5rem] z-10 shadow-sm">
+            <div className="px-4 md:px-6 py-3 bg-white border-b border-gray-100 flex gap-2 overflow-x-auto no-scrollbar whitespace-nowrap z-10 shadow-sm">
                 <button
                     onClick={() => setShowFilterModal(true)}
                     className="flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-gray-300 text-[11px] font-semibold text-gray-700 hover:bg-gray-50 shrink-0"
@@ -316,7 +308,7 @@ const Explore = () => {
                             </button>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 gap-2 md:gap-4 px-1 md:px-2">
+                        <div className="grid grid-cols-1 md:grid-cols-5 gap-2 md:gap-4 px-1 md:px-2">
                             {filteredProfiles.map((profile, i) => (
                                 <ProfileCard key={profile._id || i} profile={profile} />
                             ))}

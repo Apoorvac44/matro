@@ -199,7 +199,7 @@ const ProfileDetail = () => {
                                             <div
                                                 key={index}
                                                 onClick={() => setSelectedPhoto(photo)}
-                                                className="aspect-[4/5] rounded-[2rem] overflow-hidden border-2 border-white shadow-md group cursor-pointer hover:shadow-xl transition-all"
+                                                className="aspect-square rounded-[2rem] overflow-hidden border-2 border-white shadow-md group cursor-pointer hover:shadow-xl transition-all"
                                             >
                                                 <img
                                                     src={photo}

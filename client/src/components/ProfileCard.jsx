@@ -104,7 +104,7 @@ const ProfileCard = ({ profile }) => {
             </div>
 
             {/* Info Section */}
-            <div className="p-2 relative bg-white pb-14 flex-1 flex flex-col">
+            <div className="p-2 relative bg-white pb-16 flex-1 flex flex-col min-h-0">
                 <div className="flex justify-between items-start mb-1">
                     <div>
                         <h3 className="font-bold text-gray-900 text-sm group-hover:text-[#ed5a5a] transition-colors truncate">
@@ -117,12 +117,6 @@ const ProfileCard = ({ profile }) => {
                     {/* Circular Action Icons */}
                     <div className="flex gap-1">
                         <button
-                            onClick={(e) => { e.stopPropagation(); e.preventDefault(); }}
-                            className="w-7 h-7 rounded-full border border-orange-300 flex items-center justify-center text-orange-400 hover:bg-orange-50 transition-colors z-20"
-                        >
-                            <Phone size={12} />
-                        </button>
-                        <button
                             onClick={(e) => { e.stopPropagation(); e.preventDefault(); navigate(`/chat/${profileId}`); }}
                             className="w-7 h-7 rounded-full border border-green-400 flex items-center justify-center text-green-500 hover:bg-green-50 transition-colors z-20"
                         >
@@ -131,7 +125,7 @@ const ProfileCard = ({ profile }) => {
                     </div>
                 </div>
 
-                <div className="mt-1 mb-3 text-[11px] text-gray-700 leading-snug">
+                <div className="mt-1 mb-1 text-[11px] text-gray-700 leading-snug line-clamp-2">
                     {profile.age || '26'} Yrs • 5'4" • {profile.education || 'MCA'} • {profile.profession || 'Software Professional'} • {profile.location || 'Mysuru'}
                 </div>
 
@@ -150,11 +144,11 @@ const ProfileCard = ({ profile }) => {
                         disabled={sending || interestSent}
                         className={`flex-[1.2] py-2 px-2 rounded-full flex items-center justify-center gap-2 font-bold transition-all shadow-sm ${interestSent
                             ? 'bg-green-50 text-green-600 border border-green-100'
-                            : 'bg-[#EF5350] text-white hover:bg-[#e04848] cursor-pointer'
+                            : 'bg-[#800020] text-[#D4AF37] hover:bg-[#600318] cursor-pointer'
                             }`}
                     >
                         {sending ? (
-                            <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            <div className="w-3 h-3 border-2 border-[#D4AF37]/30 border-t-[#D4AF37] rounded-full animate-spin" />
                         ) : interestSent ? (
                             <>
                                 <CheckCircle size={14} />
@@ -162,8 +156,8 @@ const ProfileCard = ({ profile }) => {
                             </>
                         ) : (
                             <>
-                                <Heart size={14} />
-                                <span className="text-[10px] leading-[1.1] text-left text-white tracking-wide">Send<br />Interest</span>
+                                <Heart size={14} className="fill-[#D4AF37]" />
+                                <span className="text-[10px] leading-[1.1] text-left text-[#D4AF37] tracking-wide">Send<br />Interest</span>
                             </>
                         )}
                     </button>
