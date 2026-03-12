@@ -5,7 +5,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Mail, Lock, Heart, ArrowRight, Sparkles, ShieldCheck } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
-import { motion } from 'framer-motion';
+import * as api from '../services/api';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const loginSchema = z.object({
     email: z.string().email('Invalid email address'),
@@ -15,23 +16,25 @@ const loginSchema = z.object({
 const Login = () => {
     const { login } = useContext(AuthContext);
     const navigate = useNavigate();
-    const { register, handleSubmit, formState: { errors } } = useForm({
+    const { register, handleSubmit, formState: { errors }, setError } = useForm({
         resolver: zodResolver(loginSchema)
     });
+    const [loginError, setLoginError] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const onSubmit = (data) => {
-        // Frontend-only mock login
-        const mockUser = {
-            _id: 'mock_user_001',
-            name: data.email === 'admin@milana.com' ? 'Admin User' : 'Demo User',
-            email: data.email,
-            token: 'mock_token_frontend_only',
-            isAdmin: data.email === 'admin@milana.com',
-        };
-        login(mockUser);
-        navigate('/dashboard');
+    const onSubmit = async (data) => {
+        setIsLoading(true);
+        setLoginError(null);
+        try {
+            const response = await api.login(data);
+            login(response.data);
+            navigate('/dashboard');
+        } catch (error) {
+            setLoginError(error.message || "Failed to log in. Please check your credentials.");
+        } finally {
+            setIsLoading(false);
+        }
     };
-
 
     return (
         <div className="bg-[#FFFDD0]/20 min-h-screen flex items-center justify-center p-6 pt-24 relative overflow-hidden">
@@ -77,9 +80,35 @@ const Login = () => {
                         <button type="button" className="text-[10px] font-bold text-[#D4AF37] uppercase tracking-widest hover:text-[#800020] transition-colors">Forgot Password?</button>
                     </div>
 
-                    <button type="submit" className="w-full py-4 bg-[#800020] text-[#D4AF37] rounded-2xl font-bold uppercase tracking-[0.3em] text-[10px] shadow-xl shadow-[#800020]/20 hover:bg-[#600318] hover:-translate-y-1 hover:shadow-[#D4AF37]/10 transition-all active:scale-95">
-                        Sign In <ArrowRight className="inline ml-2" size={14} />
-                    </button>
+                    <AnimatePresence>
+                        {loginError && (
+                            <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                className="bg-red-50 text-red-500 p-3 rounded-xl text-xs font-bold text-center border border-red-100"
+                            >
+                                {loginError}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
+                    <div className="space-y-4">
+                        <button
+                            type="submit"
+                            disabled={isLoading}
+                            className="w-full py-4 bg-[#800020] text-[#D4AF37] rounded-2xl font-bold uppercase tracking-[0.3em] text-[10px] shadow-xl shadow-[#800020]/20 hover:bg-[#600318] hover:-translate-y-1 hover:shadow-[#D4AF37]/10 transition-all active:scale-95 disabled:opacity-70 disabled:hover:translate-y-0 flex items-center justify-center"
+                        >
+                            {isLoading ? 'Authenticating...' : <><span className="mr-2">Sign In</span> <ArrowRight className="inline" size={14} /></>}
+                        </button>
+
+                        <Link
+                            to="/admin/login"
+                            className="w-full py-4 bg-white/50 border border-[#800020]/20 text-[#800020] rounded-2xl font-bold uppercase tracking-[0.3em] text-[10px] hover:bg-[#800020]/5 transition-all flex items-center justify-center active:scale-95 shadow-sm"
+                        >
+                            <ShieldCheck className="inline mr-2" size={14} /> Admin Login
+                        </Link>
+                    </div>
                 </form>
 
                 <div className="mt-12 text-center text-[10px] font-bold uppercase tracking-widest border-t border-gray-50 pt-8">

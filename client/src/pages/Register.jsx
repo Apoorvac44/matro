@@ -151,7 +151,7 @@ const Register = () => {
         window.scrollTo(0, 0);
     };
 
-    const onSubmit = (data) => {
+    const onSubmit = async (data) => {
         console.log("Submission attempt at step:", step);
         if (step < 6) {
             console.log("Safeguard triggered: Redirecting to nextStep instead of dashboard.");
@@ -159,18 +159,23 @@ const Register = () => {
             return;
         }
 
-        // Frontend-only mock registration
-        const mockUser = {
-            _id: 'mock_user_' + Date.now(),
-            name: data.name,
-            email: data.email,
-            membership: data.membership || 'Basic',
-            token: 'mock_token_frontend_only',
-            isAdmin: false // Ensure registered users are not admins
-        };
-        console.log("Registration successful, navigating to dashboard.");
-        login(mockUser);
-        navigate('/dashboard');
+        try {
+            // Include membership to the final payload
+            const finalData = { ...data, membership: data.membership || 'Basic' };
+            const response = await api.register(finalData);
+
+            console.log("Registration successful, navigating to dashboard.");
+            login({
+                ...finalData,
+                _id: response._id,
+                token: response.token,
+                isAdmin: false
+            });
+            navigate('/dashboard');
+        } catch (error) {
+            console.error("Registration failed:", error);
+            // Optionally, show a toast or error message here
+        }
     };
 
     const renderProgress = () => (

@@ -121,13 +121,44 @@ const SENT_INTERESTS = [];
 
 const mockResolve = (data) => Promise.resolve({ data });
 
-export const login = (formData) => mockResolve({
-    _id: formData.email === 'admin@milana.com' ? 'admin_001' : 'mock_user_1',
-    name: formData.email === 'admin@milana.com' ? 'Admin User' : 'Demo User',
-    email: formData.email,
-    token: 'mock_token',
-    isAdmin: formData.email === 'admin@milana.com'
-});
+export const login = (formData) => {
+    // Admin override
+    if (formData.email === 'admin@milana.com') {
+        return mockResolve({
+            _id: 'admin_001',
+            name: 'Admin User',
+            email: formData.email,
+            token: 'mock_token',
+            isAdmin: true,
+            role: 'MAIN_ADMIN'
+        });
+    }
+
+    const profiles = getStoredProfiles();
+    const user = profiles.find(p => p.email === formData.email);
+
+    if (user) {
+        if (!user.isApproved) {
+            return Promise.reject(new Error("Your account is pending admin verification. You will be able to log in once approved."));
+        }
+        return mockResolve({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            token: 'mock_token',
+            isAdmin: false
+        });
+    }
+
+    // Fallback for demo users that might not be in the dummy profile list yet
+    return mockResolve({
+        _id: 'mock_user_1',
+        name: 'Demo User',
+        email: formData.email,
+        token: 'mock_token',
+        isAdmin: false
+    });
+};
 export const register = (formData) => {
     const newUser = {
         ...formData,
