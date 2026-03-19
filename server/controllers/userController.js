@@ -29,7 +29,10 @@ const registerUser = async (req, res) => {
             religion, motherTongue, maritalStatus, height,
             location, education, profession, income, workLocation,
             prefAgeMin, prefAgeMax, prefReligion, prefEducation,
-            membership
+            membership, aadharCard, casteCertificate,
+            weight, bodyType, profileCreatedBy, eatingHabits, smokingHabits, drinkingHabits,
+            timeOfBirth, star, raasi, kujaDosha, kulaDaiva, horoscope,
+            familyType, familyStatus, brothers, sisters, ancestralOrigin
         } = req.body;
 
         const userExists = await User.findOne({ email });
@@ -41,10 +44,17 @@ const registerUser = async (req, res) => {
 
         const user = await User.create({
             name, email, password, gender,
+            mobile, dob, motherTongue, maritalStatus, height,
+            income, workLocation, prefAgeMin, prefAgeMax,
+            prefReligion, prefEducation, prefProfession: req.body.prefProfession, prefLocation: req.body.prefLocation,
+            aadharCard, casteCertificate,
+            weight, bodyType, profileCreatedBy, eatingHabits, smokingHabits, drinkingHabits,
+            timeOfBirth, star, raasi, kujaDosha, kulaDaiva, horoscope,
+            familyType, familyStatus, brothers, sisters, ancestralOrigin,
             age: dob ? (new Date().getFullYear() - new Date(dob).getFullYear()) : undefined,
             religion, location, education, profession,
-            membership: membership || 'Free',
-            paymentStatus: (membership && membership !== 'Free') ? 'Completed' : 'Pending'
+            membership: membership || 'Basic',
+            paymentStatus: (membership && membership !== 'Basic') ? 'Completed' : 'Pending'
         });
 
         if (user) {
@@ -100,6 +110,50 @@ const updateUserProfile = async (req, res) => {
             user.interests = req.body.interests || user.interests;
             user.aboutMe = req.body.aboutMe || user.aboutMe;
             user.profilePicture = req.body.profilePicture || user.profilePicture;
+
+            // New fields
+            user.mobile = req.body.mobile || user.mobile;
+            user.dob = req.body.dob || user.dob;
+            user.motherTongue = req.body.motherTongue || user.motherTongue;
+            user.maritalStatus = req.body.maritalStatus || user.maritalStatus;
+            user.height = req.body.height || user.height;
+            user.income = req.body.income || user.income;
+            user.workLocation = req.body.workLocation || user.workLocation;
+
+            // Astrological, Lifestyle, Family
+            user.weight = req.body.weight || user.weight;
+            user.bodyType = req.body.bodyType || user.bodyType;
+            user.profileCreatedBy = req.body.profileCreatedBy || user.profileCreatedBy;
+            user.eatingHabits = req.body.eatingHabits || user.eatingHabits;
+            user.smokingHabits = req.body.smokingHabits || user.smokingHabits;
+            user.drinkingHabits = req.body.drinkingHabits || user.drinkingHabits;
+
+            user.timeOfBirth = req.body.timeOfBirth || user.timeOfBirth;
+            user.star = req.body.star || user.star;
+            user.raasi = req.body.raasi || user.raasi;
+            user.kujaDosha = req.body.kujaDosha || user.kujaDosha;
+            user.kulaDaiva = req.body.kulaDaiva || user.kulaDaiva;
+            user.horoscope = req.body.horoscope || user.horoscope;
+
+            user.familyType = req.body.familyType || user.familyType;
+            user.familyStatus = req.body.familyStatus || user.familyStatus;
+            user.brothers = req.body.brothers || user.brothers;
+            user.sisters = req.body.sisters || user.sisters;
+            user.ancestralOrigin = req.body.ancestralOrigin || user.ancestralOrigin;
+
+            // Preferences
+            user.prefAgeMin = req.body.prefAgeMin || user.prefAgeMin;
+            user.prefAgeMax = req.body.prefAgeMax || user.prefAgeMax;
+            user.prefLocation = req.body.prefLocation || user.prefLocation;
+            user.prefEducation = req.body.prefEducation || user.prefEducation;
+            user.prefProfession = req.body.prefProfession || user.prefProfession;
+
+            user.aadharCard = req.body.aadharCard || user.aadharCard;
+            user.casteCertificate = req.body.casteCertificate || user.casteCertificate;
+            user.membership = req.body.membership || user.membership;
+            if (req.body.membership && req.body.membership !== 'p1' && req.body.membership !== 'Free' && req.body.membership !== 'Basic') {
+                user.paymentStatus = 'Completed';
+            }
 
             if (req.body.photos) {
                 console.log("Received photos array. Length:", req.body.photos.length);

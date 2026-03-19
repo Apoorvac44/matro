@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import * as api from '../services/api';
-import { User, MapPin, CupSoda, Book, Briefcase, Heart, MessageSquare, Check, CheckCircle, X, Shield, Image as ImageIcon, ArrowLeft, Clock, GraduationCap, Send, Sparkles, Loader2, CreditCard, CalendarDays } from 'lucide-react';
+import { User, MapPin, CupSoda, Book, Briefcase, Heart, MessageSquare, Check, CheckCircle, X, Shield, Image as ImageIcon, ArrowLeft, Clock, GraduationCap, Send, Sparkles, Loader2, CreditCard, CalendarDays, Cake, Phone, Languages, Users, Ruler, Wallet, Building, Lock, Scale, UserPlus, Utensils, Cigarette, Wine, Moon, Sun, Home, Activity, Star, AlertTriangle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const ProfileDetail = () => {
@@ -61,6 +61,22 @@ const ProfileDetail = () => {
             <p className="text-gray-400 font-medium italic">This profile hasn't manifested in our sanctuary yet.</p>
         </div>
     );
+
+    const plan = currentUser?.membership || 'Free';
+    const normalizedPlan = ['p1', 'Basic', 'Free'].includes(plan) ? 'Free' : plan;
+
+    const isFree = normalizedPlan === 'Free';
+    const isSilver = normalizedPlan === 'Silver';
+    const isGold = normalizedPlan === 'Gold';
+    const isPremium = normalizedPlan === 'Premium';
+
+    const canViewMobile = isGold || isPremium;
+    const canViewAstrological = isPremium;
+    const canViewEducation = isPremium;
+    const canViewFamily = !isFree;
+    const canViewPartnerPref = !isFree;
+    const canViewAboutYou = !isFree;
+    const canViewVerification = !isFree;
 
     return (
         <div className="min-h-screen py-24 px-6 bg-white">
@@ -151,32 +167,201 @@ const ProfileDetail = () => {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {[
-                                { icon: <MapPin size={20} />, label: 'Location', value: profile.location || 'Not Specified' },
-                                { icon: <Briefcase size={20} />, label: 'Profession', value: profile.profession || 'Not Specified' },
-                                { icon: <GraduationCap size={20} />, label: 'Education', value: profile.education || 'Not Specified' },
-                                { icon: <Shield size={20} />, label: 'Caste', value: profile.caste || 'Not Specified' }
-                            ].map((item, idx) => (
-                                <div key={idx} className="bg-white p-6 rounded-2xl shadow-sm border border-[#800020]/5 flex items-center gap-4">
-                                    <div className="w-12 h-12 bg-[#FFFDD0] text-[#D4AF37] rounded-xl flex items-center justify-center">
-                                        {item.icon}
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">{item.label}</p>
-                                        <p className="text-gray-900 font-bold">{item.value}</p>
+                        {/* Detail Sections */}
+                        <div className="space-y-8">
+                            {/* Personal Information */}
+                            <div>
+                                <h3 className="text-[10px] font-bold text-[#800020] uppercase tracking-[0.2em] mb-4 pb-2 border-b border-[#800020]/5">Personal Information</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {[
+                                        { icon: <Users size={16} />, label: 'Marital Status', value: <span className="text-gray-900 font-semibold">{profile.maritalStatus || 'Not Specified'}</span> },
+                                        { icon: <Ruler size={16} />, label: 'Height', value: <span className="text-gray-900 font-semibold">{profile.height || 'Not Specified'}</span> },
+                                        { icon: <Languages size={16} />, label: 'Mother Tongue', value: <span className="text-gray-900 font-semibold">{profile.motherTongue || 'Not Specified'}</span> },
+                                        { icon: <Shield size={16} />, label: 'Caste', value: <span className="text-gray-900 font-semibold">{profile.caste || 'Not Specified'}</span> },
+                                        { icon: <Cake size={16} />, label: 'Date of Birth', value: <span className="text-gray-900 font-semibold">{profile.dob || '12-Aug-1996'}</span> },
+                                        canViewMobile ? { icon: <Phone size={16} />, label: 'Mobile', value: <span className="text-gray-900 font-semibold">{profile.mobile || '+91 9876543210'}</span> } : null,
+                                        { icon: <Scale size={16} />, label: 'Weight', value: <span className="text-gray-900 font-semibold">{profile.weight || 'Not Specified'}</span> },
+                                        { icon: <User size={16} />, label: 'Body Type', value: <span className="text-gray-900 font-semibold">{profile.bodyType || 'Not Specified'}</span> },
+                                        { icon: <UserPlus size={16} />, label: 'Profile Created By', value: <span className="text-gray-900 font-semibold">{profile.profileCreatedBy || 'Not Specified'}</span> }
+                                    ].filter(Boolean).map((item, idx) => (
+                                        <div key={idx} className="bg-white p-4 rounded-xl shadow-sm border border-[#800020]/5 flex items-center gap-3">
+                                            <div className="w-10 h-10 bg-[#FFFDD0] text-[#D4AF37] rounded-lg flex items-center justify-center flex-shrink-0">
+                                                {item.icon}
+                                            </div>
+                                            <div className="overflow-hidden">
+                                                <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">{item.label}</p>
+                                                <div className="text-sm truncate">{item.value}</div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Lifestyle Information */}
+                            <div>
+                                <h3 className="text-[10px] font-bold text-[#800020] uppercase tracking-[0.2em] mb-4 pb-2 border-b border-[#800020]/5">Lifestyle Details</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {[
+                                        { icon: <Utensils size={16} />, label: 'Eating Habits', value: profile.eatingHabits || 'Not Specified' },
+                                        { icon: <Wine size={16} />, label: 'Drinking Habits', value: profile.drinkingHabits || 'Not Specified' },
+                                        { icon: <Cigarette size={16} />, label: 'Smoking Habits', value: profile.smokingHabits || 'Not Specified' }
+                                    ].map((item, idx) => (
+                                        <div key={idx} className="bg-white p-4 rounded-xl shadow-sm border border-[#800020]/5 flex items-center gap-3">
+                                            <div className="w-10 h-10 bg-[#FFFDD0] text-[#D4AF37] rounded-lg flex items-center justify-center flex-shrink-0">
+                                                {item.icon}
+                                            </div>
+                                            <div className="overflow-hidden">
+                                                <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">{item.label}</p>
+                                                <p className="text-gray-900 font-semibold text-sm truncate">{item.value}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Astrological Details */}
+                            {canViewAstrological && (
+                                <div>
+                                    <h3 className="text-[10px] font-bold text-[#800020] uppercase tracking-[0.2em] mb-4 pb-2 border-b border-[#800020]/5">Astrological Information</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {[
+                                            { icon: <Clock size={16} />, label: 'Time of Birth', value: <span className="text-gray-900 font-semibold">{profile.timeOfBirth || '10:30 AM'}</span> },
+                                            { icon: <Star size={16} />, label: 'Star / Nakshatra', value: <span className="text-gray-900 font-semibold">{profile.star || 'Rohini'}</span> },
+                                            { icon: <Moon size={16} />, label: 'Raasi / Moon Sign', value: <span className="text-gray-900 font-semibold">{profile.raasi || 'Vrushabha'}</span> },
+                                            { icon: <AlertTriangle size={16} />, label: 'Kuja Dosha', value: <span className="text-gray-900 font-semibold">{profile.kujaDosha || 'No'}</span> },
+                                            { icon: <Home size={16} />, label: 'Kula Daiva', value: <span className="text-gray-900 font-semibold">{profile.kulaDaiva || 'Tirupati Balaji'}</span> },
+                                            { icon: <Activity size={16} />, label: 'Horoscope Matching', value: <span className="text-gray-900 font-semibold">{profile.horoscope || 'Yes'}</span> }
+                                        ].map((item, idx) => (
+                                            <div key={idx} className="bg-white p-4 rounded-xl shadow-sm border border-[#800020]/5 flex items-center gap-3">
+                                                <div className="w-10 h-10 bg-[#FFFDD0] text-[#D4AF37] rounded-lg flex items-center justify-center flex-shrink-0">
+                                                    {item.icon}
+                                                </div>
+                                                <div className="overflow-hidden">
+                                                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">{item.label}</p>
+                                                    <div className="text-sm truncate">{item.value}</div>
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
-                            ))}
+                            )}
+
+                            {/* Family Background */}
+                            {canViewFamily && (
+                                <div>
+                                    <h3 className="text-[10px] font-bold text-[#800020] uppercase tracking-[0.2em] mb-4 pb-2 border-b border-[#800020]/5">Family Background</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {[
+                                            { icon: <Home size={16} />, label: 'Family Type', value: profile.familyType || 'Not Specified' },
+                                            { icon: <Shield size={16} />, label: 'Family Status', value: profile.familyStatus || 'Not Specified' },
+                                            { icon: <MapPin size={16} />, label: 'Ancestral Origin', value: profile.ancestralOrigin || 'Not Specified' },
+                                            { icon: <Users size={16} />, label: 'Brothers', value: profile.brothers || 'Not Specified' },
+                                            { icon: <Users size={16} />, label: 'Sisters', value: profile.sisters || 'Not Specified' }
+                                        ].map((item, idx) => (
+                                            <div key={idx} className="bg-white p-4 rounded-xl shadow-sm border border-[#800020]/5 flex items-center gap-3">
+                                                <div className="w-10 h-10 bg-[#FFFDD0] text-[#D4AF37] rounded-lg flex items-center justify-center flex-shrink-0">
+                                                    {item.icon}
+                                                </div>
+                                                <div className="overflow-hidden">
+                                                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">{item.label}</p>
+                                                    <p className="text-gray-900 font-semibold text-sm truncate">{item.value}</p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Professional Information */}
+                            <div>
+                                <h3 className="text-[10px] font-bold text-[#800020] uppercase tracking-[0.2em] mb-4 pb-2 border-b border-[#800020]/5">Career & Education</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {[
+                                        canViewEducation ? { icon: <GraduationCap size={16} />, label: 'Education', value: profile.education || 'Not Specified' } : null,
+                                        { icon: <Briefcase size={16} />, label: 'Profession', value: profile.profession || 'Not Specified' },
+                                        { icon: <Wallet size={16} />, label: 'Income', value: profile.income || 'Not Specified' },
+                                        { icon: <Building size={16} />, label: 'Work Location', value: profile.workLocation || 'Not Specified' },
+                                        { icon: <MapPin size={16} />, label: 'Current Location', value: profile.location || 'Not Specified' }
+                                    ].filter(Boolean).map((item, idx) => (
+                                        <div key={idx} className="bg-white p-4 rounded-xl shadow-sm border border-[#800020]/5 flex items-center gap-3">
+                                            <div className="w-10 h-10 bg-[#FFFDD0] text-[#D4AF37] rounded-lg flex items-center justify-center flex-shrink-0">
+                                                {item.icon}
+                                            </div>
+                                            <div className="overflow-hidden">
+                                                <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">{item.label}</p>
+                                                <p className="text-gray-900 font-semibold text-sm truncate">{item.value}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Partner Preferences */}
+                            {canViewPartnerPref && (
+                                <div>
+                                    <h3 className="text-[10px] font-bold text-[#800020] uppercase tracking-[0.2em] mb-4 pb-2 border-b border-[#800020]/5">Partner Preferences</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="bg-[#800020]/5 p-5 rounded-2xl border border-[#800020]/10 flex flex-col gap-1">
+                                            <p className="text-[9px] text-gray-500 font-bold uppercase tracking-wider">Age Range</p>
+                                            <p className="text-gray-900 font-semibold">{profile.prefAgeMin || '18'} to {profile.prefAgeMax || '40'} Years</p>
+                                        </div>
+                                        <div className="bg-[#800020]/5 p-5 rounded-2xl border border-[#800020]/10 flex flex-col gap-1">
+                                            <p className="text-[9px] text-gray-500 font-bold uppercase tracking-wider">Preferred Location</p>
+                                            <p className="text-gray-900 font-semibold">{profile.prefLocation || 'Any'}</p>
+                                        </div>
+                                        <div className="bg-[#800020]/5 p-5 rounded-2xl border border-[#800020]/10 flex flex-col gap-1">
+                                            <p className="text-[9px] text-gray-500 font-bold uppercase tracking-wider">Preferred Education</p>
+                                            <p className="text-gray-900 font-semibold">{profile.prefEducation || 'Any'}</p>
+                                        </div>
+                                        <div className="bg-[#800020]/5 p-5 rounded-2xl border border-[#800020]/10 flex flex-col gap-1">
+                                            <p className="text-[9px] text-gray-500 font-bold uppercase tracking-wider">Preferred Profession</p>
+                                            <p className="text-gray-900 font-semibold">{profile.prefProfession || 'Any'}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Verification Details */}
+                            {canViewVerification && (profile.aadharCard || profile.casteCertificate) && (
+                                <div>
+                                    <h3 className="text-[10px] font-bold text-[#800020] uppercase tracking-[0.2em] mb-4 pb-2 border-b border-[#800020]/5">Verification Details</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {profile.aadharCard && (
+                                            <div className="bg-white p-4 rounded-xl shadow-sm border border-[#800020]/5 flex items-center gap-3">
+                                                <div className="w-10 h-10 bg-[#FFFDD0] text-[#D4AF37] rounded-lg flex items-center justify-center flex-shrink-0">
+                                                    <Shield size={16} />
+                                                </div>
+                                                <div>
+                                                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Aadhar Card</p>
+                                                    <p className="text-green-600 font-semibold text-sm">Verified</p>
+                                                </div>
+                                            </div>
+                                        )}
+                                        {profile.casteCertificate && (
+                                            <div className="bg-white p-4 rounded-xl shadow-sm border border-[#800020]/5 flex items-center gap-3">
+                                                <div className="w-10 h-10 bg-[#FFFDD0] text-[#D4AF37] rounded-lg flex items-center justify-center flex-shrink-0">
+                                                    <Book size={16} />
+                                                </div>
+                                                <div>
+                                                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Caste Certificate</p>
+                                                    <p className="text-green-600 font-semibold text-sm">Verified</p>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         <div className="space-y-12">
-                            <div className="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-[#800020]/5">
-                                <h3 className="text-[10px] font-bold text-[#800020] uppercase tracking-[0.2em] mb-6 pb-2 border-b border-[#800020]/5">About Me</h3>
-                                <p className="text-gray-600 leading-relaxed text-lg italic font-serif">
-                                    {profile.aboutMe || "I'm looking for a partner who respects values and has a modern outlook on life. Let's connect to know more."}
-                                </p>
-                            </div>
+                            {canViewAboutYou && (
+                                <div className="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-[#800020]/5">
+                                    <h3 className="text-[10px] font-bold text-[#800020] uppercase tracking-[0.2em] mb-6 pb-2 border-b border-[#800020]/5">About Me</h3>
+                                    <p className="text-gray-600 leading-relaxed text-lg italic font-serif">
+                                        {profile.aboutMe || "I'm looking for a partner who respects values and has a modern outlook on life. Let's connect to know more."}
+                                    </p>
+                                </div>
+                            )}
 
                             {profile.interests?.length > 0 && (
                                 <div>

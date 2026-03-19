@@ -8,8 +8,17 @@ const EditProfile = () => {
     const [formData, setFormData] = useState({
         name: '', age: '', gender: '', location: '',
         education: '', profession: '', income: '', workLocation: '',
-        interests: '', aboutMe: '', profilePicture: ''
+        interests: '', aboutMe: '', profilePicture: '',
+        mobile: '', dob: '', motherTongue: '', maritalStatus: '', height: '',
+        religion: '', caste: '', email: '',
+        prefAgeMin: '', prefAgeMax: '', prefLocation: '', prefEducation: '', prefProfession: '',
+        aadharCard: '', casteCertificate: '', membership: 'p1',
+        weight: '', bodyType: '', profileCreatedBy: '', eatingHabits: '', smokingHabits: '', drinkingHabits: '',
+        timeOfBirth: '', star: '', raasi: '', kujaDosha: '', kulaDaiva: '', horoscope: '',
+        familyType: '', familyStatus: '', brothers: '', sisters: '', ancestralOrigin: ''
     });
+    const [plans, setPlans] = useState([]);
+    const [paymentMethod, setPaymentMethod] = useState('UPI');
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
     const [message, setMessage] = useState('');
@@ -30,7 +39,40 @@ const EditProfile = () => {
                     workLocation: data.workLocation || '',
                     interests: data.interests?.join(', ') || '',
                     aboutMe: data.aboutMe || '',
-                    profilePicture: data.profilePicture || ''
+                    profilePicture: data.profilePicture || '',
+                    mobile: data.mobile || '',
+                    dob: data.dob || '',
+                    motherTongue: data.motherTongue || '',
+                    maritalStatus: data.maritalStatus || '',
+                    height: data.height || '',
+                    religion: data.religion || '',
+                    caste: data.caste || '',
+                    prefAgeMin: data.prefAgeMin || '',
+                    prefAgeMax: data.prefAgeMax || '',
+                    prefLocation: data.prefLocation || '',
+                    prefEducation: data.prefEducation || '',
+                    prefProfession: data.prefProfession || '',
+                    email: data.email || '',
+                    aadharCard: data.aadharCard || '',
+                    casteCertificate: data.casteCertificate || '',
+                    membership: data.membership || 'p1',
+                    weight: data.weight || '',
+                    bodyType: data.bodyType || '',
+                    profileCreatedBy: data.profileCreatedBy || '',
+                    eatingHabits: data.eatingHabits || '',
+                    smokingHabits: data.smokingHabits || '',
+                    drinkingHabits: data.drinkingHabits || '',
+                    timeOfBirth: data.timeOfBirth || '',
+                    star: data.star || '',
+                    raasi: data.raasi || '',
+                    kujaDosha: data.kujaDosha || '',
+                    kulaDaiva: data.kulaDaiva || '',
+                    horoscope: data.horoscope || '',
+                    familyType: data.familyType || '',
+                    familyStatus: data.familyStatus || '',
+                    brothers: data.brothers || '',
+                    sisters: data.sisters || '',
+                    ancestralOrigin: data.ancestralOrigin || ''
                 });
                 setLoading(false);
             } catch (err) {
@@ -38,7 +80,19 @@ const EditProfile = () => {
                 setLoading(false);
             }
         };
+
+        const fetchPlans = () => {
+            const dummyPlans = [
+                { _id: 'p1', name: 'Free', price: 0, duration: 'Lifetime', features: ['View Profiles', 'Send 5 Interests/Day'], color: '#9CA3AF' },
+                { _id: 'p2', name: 'Silver', price: 1999, duration: '3 Months', features: ['Unlimited Interests', 'Basic Support', 'View Contact Details (10)'], color: '#C0C0C0' },
+                { _id: 'p3', name: 'Gold', price: 4999, duration: '6 Months', features: ['Priority Listing', 'Standard Support', 'View Contact Details (50)'], color: '#D4AF37' },
+                { _id: 'p4', name: 'Premium', price: 9999, duration: '12 Months', features: ['Profile Highlight', 'Premium Support', 'Unlimited Contact Views', 'Personal Matchmaker'], color: '#800020' },
+            ];
+            setPlans(dummyPlans);
+        };
+
         fetchProfile();
+        fetchPlans();
     }, []);
 
     const handleSubmit = async (e) => {
@@ -76,6 +130,31 @@ const EditProfile = () => {
             setFormData({ ...formData, profilePicture: base64 });
         } catch (err) {
             console.error('File conversion error:', err);
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const handleDocumentChange = async (e, field) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (file.size > 2 * 1024 * 1024) {
+            alert('Document must be less than 2MB.');
+            return;
+        }
+
+        setUploading(true);
+        try {
+            const base64 = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = (error) => reject(error);
+            });
+            setFormData({ ...formData, [field]: base64 });
+        } catch (err) {
+            console.error('Document conversion error:', err);
         } finally {
             setUploading(false);
         }
@@ -177,6 +256,16 @@ const EditProfile = () => {
                                     Basic Details
                                 </h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="flex flex-col gap-2 md:col-span-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Email Address</label>
+                                        <input
+                                            type="email"
+                                            className="form-input-premium"
+                                            value={formData.email}
+                                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                            placeholder="Enter your email"
+                                        />
+                                    </div>
                                     <div className="flex flex-col gap-2">
                                         <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Full Name</label>
                                         <input
@@ -185,6 +274,25 @@ const EditProfile = () => {
                                             value={formData.name}
                                             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                             placeholder="Enter your name"
+                                        />
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Mobile Number</label>
+                                        <input
+                                            type="text"
+                                            className="form-input-premium"
+                                            value={formData.mobile}
+                                            onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
+                                            placeholder="10-digit number"
+                                        />
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Date of Birth</label>
+                                        <input
+                                            type="date"
+                                            className="form-input-premium"
+                                            value={formData.dob}
+                                            onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
                                         />
                                     </div>
                                     <div className="flex flex-col gap-2">
@@ -211,6 +319,81 @@ const EditProfile = () => {
                                         </select>
                                     </div>
                                     <div className="flex flex-col gap-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Religion</label>
+                                        <select
+                                            className="form-input-premium appearance-none cursor-pointer"
+                                            value={formData.religion}
+                                            onChange={(e) => setFormData({ ...formData, religion: e.target.value })}
+                                        >
+                                            <option value="">Select Religion</option>
+                                            <option>Hindu</option>
+                                            <option>Muslim</option>
+                                            <option>Christian</option>
+                                            <option>Sikh</option>
+                                            <option>Jain</option>
+                                            <option>Other</option>
+                                        </select>
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Caste</label>
+                                        <input
+                                            type="text"
+                                            className="form-input-premium"
+                                            value={formData.caste}
+                                            onChange={(e) => setFormData({ ...formData, caste: e.target.value })}
+                                            placeholder="e.g. Brahmin"
+                                        />
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Mother Tongue</label>
+                                        <select
+                                            className="form-input-premium appearance-none cursor-pointer"
+                                            value={formData.motherTongue}
+                                            onChange={(e) => setFormData({ ...formData, motherTongue: e.target.value })}
+                                        >
+                                            <option value="">Select</option>
+                                            <option>Hindi</option>
+                                            <option>Bengali</option>
+                                            <option>Marathi</option>
+                                            <option>Telugu</option>
+                                            <option>Tamil</option>
+                                            <option>Kannada</option>
+                                            <option>Other</option>
+                                        </select>
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Marital Status</label>
+                                        <select
+                                            className="form-input-premium appearance-none cursor-pointer"
+                                            value={formData.maritalStatus}
+                                            onChange={(e) => setFormData({ ...formData, maritalStatus: e.target.value })}
+                                        >
+                                            <option value="">Select Status</option>
+                                            <option value="Single">Single</option>
+                                            <option value="Divorced">Divorced</option>
+                                            <option value="Widowed">Widowed</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Height</label>
+                                        <select
+                                            className="form-input-premium appearance-none cursor-pointer"
+                                            value={formData.height}
+                                            onChange={(e) => setFormData({ ...formData, height: e.target.value })}
+                                        >
+                                            <option value="">Select Height</option>
+                                            <option>5'0" (152 cm)</option>
+                                            <option>5'2" (157 cm)</option>
+                                            <option>5'4" (162 cm)</option>
+                                            <option>5'6" (167 cm)</option>
+                                            <option>5'8" (172 cm)</option>
+                                            <option>5'10" (177 cm)</option>
+                                            <option>6'0" (182 cm)</option>
+                                            <option>Other</option>
+                                        </select>
+                                    </div>
+                                    <div className="flex flex-col gap-2">
                                         <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Location</label>
                                         <input
                                             type="text"
@@ -219,6 +402,45 @@ const EditProfile = () => {
                                             onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                                             placeholder="City, State"
                                         />
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Weight</label>
+                                        <input
+                                            type="text"
+                                            className="form-input-premium"
+                                            value={formData.weight}
+                                            onChange={(e) => setFormData({ ...formData, weight: e.target.value })}
+                                            placeholder="e.g. 60 kg"
+                                        />
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Body Type</label>
+                                        <select
+                                            className="form-input-premium appearance-none cursor-pointer"
+                                            value={formData.bodyType}
+                                            onChange={(e) => setFormData({ ...formData, bodyType: e.target.value })}
+                                        >
+                                            <option value="">Select</option>
+                                            <option value="Slim">Slim</option>
+                                            <option value="Average">Average</option>
+                                            <option value="Athletic">Athletic</option>
+                                            <option value="Heavy">Heavy</option>
+                                        </select>
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Profile Created By</label>
+                                        <select
+                                            className="form-input-premium appearance-none cursor-pointer"
+                                            value={formData.profileCreatedBy}
+                                            onChange={(e) => setFormData({ ...formData, profileCreatedBy: e.target.value })}
+                                        >
+                                            <option value="">Select</option>
+                                            <option value="Self">Self</option>
+                                            <option value="Parents">Parents</option>
+                                            <option value="Sibling">Sibling</option>
+                                            <option value="Relative">Relative</option>
+                                            <option value="Friend">Friend</option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>
@@ -279,6 +501,127 @@ const EditProfile = () => {
                                 </div>
                             </div>
 
+                            {/* Lifestyle Information */}
+                            <div className="space-y-10">
+                                <h3 className="text-[10px] font-black text-[#800020] uppercase tracking-[0.4em] flex items-center gap-4">
+                                    <span className="w-12 h-0.5 bg-[#D4AF37] opacity-30 rounded-full"></span>
+                                    Lifestyle
+                                </h3>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Eating Habits</label>
+                                        <select className="form-input-premium appearance-none cursor-pointer" value={formData.eatingHabits} onChange={(e) => setFormData({ ...formData, eatingHabits: e.target.value })}>
+                                            <option value="">Select</option>
+                                            <option value="Vegetarian">Vegetarian</option>
+                                            <option value="Non-Vegetarian">Non-Vegetarian</option>
+                                            <option value="Eggetarian">Eggetarian</option>
+                                            <option value="Vegan">Vegan</option>
+                                        </select>
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Drinking Habits</label>
+                                        <select className="form-input-premium appearance-none cursor-pointer" value={formData.drinkingHabits} onChange={(e) => setFormData({ ...formData, drinkingHabits: e.target.value })}>
+                                            <option value="">Select</option>
+                                            <option value="No">No</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="Occasionally">Occasionally</option>
+                                        </select>
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Smoking Habits</label>
+                                        <select className="form-input-premium appearance-none cursor-pointer" value={formData.smokingHabits} onChange={(e) => setFormData({ ...formData, smokingHabits: e.target.value })}>
+                                            <option value="">Select</option>
+                                            <option value="No">No</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="Occasionally">Occasionally</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Astrological Information */}
+                            <div className="space-y-10">
+                                <h3 className="text-[10px] font-black text-[#800020] uppercase tracking-[0.4em] flex items-center gap-4">
+                                    <span className="w-12 h-0.5 bg-[#D4AF37] opacity-30 rounded-full"></span>
+                                    Astrological Details
+                                </h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Time of Birth</label>
+                                        <input type="time" className="form-input-premium" value={formData.timeOfBirth} onChange={(e) => setFormData({ ...formData, timeOfBirth: e.target.value })} />
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Star / Nakshatra</label>
+                                        <input type="text" className="form-input-premium" value={formData.star} onChange={(e) => setFormData({ ...formData, star: e.target.value })} placeholder="e.g. Rohini" />
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Raasi</label>
+                                        <input type="text" className="form-input-premium" value={formData.raasi} onChange={(e) => setFormData({ ...formData, raasi: e.target.value })} placeholder="e.g. Vrishabha" />
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Kuja Dosha</label>
+                                        <select className="form-input-premium appearance-none cursor-pointer" value={formData.kujaDosha} onChange={(e) => setFormData({ ...formData, kujaDosha: e.target.value })}>
+                                            <option value="">Select</option>
+                                            <option value="No">No</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="Don't Know">Don't Know</option>
+                                        </select>
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Kula Daiva</label>
+                                        <input type="text" className="form-input-premium" value={formData.kulaDaiva} onChange={(e) => setFormData({ ...formData, kulaDaiva: e.target.value })} placeholder="e.g. Tirupati Balaji" />
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Horoscope Matching Required?</label>
+                                        <select className="form-input-premium appearance-none cursor-pointer" value={formData.horoscope} onChange={(e) => setFormData({ ...formData, horoscope: e.target.value })}>
+                                            <option value="">Select</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Family Background */}
+                            <div className="space-y-10">
+                                <h3 className="text-[10px] font-black text-[#800020] uppercase tracking-[0.4em] flex items-center gap-4">
+                                    <span className="w-12 h-0.5 bg-[#D4AF37] opacity-30 rounded-full"></span>
+                                    Family Background
+                                </h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Family Type</label>
+                                        <select className="form-input-premium appearance-none cursor-pointer" value={formData.familyType} onChange={(e) => setFormData({ ...formData, familyType: e.target.value })}>
+                                            <option value="">Select</option>
+                                            <option value="Nuclear Family">Nuclear Family</option>
+                                            <option value="Joint Family">Joint Family</option>
+                                        </select>
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Family Status</label>
+                                        <select className="form-input-premium appearance-none cursor-pointer" value={formData.familyStatus} onChange={(e) => setFormData({ ...formData, familyStatus: e.target.value })}>
+                                            <option value="">Select</option>
+                                            <option value="Middle Class">Middle Class</option>
+                                            <option value="Upper Middle Class">Upper Middle Class</option>
+                                            <option value="Rich">Rich</option>
+                                            <option value="Affluent">Affluent</option>
+                                        </select>
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Ancestral Origin</label>
+                                        <input type="text" className="form-input-premium" value={formData.ancestralOrigin} onChange={(e) => setFormData({ ...formData, ancestralOrigin: e.target.value })} placeholder="e.g. Hubli" />
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Brothers</label>
+                                        <input type="number" className="form-input-premium" value={formData.brothers} onChange={(e) => setFormData({ ...formData, brothers: e.target.value })} placeholder="Number of brothers" />
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Sisters</label>
+                                        <input type="number" className="form-input-premium" value={formData.sisters} onChange={(e) => setFormData({ ...formData, sisters: e.target.value })} placeholder="Number of sisters" />
+                                    </div>
+                                </div>
+                            </div>
+
                             {/* About & Interests */}
                             <div className="space-y-10">
                                 <h3 className="text-[10px] font-black text-[#800020] uppercase tracking-[0.4em] flex items-center gap-4">
@@ -308,13 +651,183 @@ const EditProfile = () => {
                                 </div>
                             </div>
 
+                            {/* Verification Documents */}
+                            <div className="space-y-10">
+                                <h3 className="text-[10px] font-black text-[#800020] uppercase tracking-[0.4em] flex items-center gap-4">
+                                    <span className="w-12 h-0.5 bg-[#D4AF37] opacity-30 rounded-full"></span>
+                                    Verification Documents
+                                </h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Aadhar Card</label>
+                                        <div className="flex items-center gap-4 p-4 form-input-premium">
+                                            {formData.aadharCard ? (
+                                                <div className="flex-1 flex justify-between items-center text-sm">
+                                                    <span className="text-green-600 font-bold items-center flex gap-1"><ShieldCheck size={16} /> Uploaded</span>
+                                                    <button type="button" onClick={() => setFormData({ ...formData, aadharCard: '' })} className="text-red-500 hover:text-red-700 font-bold text-xs uppercase tracking-widest">Remove</button>
+                                                </div>
+                                            ) : (
+                                                <input type="file" accept=".pdf,image/*" onChange={(e) => handleDocumentChange(e, 'aadharCard')} className="w-full text-sm" disabled={uploading} />
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Caste Certificate</label>
+                                        <div className="flex items-center gap-4 p-4 form-input-premium">
+                                            {formData.casteCertificate ? (
+                                                <div className="flex-1 flex justify-between items-center text-sm">
+                                                    <span className="text-green-600 font-bold items-center flex gap-1"><ShieldCheck size={16} /> Uploaded</span>
+                                                    <button type="button" onClick={() => setFormData({ ...formData, casteCertificate: '' })} className="text-red-500 hover:text-red-700 font-bold text-xs uppercase tracking-widest">Remove</button>
+                                                </div>
+                                            ) : (
+                                                <input type="file" accept=".pdf,image/*" onChange={(e) => handleDocumentChange(e, 'casteCertificate')} className="w-full text-sm" disabled={uploading} />
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Preferences */}
+                            <div className="space-y-10">
+                                <h3 className="text-[10px] font-black text-[#800020] uppercase tracking-[0.4em] flex items-center gap-4">
+                                    <span className="w-12 h-0.5 bg-[#D4AF37] opacity-30 rounded-full"></span>
+                                    Partner Preferences
+                                </h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Min Age</label>
+                                        <input type="number" className="form-input-premium" value={formData.prefAgeMin} onChange={(e) => setFormData({ ...formData, prefAgeMin: e.target.value })} placeholder="e.g. 21" />
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Max Age</label>
+                                        <input type="number" className="form-input-premium" value={formData.prefAgeMax} onChange={(e) => setFormData({ ...formData, prefAgeMax: e.target.value })} placeholder="e.g. 30" />
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Preferred Location</label>
+                                        <input type="text" className="form-input-premium" value={formData.prefLocation} onChange={(e) => setFormData({ ...formData, prefLocation: e.target.value })} placeholder="e.g. Any City in India" />
+                                    </div>
+                                    <div className="flex flex-col gap-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Preferred Education</label>
+                                        <input type="text" className="form-input-premium" value={formData.prefEducation} onChange={(e) => setFormData({ ...formData, prefEducation: e.target.value })} placeholder="e.g. Masters" />
+                                    </div>
+                                    <div className="flex flex-col gap-2 md:col-span-2">
+                                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Preferred Profession</label>
+                                        <input type="text" className="form-input-premium" value={formData.prefProfession} onChange={(e) => setFormData({ ...formData, prefProfession: e.target.value })} placeholder="e.g. IT Professional" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Membership Selection */}
+                            <div className="space-y-10">
+                                <h3 className="text-[10px] font-black text-[#800020] uppercase tracking-[0.4em] flex items-center gap-4">
+                                    <span className="w-12 h-0.5 bg-[#D4AF37] opacity-30 rounded-full"></span>
+                                    Membership Plan
+                                </h3>
+                                <div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        {plans.map((plan) => {
+                                            const isSelected = formData.membership === plan._id;
+                                            return (
+                                                <div
+                                                    key={plan._id}
+                                                    onClick={() => setFormData({ ...formData, membership: plan._id })}
+                                                    className={`flex flex-col p-6 rounded-[2.5rem] border-2 cursor-pointer transition-all select-none relative ${isSelected ? 'border-[#800020] shadow-xl scale-[1.02]' : 'border-gray-100 hover:border-[#800020]/20 bg-gray-50/50'}`}
+                                                    style={{ backgroundColor: isSelected ? '#ffffff' : undefined }}
+                                                >
+                                                    <div className="flex justify-between items-start mb-4">
+                                                        <div
+                                                            className="w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0"
+                                                            style={{ borderColor: isSelected ? '#800020' : '#e5e7eb', backgroundColor: '#ffffff' }}
+                                                        >
+                                                            {isSelected && (
+                                                                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#800020' }}></div>
+                                                            )}
+                                                        </div>
+                                                        <div className="text-right">
+                                                            <div className="text-2xl font-serif font-black italic leading-none" style={{ color: isSelected ? '#800020' : '#111827' }}>
+                                                                ₹{plan.price.toLocaleString()}
+                                                            </div>
+                                                            <div className="text-[8px] font-bold uppercase tracking-widest text-gray-400 mt-1">{plan.duration}</div>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <h4 className="text-sm font-black text-gray-900 mb-2 uppercase tracking-tight">{plan.name}</h4>
+                                                        <ul className="space-y-1">
+                                                            {plan.features.slice(0, 2).map((feat, i) => (
+                                                                <li key={i} className="text-[10px] font-medium text-gray-500 flex items-center gap-1.5">
+                                                                    <div className="w-1 h-1 rounded-full bg-[#D4AF37]"></div>
+                                                                    {feat}
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                    {plan.name === 'Gold' && (
+                                                        <span className="absolute -top-2 -right-2 bg-[#D4AF37] text-white text-[7px] font-black uppercase px-3 py-1 rounded-full shadow-lg border border-white/20">Popular</span>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                                <div className="space-y-6 mt-8">
+                                    <div className="flex flex-col sm:flex-row gap-4 p-2 bg-[#F8F9FA] rounded-2xl border border-gray-100">
+                                        <button
+                                            type="button"
+                                            onClick={() => setPaymentMethod('UPI')}
+                                            className={`flex-1 py-3 px-4 rounded-xl font-bold text-[10px] uppercase tracking-widest transition-all ${paymentMethod === 'UPI' ? 'bg-[#800020] text-[#D4AF37] shadow-lg' : 'text-gray-400 hover:text-[#800020]'}`}
+                                        >
+                                            UPI ID
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setPaymentMethod('Card')}
+                                            className={`flex-1 py-3 px-4 rounded-xl font-bold text-[10px] uppercase tracking-widest transition-all ${paymentMethod === 'Card' ? 'bg-[#800020] text-[#D4AF37] shadow-lg' : 'text-gray-400 hover:text-[#800020]'}`}
+                                        >
+                                            Credit / Debit Card
+                                        </button>
+                                    </div>
+                                    <div
+                                        className="p-8 bg-[#800020] rounded-[2.5rem] text-[#D4AF37] border border-[#D4AF37]/20 relative overflow-hidden group"
+                                    >
+                                        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')] opacity-10"></div>
+                                        <div className="relative z-10">
+                                            {paymentMethod === 'UPI' ? (
+                                                <div className="space-y-6">
+                                                    <div className="space-y-2">
+                                                        <label className="text-[10px] font-black uppercase tracking-widest opacity-60">Enter your UPI ID</label>
+                                                        <input type="text" placeholder="yourname@upi" className="w-full bg-white/10 border border-[#D4AF37]/30 rounded-xl px-4 py-3 text-white placeholder:text-white/30 outline-none focus:border-[#D4AF37]" />
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="space-y-6">
+                                                    <div className="space-y-2">
+                                                        <label className="text-[10px] font-black uppercase tracking-widest opacity-60">Card Number</label>
+                                                        <input type="text" placeholder="•••• •••• •••• ••••" className="w-full bg-white/10 border border-[#D4AF37]/30 rounded-xl px-4 py-3 text-white placeholder:text-white/30 outline-none focus:border-[#D4AF37]" />
+                                                    </div>
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                        <div className="space-y-2">
+                                                            <label className="text-[10px] font-black uppercase tracking-widest opacity-60">Expiry Date</label>
+                                                            <input type="text" placeholder="MM/YY" className="w-full bg-white/10 border border-[#D4AF37]/30 rounded-xl px-4 py-3 text-white placeholder:text-white/30 outline-none focus:border-[#D4AF37]" />
+                                                        </div>
+                                                        <div className="space-y-2">
+                                                            <label className="text-[10px] font-black uppercase tracking-widest opacity-60">CVV</label>
+                                                            <input type="password" placeholder="•••" className="w-full bg-white/10 border border-[#D4AF37]/30 rounded-xl px-4 py-3 text-white placeholder:text-white/30 outline-none focus:border-[#D4AF37]" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <button type="submit" className="w-full py-5 bg-[#800020] text-[#D4AF37] rounded-2xl font-bold uppercase tracking-[0.4em] text-[10px] shadow-2xl shadow-[#800020]/20 hover:bg-[#600318] hover:-translate-y-1 transition-all">
                                 Save Profile
                             </button>
                         </form>
                     </div>
                 </div>
-            </div>
+            </div >
 
             <style>{`
                 .form-input-premium {
@@ -335,7 +848,7 @@ const EditProfile = () => {
                     box-shadow: 0 15px 25px -5px rgba(128, 0, 32, 0.08);
                 }
             `}</style>
-        </div>
+        </div >
     );
 };
 
