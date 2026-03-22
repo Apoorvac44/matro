@@ -79,7 +79,7 @@ const ProfileDetail = () => {
     const canViewVerification = !isFree;
 
     return (
-        <div className="min-h-screen py-24 px-6 bg-white">
+        <div className="min-h-screen pb-12 pt-4 px-6 bg-white">
             <div className="container mx-auto max-w-6xl">
                 <button
                     onClick={() => navigate(-1)}

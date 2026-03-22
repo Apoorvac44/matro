@@ -89,7 +89,7 @@ const Gallery = () => {
     return (
         <div className="min-h-screen bg-[#FDFCFB] flex flex-col font-sans">
             {/* Simple Header */}
-            <div className="bg-[#800020] text-white pt-16 pb-32 px-6">
+            <div className="bg-[#800020] text-white pt-8 pb-32 px-6">
                 <div className="max-w-6xl mx-auto">
                     <div className="flex items-center justify-between mb-8">
                         <button

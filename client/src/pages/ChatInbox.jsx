@@ -36,7 +36,7 @@ const ChatInbox = () => {
     return (
         <div className="min-h-screen bg-white flex flex-col pb-20 md:pb-0">
             {/* Maroon Header */}
-            <div className="bg-[#800020] pt-28 px-6 pb-16 shrink-0 relative overflow-hidden">
+            <div className="bg-[#800020] pt-8 px-6 pb-16 shrink-0 relative overflow-hidden">
                 {/* Subtle Decorative Element */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-[#D4AF37]/10 rounded-full blur-2xl -mr-16 -mt-16"></div>
                 <div className="max-w-4xl mx-auto text-center relative z-10">

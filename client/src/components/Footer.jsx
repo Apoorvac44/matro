@@ -3,12 +3,12 @@ import { Heart, Instagram, Twitter, Facebook } from 'lucide-react';
 
 const Footer = () => {
     return (
-        <footer className="bg-[#800020] text-white pt-24 pb-12 relative overflow-hidden">
+        <footer className="bg-[#800020] text-white pt-16 pb-8 relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#D4AF37] via-[#FFFDD0] to-[#D4AF37]"></div>
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#D4AF37]/5 rounded-full blur-[100px] -mr-48 -mt-48"></div>
 
             <div className="container mx-auto px-6 relative z-10">
-                <div className="flex flex-col items-center gap-12">
+                <div className="flex flex-col items-center gap-8">
                     <div className="flex flex-col items-center"> {/* Added a wrapper div for logo and matrimony text */}
                         <div className="flex items-center gap-3 mb-8 group">
                             <div className="bg-[#FFFDD0] p-2.5 rounded-xl rotate-3 group-hover:rotate-12 transition-all">
@@ -35,8 +35,8 @@ const Footer = () => {
                         ))}
                     </div>
 
-                    <div className="pt-16 border-t border-white/5 w-full flex flex-col md:flex-row justify-between items-center gap-8">
-                        <div className="mt-8 pt-8 border-t border-white/10 text-center text-gray-400 text-xs font-bold uppercase tracking-[0.2em]">
+                    <div className="pt-10 border-t border-white/5 w-full flex flex-col md:flex-row justify-between items-center gap-8">
+                        <div className="text-center text-gray-400 text-xs font-bold uppercase tracking-[0.2em]">
                             © {new Date().getFullYear()} Milana Matrimony. Sacredly Handcrafted in India.
                         </div>
                         <div className="flex gap-10 text-[10px] font-bold text-[#FFFDD0]/60 uppercase tracking-widest">

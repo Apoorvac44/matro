@@ -196,7 +196,7 @@ const Register = () => {
     );
 
     return (
-        <div className="min-h-screen bg-[#FFFDD0]/20 flex items-center justify-center p-4 md:p-8 pt-28">
+        <div className="min-h-screen bg-[#FFFDD0]/20 flex items-center justify-center p-4 md:p-8 pt-8">
             <div className="max-w-6xl w-full bg-white rounded-[2rem] md:rounded-[3rem] shadow-2xl shadow-[#800020]/5 overflow-hidden md:overflow-hidden flex flex-col md:flex-row min-h-[auto] md:min-h-[750px] border border-[#800020]/5">
 
                 {/* Left Section - Premium Sidebar */}

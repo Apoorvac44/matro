@@ -102,57 +102,11 @@ const Dashboard = () => {
     const nearFallback = nearLocation.length > 0 ? nearLocation : allProfiles.slice(2, 8);
 
     return (
-        <div className="min-h-screen bg-[#FFFDD0]/10 flex flex-col pb-20 md:pb-0">
-            {/* Elegant Header */}
-            <div className="pt-32 px-6 pb-12 bg-white border-b border-[#800020]/5 shadow-sm">
-                <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
-                    <div className="flex items-center gap-6">
-                        <div className="relative group">
-                            <div className="w-20 h-20 rounded-[2rem] overflow-hidden bg-gray-50 border-4 border-white shadow-xl group-hover:rotate-6 transition-transform duration-500">
-                                {user?.profilePicture || user?.image ? (
-                                    <img src={user.profilePicture || user.image} alt="Profile" className="w-full h-full object-cover" />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-gray-200 bg-gradient-to-br from-gray-50 to-[#FFFDD0]">
-                                        <User size={32} className="text-[#D4AF37]/30" />
-                                    </div>
-                                )}
-                            </div>
-                            <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-4 border-white"></div>
-                        </div>
-                        <div>
-                            <motion.span
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#D4AF37] mb-1 block"
-                            >
-                                Your Account
-                            </motion.span>
-                            <h1 className="text-3xl font-serif font-bold text-gray-900 italic">Namaste, {user?.name || 'User'}</h1>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <Link
-                            to="/edit-profile"
-                            className="flex items-center gap-2 px-8 py-3.5 bg-white text-[#800020] rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-[#800020] hover:text-[#D4AF37] transition-all border border-[#800020]/10 shadow-sm active:scale-95"
-                        >
-                            <User size={16} />
-                            Edit Profile
-                        </Link>
-                        <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={logout}
-                            className="px-6 py-2 rounded-xl bg-[#800020]/5 text-[#800020] font-bold text-xs uppercase tracking-widest hover:bg-[#800020] hover:text-[#D4AF37] transition-all flex items-center gap-2 border border-[#800020]/10"
-                        >
-                            <LogOut size={16} />
-                            Logout
-                        </motion.button>
-                    </div>
-                </div>
-            </div>
+        <div className="min-h-screen bg-[#FFFDD0]/20 flex flex-col">
+
 
             {/* Premium Search */}
-            <div className="px-6 py-12 bg-white/50 backdrop-blur-sm border-b border-[#800020]/5 mb-10">
+            <div className="px-6 py-6 bg-white/50 backdrop-blur-sm border-b border-[#800020]/5 mb-6">
                 <div className="max-w-4xl mx-auto relative text-center">
                     <h2 className="text-3xl font-serif italic text-gray-900 mb-8">Find Your Match</h2>
                     <div className="relative max-w-2xl mx-auto">
@@ -194,7 +148,7 @@ const Dashboard = () => {
             </div>
 
             {/* Premium Membership Banner */}
-            <div className="px-6 pb-16">
+            <div className="px-6 pb-8">
                 <div className="max-w-6xl mx-auto">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.95 }}
@@ -204,7 +158,7 @@ const Dashboard = () => {
                         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')] opacity-10"></div>
                         <div className="absolute top-0 right-0 w-96 h-96 bg-[#D4AF37]/10 rounded-full blur-[80px] -mr-32 -mt-32"></div>
 
-                        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-10">
+                        <div className="pt-8 pb-12 flex flex-col md:flex-row items-center justify-between gap-8">
                             <div className="text-center md:text-left">
                                 <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#D4AF37]/20 border border-[#D4AF37]/30 rounded-full mb-6">
                                     <Sparkles size={12} className="text-[#D4AF37]" />

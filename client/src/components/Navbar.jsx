@@ -1,11 +1,11 @@
 import React, { useContext } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { Heart, User, MessageSquare, Compass, Home, Menu, X, Shield } from 'lucide-react';
+import { Heart, User, MessageSquare, Compass, Home, Menu, X, Shield, LogOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Navbar = () => {
-    const { user } = useContext(AuthContext);
+    const { user, logout } = useContext(AuthContext);
     const location = useLocation();
     const [isOpen, setIsOpen] = React.useState(false);
 
@@ -26,7 +26,7 @@ const Navbar = () => {
 
     return (
         <nav className="fixed w-full z-[100] bg-white/80 backdrop-blur-xl shadow-[0_2px_20px_-5px_rgba(128,0,32,0.1)] border-b border-[#800020]/5">
-            <div className="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div className="container mx-auto px-6 py-3 flex justify-between items-center">
                 <Link to="/" onClick={() => setIsOpen(false)} className="flex items-center gap-2 group">
                     <div className="bg-[#800020] p-2.5 rounded-xl group-hover:rotate-12 transition-all shadow-lg shadow-[#800020]/20">
                         <Heart className="text-[#D4AF37] fill-[#D4AF37]" size={20} />
@@ -35,19 +35,56 @@ const Navbar = () => {
                 </Link>
 
                 {/* Desktop Links */}
-                <div className="hidden md:flex items-center gap-10">
-                    {navLinks.map((link) => (
-                        <Link
-                            key={link.name}
-                            to={link.path}
-                            className={`flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] transition-all hover:text-[#D4AF37] ${location.pathname === link.path ? 'text-[#800020]' : 'text-[#800020]/60'}`}
-                        >
-                            <span className={`transition-colors ${location.pathname === link.path ? 'text-[#D4AF37]' : 'text-[#D4AF37]/60'}`}>
-                                {link.icon}
-                            </span>
-                            {link.name}
-                        </Link>
-                    ))}
+                <div className="hidden md:flex items-center gap-8">
+                    {navLinks.map((link) => {
+                        if (link.name === 'Profile' && user) {
+                            return (
+                                <div key={link.name} className="relative group/dropdown">
+                                    <Link
+                                        to={link.path}
+                                        className={`flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] transition-all hover:text-[#D4AF37] ${location.pathname === link.path ? 'text-[#800020]' : 'text-[#800020]/60'}`}
+                                    >
+                                        <span className={`transition-colors ${location.pathname === link.path ? 'text-[#D4AF37]' : 'text-[#D4AF37]/60'}`}>
+                                            {link.icon}
+                                        </span>
+                                        {link.name}
+                                    </Link>
+
+                                    {/* Dropdown Menu */}
+                                    <div className="absolute top-full right-0 pt-4 opacity-0 invisible group-hover/dropdown:opacity-100 group-hover/dropdown:visible transition-all duration-300 translate-y-2 group-hover/dropdown:translate-y-0 z-[110]">
+                                        <div className="bg-white rounded-2xl shadow-[0_10px_40px_-10px_rgba(128,0,32,0.2)] border border-[#800020]/5 overflow-hidden min-w-[200px] backdrop-blur-xl bg-white/95">
+                                            <Link
+                                                to="/edit-profile"
+                                                className="flex items-center gap-3 px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-[#800020]/60 hover:text-[#800020] hover:bg-[#800020]/5 transition-all border-b border-[#800020]/5"
+                                            >
+                                                <User size={14} className="text-[#D4AF37]" />
+                                                Edit Profile
+                                            </Link>
+                                            <button
+                                                onClick={logout}
+                                                className="w-full flex items-center gap-3 px-6 py-4 text-[10px] font-bold uppercase tracking-widest text-[#800020]/60 hover:text-[#800020] hover:bg-[#800020]/5 transition-all text-left"
+                                            >
+                                                <LogOut size={14} className="text-[#D4AF37]" />
+                                                Logout
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        }
+                        return (
+                            <Link
+                                key={link.name}
+                                to={link.path}
+                                className={`flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] transition-all hover:text-[#D4AF37] ${location.pathname === link.path ? 'text-[#800020]' : 'text-[#800020]/60'}`}
+                            >
+                                <span className={`transition-colors ${location.pathname === link.path ? 'text-[#D4AF37]' : 'text-[#D4AF37]/60'}`}>
+                                    {link.icon}
+                                </span>
+                                {link.name}
+                            </Link>
+                        );
+                    })}
                     {user?.isAdmin && (
                         <Link
                             to="/admin"
@@ -59,7 +96,6 @@ const Navbar = () => {
                             Admin
                         </Link>
                     )}
-
                 </div>
 
                 {/* Mobile Menu Button */}
@@ -102,6 +138,38 @@ const Navbar = () => {
                                     </span>
                                 </Link>
                             ))}
+
+                            {user && (
+                                <>
+                                    <Link
+                                        to="/edit-profile"
+                                        onClick={() => setIsOpen(false)}
+                                        className="flex items-center gap-5 text-xl font-serif italic text-gray-500 hover:text-[#800020] transition-all group"
+                                    >
+                                        <span className="p-4 rounded-2xl bg-gray-50 text-gray-400 group-hover:bg-[#800020]/5 group-hover:text-[#800020] group-hover:scale-105 transition-all duration-300 shadow-sm">
+                                            <User size={28} />
+                                        </span>
+                                        <span className="group-hover:translate-x-2 transition-transform duration-300">
+                                            Edit Profile
+                                        </span>
+                                    </Link>
+                                    <button
+                                        onClick={() => {
+                                            logout();
+                                            setIsOpen(false);
+                                        }}
+                                        className="flex items-center gap-5 text-xl font-serif italic text-gray-500 hover:text-[#800020] transition-all group text-left"
+                                    >
+                                        <span className="p-4 rounded-2xl bg-gray-50 text-gray-400 group-hover:bg-[#800020]/5 group-hover:text-[#800020] group-hover:scale-105 transition-all duration-300 shadow-sm">
+                                            <LogOut size={28} />
+                                        </span>
+                                        <span className="group-hover:translate-x-2 transition-transform duration-300">
+                                            Logout
+                                        </span>
+                                    </button>
+                                </>
+                            )}
+
                             {user?.isAdmin && (
                                 <Link
                                     to="/admin"

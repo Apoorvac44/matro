@@ -12,7 +12,7 @@ const Home = () => {
             <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-[#800020]/5 rounded-full blur-[120px] -ml-48 -mb-48"></div>
 
             {/* Hero Section */}
-            <section className="relative md:min-h-[90vh] flex items-center pt-24 md:pt-32 pb-4 md:pb-20 overflow-hidden">
+            <section className="relative md:min-h-[60vh] flex items-center pt-4 md:pt-6 pb-2 md:pb-4 overflow-hidden">
                 <div className="container mx-auto px-6 lg:px-24 relative z-10 w-full">
                     <div className="flex flex-col md:flex-row items-center gap-12 md:gap-10 lg:gap-20">
                         {/* Text Content */}
@@ -65,9 +65,9 @@ const Home = () => {
             </section>
 
             {/* Premium Features Section */}
-            <section className="py-24 md:py-32 bg-white relative">
+            <section className="py-8 md:py-12 bg-white relative">
                 <div className="container mx-auto px-6 lg:px-24">
-                    <div className="text-center mb-20">
+                    <div className="text-center mb-10">
                         <motion.span
                             initial={{ opacity: 0 }}
                             whileInView={{ opacity: 1 }}
@@ -102,9 +102,9 @@ const Home = () => {
             </section>
 
             {/* How It Works Section */}
-            <section className="py-24 md:py-32 bg-[#FFFDD0]/10">
+            <section className="py-8 md:py-12 bg-[#FFFDD0]/10">
                 <div className="container mx-auto px-6 lg:px-24">
-                    <div className="text-center mb-20">
+                    <div className="text-center mb-10">
                         <motion.span
                             initial={{ opacity: 0 }}
                             whileInView={{ opacity: 1 }}
@@ -138,7 +138,7 @@ const Home = () => {
             </section>
 
             {/* Success Stories Section */}
-            <section className="py-24 md:py-32 bg-[#800020] relative overflow-hidden">
+            <section className="py-12 md:py-16 bg-[#800020] relative overflow-hidden">
                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')] opacity-10"></div>
                 <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[#D4AF37]/5 rounded-full blur-[150px] -mr-64 -mt-64"></div>
 
