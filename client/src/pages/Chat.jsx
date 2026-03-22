@@ -65,7 +65,7 @@ const Chat = () => {
     return (
         <div className="h-screen bg-white flex flex-col">
             {/* Minimal Chat Header */}
-            <div className="bg-white border-b border-gray-100 sticky top-20 z-50">
+            <div className="bg-white border-b border-gray-100 sticky top-[64px] z-50">
                 <div className="max-w-4xl mx-auto p-4 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <button onClick={() => navigate('/chat/inbox')} className="p-3 hover:bg-gray-50 rounded-2xl transition-colors">
@@ -98,9 +98,8 @@ const Chat = () => {
                 </div>
             </div>
 
-            {/* Messages Area */}
             <div className="flex-1 overflow-y-auto bg-gray-50/50">
-                <div className="max-w-4xl mx-auto p-6 space-y-6">
+                <div className="max-w-4xl mx-auto p-2 md:p-4 space-y-3">
                     {loading ? (
                         <div className="flex justify-center py-20">
                             <Loader2 size={32} className="animate-spin text-[#800020]" />
@@ -125,11 +124,11 @@ const Chat = () => {
                             </motion.div>
                         ))
                     ) : (
-                        <div className="flex flex-col items-center justify-center h-full text-center py-40">
-                            <div className="w-20 h-20 bg-[#FFFDD0] rounded-full flex items-center justify-center text-[#D4AF37] mb-6">
-                                <MessageSquare size={40} />
+                        <div className="flex flex-col items-center justify-center h-full text-center py-8">
+                            <div className="w-12 h-12 bg-[#FFFDD0] rounded-full flex items-center justify-center text-[#D4AF37] mb-2">
+                                <MessageSquare size={24} />
                             </div>
-                            <p className="text-sm text-gray-400 font-bold uppercase tracking-widest">Connect and start chatting</p>
+                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Connect and start chatting</p>
                         </div>
                     )}
                     <div ref={scrollRef} />
@@ -137,7 +136,7 @@ const Chat = () => {
             </div>
 
             {/* Input Area */}
-            <div className="bg-white border-t border-gray-50 p-6">
+            <div className="bg-white border-t border-gray-50 p-3 md:p-4">
                 <div className="max-w-4xl mx-auto">
                     <form onSubmit={handleSend} className="flex gap-4 relative">
                         <input

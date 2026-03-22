@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Heart, Search, Users } from 'lucide-react';
+import { Sparkles, Heart, Search, Users, MessageSquare } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
+import ProfileCompletenessCard from '../components/ProfileCompletenessCard';
 import heroRitual from '../assets/hero_ritual.png';
 
 const Home = () => {
+    const { user } = useContext(AuthContext);
+
     return (
         <div className="bg-[#FFFDD0]/20 min-h-screen relative overflow-hidden flex flex-col">
             {/* Minimalist Background Decoration */}
@@ -63,6 +67,13 @@ const Home = () => {
                     </div>
                 </div>
             </section>
+
+            {/* Profile Completeness Card (if logged in) */}
+            {user && (
+                <div className="container mx-auto px-6 lg:px-24 mb-12">
+                    <ProfileCompletenessCard />
+                </div>
+            )}
 
             {/* Premium Features Section */}
             <section className="py-8 md:py-12 bg-white relative">

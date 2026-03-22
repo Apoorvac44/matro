@@ -12,9 +12,11 @@ import {
 } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import * as api from '../services/api';
 
 const registrationSchema = z.object({
     // Step 1
+    profileCreatedBy: z.enum(['Self', 'Parent', 'Sibling', 'Friend', 'Relative', 'Other'], { required_error: 'Please select who is creating the profile' }),
     name: z.string().min(2, 'Name must be at least 2 characters'),
     gender: z.enum(['Male', 'Female', 'Other'], { required_error: 'Gender is required' }),
     dob: z.string().min(1, 'Date of birth is required').refine((val) => {
@@ -32,9 +34,9 @@ const registrationSchema = z.object({
     password: z.string().min(6, 'Password must be at least 6 characters'),
     confirmPassword: z.string(),
     // Step 2
-    religion: z.string().min(1, 'Religion is required'),
-    caste: z.string().optional(),
     motherTongue: z.string().min(1, 'Mother tongue is required'),
+    religion: z.string().min(1, 'Religion is required'),
+    caste: z.string().min(1, 'Caste is required'),
     maritalStatus: z.enum(['Single', 'Divorced', 'Widowed', 'Other'], { required_error: 'Marital status is required' }),
     height: z.string().min(1, 'Height is required'),
     location: z.string().min(1, 'Location is required'),
@@ -53,7 +55,7 @@ const registrationSchema = z.object({
     casteCertificate: z.any().optional(),
     aadharCard: z.any().optional(),
     // Step 6
-    membership: z.string().default('Basic'),
+    membership: z.string().default('p1'),
 }).refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
     path: ["confirmPassword"],
@@ -123,7 +125,7 @@ const Register = () => {
     const nextStep = async () => {
         let fieldsToValidate = [];
         if (step === 1) fieldsToValidate = ['name', 'gender', 'dob', 'mobile', 'email', 'password', 'confirmPassword'];
-        if (step === 2) fieldsToValidate = ['religion', 'motherTongue', 'maritalStatus', 'height', 'location'];
+        if (step === 2) fieldsToValidate = ['religion', 'caste', 'motherTongue', 'maritalStatus', 'height', 'location'];
         if (step === 3) fieldsToValidate = ['education', 'profession', 'workLocation'];
         if (step === 4) fieldsToValidate = ['prefAgeMin', 'prefAgeMax', 'prefLocation', 'prefEducation', 'prefProfession'];
         if (step === 5) fieldsToValidate = ['casteCertificate', 'aadharCard'];
@@ -159,9 +161,30 @@ const Register = () => {
             return;
         }
 
+        setLoading(true);
         try {
-            // Include membership to the final payload
-            const finalData = { ...data, membership: data.membership || 'Basic' };
+            // Convert files to base64 before saving to localStorage
+            const fileToBase64 = (file) => {
+                if (!file || !(file instanceof File)) return Promise.resolve(file);
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = (error) => reject(error);
+                });
+            };
+
+            const aadharBase64 = await fileToBase64(data.aadharCard);
+            const casteBase64 = await fileToBase64(data.casteCertificate);
+
+            const finalData = {
+                ...data,
+                aadharCard: aadharBase64,
+                casteCertificate: casteBase64,
+                membership: data.membership || 'p1'
+            };
+
+            console.log('Submitting Registration Data:', finalData);
             const response = await api.register(finalData);
 
             console.log("Registration successful, navigating to dashboard.");
@@ -260,6 +283,20 @@ const Register = () => {
                                         exit={{ opacity: 0, x: -20 }}
                                         className="space-y-5"
                                     >
+                                        <div className="space-y-1.5">
+                                            <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Profile Created By *</label>
+                                            <select {...register('profileCreatedBy')} className="form-input-premium appearance-none">
+                                                <option value="">Select</option>
+                                                <option>Self</option>
+                                                <option>Parent</option>
+                                                <option>Sibling</option>
+                                                <option>Friend</option>
+                                                <option>Relative</option>
+                                                <option>Other</option>
+                                            </select>
+                                            {errors.profileCreatedBy && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.profileCreatedBy.message}</p>}
+                                        </div>
+
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div className="space-y-1.5">
                                                 <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Full Name *</label>
@@ -361,6 +398,8 @@ const Register = () => {
                                         exit={{ opacity: 0, x: -20 }}
                                         className="space-y-5"
                                     >
+
+
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div className="space-y-1.5">
                                                 <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Religion *</label>
@@ -371,13 +410,15 @@ const Register = () => {
                                                     <option>Christian</option>
                                                     <option>Sikh</option>
                                                     <option>Jain</option>
+                                                    <option>Buddhist</option>
                                                     <option>Other</option>
                                                 </select>
                                                 {errors.religion && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.religion.message}</p>}
                                             </div>
                                             <div className="space-y-1.5">
-                                                <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Caste (Optional)</label>
-                                                <input {...register('caste')} className="form-input-premium" placeholder="e.g. Brahmin" />
+                                                <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Caste *</label>
+                                                <input {...register('caste')} className="form-input-premium" placeholder="e.g. Brahmin, Vokkaliga" />
+                                                {errors.caste && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.caste.message}</p>}
                                             </div>
                                         </div>
 
@@ -768,7 +809,10 @@ const Register = () => {
                                 ) : (
                                     <button
                                         type="button"
-                                        onClick={handleSubmit(onSubmit)}
+                                        onClick={handleSubmit(onSubmit, (err) => {
+                                            console.log("Validation Errors:", err);
+                                            // Optionally alert or show a message
+                                        })}
                                         className="flex-[2] py-5 bg-[#800020] text-[#D4AF37] flex items-center justify-center gap-3 rounded-2xl font-bold uppercase tracking-[0.2em] text-[10px] shadow-xl shadow-[#800020]/20 hover:bg-[#600318] hover:-translate-y-1 hover:shadow-[#D4AF37]/10 transition-all active:scale-95"
                                     >
                                         Create Account <ArrowRight size={16} />

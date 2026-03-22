@@ -95,7 +95,7 @@ const ProfileDetail = () => {
                     {/* Left Column: Photo & Actions */}
                     <div className="w-full lg:w-1/3">
                         <div className="bg-white p-4 rounded-3xl shadow-lg mb-8">
-                            <div className="aspect-[4/5] rounded-2xl overflow-hidden bg-gray-100">
+                            <div className="aspect-square rounded-full overflow-hidden bg-gray-100 border-4 border-[#800020]/5 shadow-inner">
                                 {profile.profilePicture ? (
                                     <img
                                         src={profile.profilePicture}
@@ -163,7 +163,6 @@ const ProfileDetail = () => {
                             <div className="flex flex-wrap items-center gap-6 text-sm font-semibold text-gray-500">
                                 <span className="flex items-center gap-2"><Clock size={16} /> {profile.age} Years</span>
                                 <span className="flex items-center gap-2"><User size={16} /> {profile.gender}</span>
-                                <span className="flex items-center gap-2"><Sparkles size={16} /> {profile.religion}</span>
                             </div>
                         </div>
 
@@ -177,7 +176,6 @@ const ProfileDetail = () => {
                                         { icon: <Users size={16} />, label: 'Marital Status', value: <span className="text-gray-900 font-semibold">{profile.maritalStatus || 'Not Specified'}</span> },
                                         { icon: <Ruler size={16} />, label: 'Height', value: <span className="text-gray-900 font-semibold">{profile.height || 'Not Specified'}</span> },
                                         { icon: <Languages size={16} />, label: 'Mother Tongue', value: <span className="text-gray-900 font-semibold">{profile.motherTongue || 'Not Specified'}</span> },
-                                        { icon: <Shield size={16} />, label: 'Caste', value: <span className="text-gray-900 font-semibold">{profile.caste || 'Not Specified'}</span> },
                                         { icon: <Cake size={16} />, label: 'Date of Birth', value: <span className="text-gray-900 font-semibold">{profile.dob || '12-Aug-1996'}</span> },
                                         canViewMobile ? { icon: <Phone size={16} />, label: 'Mobile', value: <span className="text-gray-900 font-semibold">{profile.mobile || '+91 9876543210'}</span> } : null,
                                         { icon: <Scale size={16} />, label: 'Weight', value: <span className="text-gray-900 font-semibold">{profile.weight || 'Not Specified'}</span> },

@@ -1,40 +1,10 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AuthContext } from '../context/AuthContext';
-import { User, Heart, MessageSquare, Bell, LogOut, Home, Eye, Send, CheckCheck, Image, ArrowRight, Search, Sparkles } from 'lucide-react';
+import { User, Heart, MessageSquare, Bell, LogOut, Home, Eye, Send, CheckCheck, Image, ArrowRight, Search, Sparkles, ShieldCheck, Users, Music } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import * as api from '../services/api';
-
-const ProfileThumbnail = ({ profile }) => {
-    if (!profile) return null;
-    const id = profile._id || profile.id;
-    const [imgError, setImgError] = React.useState(false);
-    const imgSrc = profile.profilePicture || profile.image;
-
-    return (
-        <Link to={`/profile/${id}`} className="w-full group">
-            <div className="aspect-[3/4] rounded-[2rem] overflow-hidden bg-gray-50 relative shadow-sm border border-[#800020]/5">
-                {imgSrc && !imgError ? (
-                    <img
-                        src={imgSrc}
-                        alt={profile.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                        onError={() => setImgError(true)}
-                    />
-                ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-200 bg-gradient-to-br from-gray-50 to-[#FFFDD0]">
-                        <User size={32} />
-                    </div>
-                )}
-                {/* Elegant Overlay */}
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#800020]/90 via-[#800020]/40 to-transparent p-5 pt-12">
-                    <p className="text-white text-sm font-serif font-bold italic truncate mb-0.5">{profile.name}</p>
-                    <p className="text-[#D4AF37] text-[9px] font-bold uppercase tracking-widest truncate">{profile.profession || 'Professional'}</p>
-                </div>
-            </div>
-        </Link>
-    );
-};
+import ProfileCompletenessCard from '../components/ProfileCompletenessCard';
 
 const SkeletonCard = () => (
     <div className="w-full">
@@ -52,16 +22,19 @@ const Dashboard = () => {
     const [activeView, setActiveView] = useState(null);
     const [viewProfiles, setViewProfiles] = useState([]);
     const [viewLoading, setViewLoading] = useState(false);
+    const [fullProfile, setFullProfile] = useState(null);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [profilesRes, statsRes] = await Promise.all([
+                const [profilesRes, statsRes, profileRes] = await Promise.all([
                     api.getProfiles(),
-                    api.getDashboardStats()
+                    api.getDashboardStats(),
+                    api.getProfile()
                 ]);
                 setAllProfiles(profilesRes.data);
                 setDashStats(statsRes.data);
+                setFullProfile(profileRes.data);
             } catch (err) {
                 console.error(err);
             }
@@ -120,6 +93,11 @@ const Dashboard = () => {
                         />
                     </div>
                 </div>
+            </div>
+
+            {/* Complete Your Profile Card */}
+            <div className="px-6 pb-12">
+                <ProfileCompletenessCard userProfile={fullProfile} />
             </div>
 
             {/* Stats Grid */}
@@ -286,5 +264,59 @@ const Dashboard = () => {
         </div >
     );
 };
+
+const ProfileThumbnail = ({ profile }) => {
+    const navigate = useNavigate();
+    const profileId = profile?._id || profile?.id;
+
+    if (!profile) return null;
+
+    return (
+        <div
+            onClick={() => navigate(`/profile/${profileId}`)}
+            className="group relative bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-[#800020]/5 cursor-pointer aspect-[4/5.5] w-full"
+        >
+            {/* Image section */}
+            <div className="absolute inset-0">
+                {profile.profilePicture ? (
+                    <img src={profile.profilePicture} alt={profile.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-gray-100 to-[#FFFDD0]/30 flex items-center justify-center text-[#800020]/10">
+                        <User size={48} />
+                    </div>
+                )}
+                {/* Overlay gradient */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#800020]/90 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity"></div>
+            </div>
+
+            {/* Info overlay */}
+            <div className="absolute bottom-0 left-0 w-full p-5">
+                <h3 className="text-white font-serif font-bold italic text-base leading-tight truncate">{profile.name}</h3>
+                <div className="flex items-center gap-1.5 mt-1.5 overflow-hidden">
+                    <span className="text-[#D4AF37]/90 text-[9px] font-black uppercase tracking-widest truncate">
+                        {profile.age ? `${profile.age} Yrs` : ''} {profile.location ? `• ${profile.location}` : ''}
+                    </span>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const ProfileActionButton = ({ icon, label, bg, onClick }) => (
+    <button
+        onClick={onClick}
+        className="flex items-center gap-4 bg-white hover:bg-gray-50 p-4 pr-8 rounded-2xl border border-gray-100 shadow-sm transition-all group active:scale-95"
+    >
+        <div className={`w-12 h-12 rounded-2xl ${bg} flex items-center justify-center relative`}>
+            {icon}
+            <div className="absolute -right-1 -bottom-1 bg-white rounded-full shadow-sm border border-gray-100 p-0.5">
+                <div className="bg-blue-400 rounded-full p-0.5 text-white">
+                    <CheckCheck size={8} />
+                </div>
+            </div>
+        </div>
+        <span className="text-xs font-black text-gray-900 uppercase tracking-widest">{label}</span>
+    </button>
+);
 
 export default Dashboard;

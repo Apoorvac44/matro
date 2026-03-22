@@ -16,6 +16,11 @@ import Gallery from './pages/Gallery';
 import Splash from './components/Splash';
 import ProtectedRoute from './components/ProtectedRoute';
 import MainLayout from './components/MainLayout';
+import Interests from './pages/Interests';
+import Notifications from './pages/Notifications';
+import SearchPage from './pages/Search';
+import SuccessStories from './pages/SuccessStories';
+import Help from './pages/Help';
 
 // Admin Imports
 import AdminLayout from './components/admin/AdminLayout';
@@ -60,6 +65,18 @@ function App() {
             <Route path="/chat/:id" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
             <Route path="/gallery" element={<ProtectedRoute><Gallery /></ProtectedRoute>} />
             <Route path="/contact" element={<ProtectedRoute><Contact /></ProtectedRoute>} />
+
+            {/* New Feature Routes */}
+            <Route path="/interests" element={<ProtectedRoute><Interests /></ProtectedRoute>} />
+            <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+            <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>} />
+            <Route path="/success-stories" element={<SuccessStories />} />
+            <Route path="/help" element={<Help />} />
+
+            {/* Redirects to Edit Profile Tabs */}
+            <Route path="/edit-preferences" element={<ProtectedRoute><EditProfile defaultTab="Partner Preference" /></ProtectedRoute>} />
+            <Route path="/horoscope" element={<ProtectedRoute><EditProfile defaultTab="Horoscope" /></ProtectedRoute>} />
+            <Route path="/settings" element={<ProtectedRoute><EditProfile defaultTab="Settings" /></ProtectedRoute>} />
           </Route>
 
           {/* Admin Routes */}

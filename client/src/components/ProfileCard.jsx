@@ -33,19 +33,19 @@ const ProfileCard = ({ profile }) => {
     const imgSrc = profile.profilePicture || profile.image;
 
     const handleInterest = async (interested) => {
-        if (!interested) {
-            setDismissed(true);
-            return;
-        }
         if (!profileId) return;
         setSending(true);
         try {
-            await api.sendInterest(profileId);
-            setInterestSent(true);
+            await api.sendInterest(profileId, interested ? 'pending' : 'declined');
+            if (interested) {
+                setInterestSent(true);
+            } else {
+                setDismissed(true);
+            }
         } catch (err) {
             console.error(err);
-            const msg = err.response?.data?.message || 'Failed to send interest';
-            if (msg === 'Interest already sent') setInterestSent(true);
+            const msg = err.response?.data?.message || 'Failed to update interest';
+            if (msg === 'Interest already sent' && interested) setInterestSent(true);
         } finally {
             setSending(false);
         }

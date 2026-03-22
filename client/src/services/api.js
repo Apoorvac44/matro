@@ -121,13 +121,38 @@ const INITIAL_PROFILES = [
         mobile: '9334455667', dob: '1996-05-30', motherTongue: 'Kannada', maritalStatus: 'Single', height: "5'10\"",
         workLocation: 'Bengaluru', prefAgeRange: '23-27', prefLocation: 'Karnataka', prefEducation: 'Masters', prefProfession: 'Professional'
     },
+    {
+        _id: 'd1', name: 'Rashmi', email: 'rashmi@example.com', age: 29, gender: 'Female', religion: 'Hindu', caste: 'Brahmin', location: 'Bengaluru/ Bangalore',
+        profession: 'Software Professional', education: 'B.E', income: '₹10 LPA',
+        profilePicture: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=500&fit=cover',
+        isApproved: true, interests: ['Coding', 'Yoga'],
+        mobile: '9880011223', dob: '1995-02-15', motherTongue: 'Kannada', maritalStatus: 'Never Married', height: "5'4\"",
+        workLocation: 'Bengaluru'
+    },
+    {
+        _id: 'd2', name: 'Anusha', email: 'anusha@example.com', age: 28, gender: 'Female', religion: 'Hindu', caste: 'Gowda', location: 'Uttara Kannada',
+        profession: 'Software Professional', education: 'B.E', income: '₹12 LPA',
+        profilePicture: '', // No photo demo
+        membership: 'p3',
+        isApproved: true, interests: ['Music', 'Travel'],
+        mobile: '9880011224', dob: '1996-03-20', motherTongue: 'Kannada', maritalStatus: 'Never Married', height: "5'6\"",
+        workLocation: 'Bengaluru'
+    },
+    {
+        _id: 'd3', name: 'Sowmya', email: 'sowmya@example.com', age: 27, gender: 'Female', religion: 'Hindu', caste: 'Lingayat', location: 'Mysuru',
+        profession: 'Doctor', education: 'MBBS', income: '₹18 LPA',
+        profilePicture: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=500&fit=cover',
+        isApproved: true, interests: ['Helping others', 'Cooking'],
+        mobile: '9880011225', dob: '1997-01-12', motherTongue: 'Kannada', maritalStatus: 'Never Married', height: "5'3\"",
+        workLocation: 'Mysuru'
+    }
 ];
 
 // Helper to get profiles from LocalStorage or use initial data
 const getStoredProfiles = () => {
-    const stored = localStorage.getItem('dummy_profiles_v3');
+    const stored = localStorage.getItem('dummy_profiles_v4');
     if (stored) return JSON.parse(stored);
-    localStorage.setItem('dummy_profiles_v3', JSON.stringify(INITIAL_PROFILES));
+    localStorage.setItem('dummy_profiles_v4', JSON.stringify(INITIAL_PROFILES));
     return INITIAL_PROFILES;
 };
 
@@ -135,7 +160,7 @@ let DUMMY_PROFILES = getStoredProfiles();
 
 const updateStoredProfiles = (profiles) => {
     DUMMY_PROFILES = profiles;
-    localStorage.setItem('dummy_profiles_v2', JSON.stringify(profiles));
+    localStorage.setItem('dummy_profiles_v4', JSON.stringify(profiles));
 };
 
 let DUMMY_PLANS = [
@@ -145,31 +170,66 @@ let DUMMY_PLANS = [
     { _id: 'p4', name: 'Premium', price: 9999, duration: '12 Months', features: ['Profile Highlight', 'Premium Support', 'Unlimited Contact Views', 'Personal Matchmaker'], color: '#800020' },
 ];
 
-const MOCK_MESSAGES = {
-    '1': [
-        { _id: 'm1', sender: '1', content: 'Hi there!', createdAt: new Date(Date.now() - 7200000).toISOString() },
-        { _id: 'm2', sender: 'mock_user_1', content: 'Hello! How are you?', createdAt: new Date(Date.now() - 7100000).toISOString() },
-        { _id: 'm3', sender: '1', content: 'I am doing great, saw your profile and wanted to connect.', createdAt: new Date(Date.now() - 7000000).toISOString() },
-        { _id: 'm4', sender: 'mock_user_1', content: 'That is wonderful. I would love to chat more.', createdAt: new Date(Date.now() - 6900000).toISOString() },
-        { _id: 'm5', sender: '1', content: 'That sounds like a plan!', createdAt: new Date(Date.now() - 6800000).toISOString() },
-    ]
+const getSentInterestsData = () => {
+    const stored = localStorage.getItem('sent_interests_v1');
+    return stored ? JSON.parse(stored) : [
+        { _id: 'int_s1', receiverId: '1', status: 'pending', updatedAt: new Date().toISOString() }
+    ];
 };
 
-const SENT_INTERESTS = [];
+const getReceivedInterestsData = () => {
+    const stored = localStorage.getItem('received_interests_v1');
+    return stored ? JSON.parse(stored) : [
+        { _id: 'int_1', senderId: 'd1', status: 'declined', updatedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString() },
+        { _id: 'int_2', senderId: 'd2', status: 'pending', updatedAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString() },
+        { _id: 'int_3', senderId: 'd3', status: 'accepted', updatedAt: new Date().toISOString() }
+    ];
+};
+
+// Helper for persistent messages
+const getStoredMessages = () => {
+    const stored = localStorage.getItem('messages_v1');
+    if (stored) return JSON.parse(stored);
+
+    // Initial dummy messages
+    const initial = {
+        '1': [
+            { _id: 'm1', sender: '1', content: 'Hi there!', createdAt: new Date(Date.now() - 7200000).toISOString() },
+            { _id: 'm2', sender: 'mock_user_1', content: 'Hello! How are you?', createdAt: new Date(Date.now() - 7100000).toISOString() },
+            { _id: 'm3', sender: '1', content: 'I am doing great, saw your profile and wanted to connect.', createdAt: new Date(Date.now() - 7000000).toISOString() },
+            { _id: 'm4', sender: 'mock_user_1', content: 'That is wonderful. I would love to chat more.', createdAt: new Date(Date.now() - 6900000).toISOString() },
+            { _id: 'm5', sender: '1', content: 'That sounds like a plan!', createdAt: new Date(Date.now() - 6800000).toISOString() },
+        ]
+    };
+    localStorage.setItem('messages_v1', JSON.stringify(initial));
+    return initial;
+};
+
+// Helper for current logged in user
+const getLoggedInUser = () => {
+    const stored = localStorage.getItem('currentUser_v1');
+    return stored ? JSON.parse(stored) : null;
+};
+
+const setLoggedInUser = (user) => {
+    localStorage.setItem('currentUser_v1', JSON.stringify(user));
+};
 
 const mockResolve = (data) => Promise.resolve({ data });
 
 export const login = (formData) => {
     // Admin override
     if (formData.email === 'admin@milana.com') {
-        return mockResolve({
+        const admin = {
             _id: 'admin_001',
             name: 'Admin User',
             email: formData.email,
             token: 'mock_token',
             isAdmin: true,
             role: 'MAIN_ADMIN'
-        });
+        };
+        setLoggedInUser(admin);
+        return mockResolve(admin);
     }
 
     const profiles = getStoredProfiles();
@@ -179,24 +239,30 @@ export const login = (formData) => {
         if (!user.isApproved) {
             return Promise.reject(new Error("Your account is pending admin verification. You will be able to log in once approved."));
         }
-        return mockResolve({
+        const loggedInUser = {
             _id: user._id,
             name: user.name,
             email: user.email,
             token: 'mock_token',
-            isAdmin: false
-        });
+            isAdmin: false,
+            profilePicture: user.profilePicture
+        };
+        setLoggedInUser(loggedInUser);
+        return mockResolve(loggedInUser);
     }
 
-    // Fallback for demo users that might not be in the dummy profile list yet
-    return mockResolve({
+    // Fallback for demo users
+    const demoUser = {
         _id: 'mock_user_1',
         name: 'Demo User',
         email: formData.email,
         token: 'mock_token',
         isAdmin: false
-    });
+    };
+    setLoggedInUser(demoUser);
+    return mockResolve(demoUser);
 };
+
 export const register = (formData) => {
     const newUser = {
         ...formData,
@@ -216,44 +282,134 @@ export const register = (formData) => {
     const updatedProfiles = [...getStoredProfiles(), newUser];
     updateStoredProfiles(updatedProfiles);
 
-    return mockResolve({
-        _id: newUser._id, name: formData.name, email: formData.email, token: 'mock_token'
-    });
+    const loggedInUser = {
+        _id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+        token: 'mock_token',
+        isAdmin: false
+    };
+    setLoggedInUser(loggedInUser);
+
+    return mockResolve(loggedInUser);
 };
+
 export const getProfile = (id) => {
+    const profiles = getStoredProfiles();
     if (id) {
-        return mockResolve(DUMMY_PROFILES.find(p => p._id === id || p.id === id) || DUMMY_PROFILES[0]);
+        return mockResolve(profiles.find(p => p._id === id || p.id === id) || profiles[0]);
     }
+
+    // Return current logged in user's full data from profiles list
+    const currentUser = getLoggedInUser();
+    if (currentUser) {
+        const fullData = profiles.find(p => p._id === currentUser._id);
+        if (fullData) return mockResolve(fullData);
+    }
+
+    // Fallback
     return mockResolve({
         _id: 'mock_user_1', name: 'Demo User', email: 'demo@example.com', age: 28, gender: 'Male', religion: 'Hindu', caste: 'General', location: 'Mumbai', education: 'Masters in Management', profession: 'Senior Executive', income: '₹15 LPA', aboutMe: 'I am a balanced individual looking for a life partner who values family and dreams.', membership: 'Premium', interests: ['Reading', 'Travel', 'Movies'], profilePicture: 'https://randomuser.me/api/portraits/men/1.jpg'
     });
 };
-export const updateProfile = (formData) => mockResolve(formData);
-export const getProfiles = () => mockResolve(getStoredProfiles());
-export const sendInterest = (id) => {
-    if (!SENT_INTERESTS.includes(id)) SENT_INTERESTS.push(id);
-    return mockResolve({ message: 'Interest sent' });
+
+export const updateProfile = (formData) => {
+    const profiles = getStoredProfiles();
+    const currentUser = getLoggedInUser();
+
+    // Find and update in the broad list
+    const index = profiles.findIndex(p => p._id === formData._id || p._id === currentUser?._id);
+    if (index > -1) {
+        profiles[index] = { ...profiles[index], ...formData };
+        updateStoredProfiles(profiles);
+
+        // If it's the current user, update their fast-access session data too
+        if (profiles[index]._id === currentUser?._id) {
+            setLoggedInUser({
+                ...currentUser,
+                name: profiles[index].name,
+                profilePicture: profiles[index].profilePicture
+            });
+        }
+    }
+
+    return mockResolve(formData);
 };
-export const getSentInterestsList = () => mockResolve(SENT_INTERESTS);
+
+export const getProfiles = () => mockResolve(getStoredProfiles());
+
+export const sendInterest = (id, status = 'pending') => {
+    const sent = getSentInterestsData();
+    const existing = sent.find(i => i.receiverId === id);
+    if (!existing) {
+        sent.push({ _id: 'int_s' + Date.now(), receiverId: id, status, updatedAt: new Date().toISOString() });
+    } else {
+        existing.status = status;
+        existing.updatedAt = new Date().toISOString();
+    }
+    localStorage.setItem('sent_interests_v1', JSON.stringify(sent));
+    return mockResolve({ message: 'Interest updated' });
+};
+
+export const getSentInterestsList = () => mockResolve(getSentInterestsData().filter(i => i.status === 'pending' || i.status === 'accepted').map(i => i.receiverId));
 export const toggleFavorite = (id) => mockResolve({ message: 'Favorite toggled' });
+
 export const sendMessage = (data) => {
     const { receiverId, content } = data;
-    if (!MOCK_MESSAGES[receiverId]) MOCK_MESSAGES[receiverId] = [];
-    MOCK_MESSAGES[receiverId].push({
+    const messages = getStoredMessages();
+    if (!messages[receiverId]) messages[receiverId] = [];
+    messages[receiverId].push({
         _id: Date.now().toString(),
         sender: 'mock_user_1',
         content,
         createdAt: new Date().toISOString()
     });
+    localStorage.setItem('messages_v1', JSON.stringify(messages));
     return mockResolve(data);
 };
-export const getConversations = () => mockResolve([
-    { _id: '1', name: 'Priya Sharma', profilePicture: 'https://randomuser.me/api/portraits/women/44.jpg', lastMessage: MOCK_MESSAGES['1']?.[MOCK_MESSAGES['1'].length - 1]?.content || 'That sounds like a plan!', lastMessageDate: MOCK_MESSAGES['1']?.[MOCK_MESSAGES['1'].length - 1]?.createdAt || new Date().toISOString(), unreadCount: 1 },
-    { _id: '2', name: 'Amit Patel', profilePicture: 'https://randomuser.me/api/portraits/men/32.jpg', lastMessage: 'Hello, how are you?', lastMessageDate: new Date(Date.now() - 3600000).toISOString(), unreadCount: 0 },
-    { _id: '5', name: 'Kavya Nair', profilePicture: 'https://randomuser.me/api/portraits/women/55.jpg', lastMessage: 'I loved your profile!', lastMessageDate: new Date(Date.now() - 86400000).toISOString(), unreadCount: 0 },
-]);
-export const getMessages = (userId) => mockResolve(MOCK_MESSAGES[userId] || []);
+
+export const getConversations = () => {
+    const messages = getStoredMessages();
+    const profiles = getStoredProfiles();
+    const conversationIds = Object.keys(messages);
+
+    // Add dummy conversation markers even if no messages yet (for UX demo)
+    const dummyIds = ['2', '5'];
+    dummyIds.forEach(id => {
+        if (!conversationIds.includes(id)) {
+            // We don't push to conversationIds here to keep it derived, 
+            // but we can merge them in the final map
+        }
+    });
+
+    const allIds = Array.from(new Set([...conversationIds, ...dummyIds]));
+
+    const convos = allIds.map(id => {
+        const profile = profiles.find(p => p._id === id);
+        if (!profile) return null;
+
+        const userMsgs = messages[id] || [];
+        const lastMsg = userMsgs[userMsgs.length - 1];
+
+        return {
+            _id: profile._id,
+            name: profile.name,
+            profilePicture: profile.profilePicture || profile.image,
+            lastMessage: lastMsg?.content || 'Hello, how are you?',
+            lastMessageDate: lastMsg?.createdAt || new Date(Date.now() - 3600000).toISOString(),
+            unreadCount: id === '1' && !lastMsg ? 1 : 0
+        };
+    }).filter(Boolean);
+
+    // Sort by latest message date
+    convos.sort((a, b) => new Date(b.lastMessageDate) - new Date(a.lastMessageDate));
+
+    return mockResolve(convos);
+};
+
+export const getMessages = (userId) => mockResolve(getStoredMessages()[userId] || []);
 export const getAdminUsers = () => mockResolve(getStoredProfiles());
+
 export const toggleApproval = (id) => {
     const profiles = getStoredProfiles();
     const userIndex = profiles.findIndex(u => u._id === id);
@@ -264,12 +420,14 @@ export const toggleApproval = (id) => {
     }
     return mockResolve({ isApproved: true });
 };
+
 export const getMembershipPlans = () => mockResolve(DUMMY_PLANS);
 export const createMembershipPlan = (data) => {
     const newPlan = { ...data, _id: 'p' + Date.now() };
     DUMMY_PLANS.push(newPlan);
     return mockResolve(newPlan);
 };
+
 export const updateMembershipPlan = (id, data) => {
     const index = DUMMY_PLANS.findIndex(p => p._id === id);
     if (index > -1) {
@@ -278,6 +436,7 @@ export const updateMembershipPlan = (id, data) => {
     }
     return Promise.reject(new Error('Plan not found'));
 };
+
 export const deleteMembershipPlan = (id) => {
     const index = DUMMY_PLANS.findIndex(p => p._id === id);
     if (index > -1) {
@@ -286,17 +445,57 @@ export const deleteMembershipPlan = (id) => {
     }
     return Promise.reject(new Error('Plan not found'));
 };
+
 export const getDashboardStats = () => mockResolve({ viewedYou: 12, saved: 5, receivedInterested: 3, sentInterests: 8, gallery: 4 });
-export const getFavorites = () => mockResolve(DUMMY_PROFILES.slice(0, 2));
-export const getInterestsReceived = () => mockResolve(DUMMY_PROFILES.slice(2, 5));
-export const getInterestsSent = () => mockResolve(DUMMY_PROFILES.slice(4, 7));
-export const getGallery = () => mockResolve(DUMMY_PROFILES[0].photos || []);
+export const getFavorites = () => mockResolve(getStoredProfiles().slice(0, 2));
+
+export const getInterestsReceived = () => {
+    const items = getReceivedInterestsData();
+    const profiles = getStoredProfiles();
+    return mockResolve(items.map(item => ({
+        ...item,
+        sender: profiles.find(p => p._id === item.senderId)
+    })));
+};
+
+export const getInterestsSent = () => {
+    const items = getSentInterestsData();
+    const profiles = getStoredProfiles();
+    return mockResolve(items.map(item => ({
+        ...item,
+        receiver: profiles.find(p => p._id === item.receiverId)
+    })));
+};
+
+export const updateInterestStatus = (id, status) => {
+    const received = getReceivedInterestsData();
+    const rIdx = received.findIndex(i => i._id === id);
+    if (rIdx > -1) {
+        received[rIdx].status = status;
+        received[rIdx].updatedAt = new Date().toISOString();
+        localStorage.setItem('received_interests_v1', JSON.stringify(received));
+        return mockResolve({ message: 'Status updated' });
+    }
+    const sent = getSentInterestsData();
+    const sIdx = sent.findIndex(i => i._id === id);
+    if (sIdx > -1) {
+        sent[sIdx].status = status;
+        sent[sIdx].updatedAt = new Date().toISOString();
+        localStorage.setItem('sent_interests_v1', JSON.stringify(sent));
+        return mockResolve({ message: 'Status updated' });
+    }
+    return Promise.reject(new Error('Interest not found'));
+};
+
+export const getGallery = () => mockResolve(getStoredProfiles()[0].photos || []);
 export const addGalleryPhoto = (base64) => mockResolve({ url: base64 });
 export const deleteGalleryPhoto = (id) => mockResolve({ message: 'Photo deleted' });
+
 export const updateSettings = (data) => {
     localStorage.setItem('siteSettings', JSON.stringify(data));
     return mockResolve(data);
 };
+
 export const getSettings = () => {
     const settings = localStorage.getItem('siteSettings');
     return mockResolve(settings ? JSON.parse(settings) : {
@@ -306,7 +505,7 @@ export const getSettings = () => {
         emailNotifications: true,
         smsNotifications: false,
         maintenanceMode: false,
-        maxPhotos: 5,
+        maxPhotos: 6,
         minAge: 18,
         maxAge: 60,
         darkMode: false,
