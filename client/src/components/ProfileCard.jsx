@@ -64,7 +64,7 @@ const ProfileCard = ({ profile }) => {
             className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm relative z-0 flex flex-col group transition-all hover:shadow-md cursor-pointer w-full h-full"
         >
             {/* Image Section */}
-            <div className="relative w-full aspect-square bg-gray-100 shrink-0 pointer-events-none overflow-hidden">
+            <div className="relative w-full aspect-[4/3] sm:aspect-square bg-gray-100 shrink-0 pointer-events-none overflow-hidden">
                 {imgSrc && !imgError ? (
                     <img
                         src={imgSrc}

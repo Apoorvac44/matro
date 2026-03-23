@@ -352,7 +352,7 @@ const Explore = () => {
                         </button>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 md:gap-4 px-1 md:px-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 px-4 sm:px-2">
                         {filteredProfiles.map((profile, i) => (
                             <ProfileCard key={profile._id || i} profile={profile} />
                         ))}

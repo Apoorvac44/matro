@@ -296,21 +296,22 @@ export const register = (formData) => {
 
 export const getProfile = (id) => {
     const profiles = getStoredProfiles();
-    if (id) {
-        return mockResolve(profiles.find(p => p._id === id || p.id === id) || profiles[0]);
-    }
-
-    // Return current logged in user's full data from profiles list
     const currentUser = getLoggedInUser();
-    if (currentUser) {
-        const fullData = profiles.find(p => p._id === currentUser._id);
-        if (fullData) return mockResolve(fullData);
+
+    if (id) {
+        const found = profiles.find(p => p._id === id || p.id === id);
+        if (found) return mockResolve(found);
+
+        // If searching for self by ID but not in profiles array for some reason
+        if (currentUser && (currentUser._id === id || currentUser.id === id)) {
+            return mockResolve(currentUser);
+        }
+    } else if (currentUser) {
+        return mockResolve(currentUser);
     }
 
-    // Fallback
-    return mockResolve({
-        _id: 'mock_user_1', name: 'Demo User', email: 'demo@example.com', age: 28, gender: 'Male', location: 'Mumbai', education: 'Masters in Management', profession: 'Senior Executive', income: '₹15 LPA', aboutMe: 'I am a balanced individual looking for a life partner who values family and dreams.', membership: 'Premium', interests: ['Reading', 'Travel', 'Movies'], profilePicture: 'https://randomuser.me/api/portraits/men/1.jpg'
-    });
+    // Default fallback to Priya (profiles[0]) only if no user is found at all
+    return mockResolve(profiles[0]);
 };
 
 export const updateProfile = (formData) => {
@@ -327,8 +328,7 @@ export const updateProfile = (formData) => {
         if (profiles[index]._id === currentUser?._id) {
             setLoggedInUser({
                 ...currentUser,
-                name: profiles[index].name,
-                profilePicture: profiles[index].profilePicture
+                ...profiles[index]
             });
         }
     }
@@ -373,15 +373,7 @@ export const getConversations = () => {
     const profiles = getStoredProfiles();
     const conversationIds = Object.keys(messages);
 
-    // Add dummy conversation markers even if no messages yet (for UX demo)
     const dummyIds = ['2', '5'];
-    dummyIds.forEach(id => {
-        if (!conversationIds.includes(id)) {
-            // We don't push to conversationIds here to keep it derived, 
-            // but we can merge them in the final map
-        }
-    });
-
     const allIds = Array.from(new Set([...conversationIds, ...dummyIds]));
 
     const convos = allIds.map(id => {
@@ -401,9 +393,7 @@ export const getConversations = () => {
         };
     }).filter(Boolean);
 
-    // Sort by latest message date
     convos.sort((a, b) => new Date(b.lastMessageDate) - new Date(a.lastMessageDate));
-
     return mockResolve(convos);
 };
 
@@ -513,7 +503,6 @@ export const getSettings = () => {
 };
 
 export const getCountries = () => {
-    // Attempt to fetch from real API if possible, otherwise return mock
     return fetch('/api/countries')
         .then(res => res.json())
         .catch(() => [
