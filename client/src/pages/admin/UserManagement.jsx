@@ -460,8 +460,6 @@ const UserManagement = () => {
                                                 <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[#800020]">Roots & Beliefs</h3>
                                             </div>
                                             <div className="grid grid-cols-2 gap-6">
-                                                <DetailItem label="Religion" value={selectedUser?.religion} />
-                                                <DetailItem label="Caste" value={selectedUser?.caste || 'Open'} />
                                                 <DetailItem label="Mother Tongue" value={selectedUser?.motherTongue || 'N/A'} />
                                                 <DetailItem label="Resident Location" value={selectedUser?.location} icon={<MapPin size={14} />} />
                                             </div>
@@ -496,11 +494,6 @@ const UserManagement = () => {
                                                     label="Aadhar Card"
                                                     status={selectedUser?.aadharCard ? "Uploaded" : "Pending"}
                                                     imageUrl={selectedUser?.aadharCard}
-                                                />
-                                                <DocumentItem
-                                                    label="Caste Certificate"
-                                                    status={selectedUser?.casteCertificate ? "Uploaded" : (selectedUser?.caste ? "Pending" : "Not Required")}
-                                                    imageUrl={selectedUser?.casteCertificate}
                                                 />
                                             </div>
                                         </section>

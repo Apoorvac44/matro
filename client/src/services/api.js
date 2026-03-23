@@ -1,7 +1,7 @@
 const INITIAL_PROFILES = [
     {
-        _id: '1', name: 'Priya Hegde', email: 'priya.hegde@example.com', age: 26, gender: 'Female', religion: 'Hindu', location: 'Mysuru',
-        profession: 'Software Engineer', education: 'B.E CS', income: '₹12 LPA', caste: 'Brahmin',
+        _id: '1', name: 'Priya Hegde', email: 'priya.hegde@example.com', age: 26, gender: 'Female', location: 'Mysuru',
+        profession: 'Software Engineer', education: 'B.E CS', income: '₹12 LPA',
         profilePicture: 'https://randomuser.me/api/portraits/women/44.jpg',
         aboutMe: 'Passionate about technology and classical music. Looking for someone with a modern soul and traditional roots.',
         isApproved: true, interests: ['Veena', 'Yoga', 'Travel', 'Reading'],
@@ -13,11 +13,11 @@ const INITIAL_PROFILES = [
         mobile: '9876543210', dob: '1998-05-15', motherTongue: 'Kannada', maritalStatus: 'Single', height: "5'4\"",
         workLocation: 'Bengaluru', prefAgeRange: '27-32', prefLocation: 'Mysuru/Bengaluru', prefEducation: 'Masters', prefProfession: 'IT Professional',
         aadharCard: 'https://images.unsplash.com/photo-1544383333-5cf9833b378e?w=800&auto=format&fit=crop&q=60',
-        casteCertificate: 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&auto=format&fit=crop&q=60'
+        aadharCard: 'https://images.unsplash.com/photo-1544383333-5cf9833b378e?w=800&auto=format&fit=crop&q=60',
     },
     {
-        _id: '2', name: 'Rahul Gowda', email: 'rahul.gowda@example.com', age: 29, gender: 'Male', religion: 'Hindu', location: 'Bengaluru',
-        profession: 'Business Owner', education: 'MBA', income: '₹25 LPA', caste: 'Vokkaliga',
+        _id: '2', name: 'Rahul Gowda', email: 'rahul.gowda@example.com', age: 29, gender: 'Male', location: 'Bengaluru',
+        profession: 'Business Owner', education: 'MBA', income: '₹25 LPA',
         profilePicture: 'https://randomuser.me/api/portraits/men/32.jpg',
         aboutMe: 'Dedicated to my family business. Love exploring the temples and nature of Karnataka.',
         isApproved: true, interests: ['Cricket', 'Travel', 'Music', 'Hiking'],
@@ -31,8 +31,8 @@ const INITIAL_PROFILES = [
         aadharCard: 'https://images.unsplash.com/photo-1544383333-5cf9833b378e?w=800&auto=format&fit=crop&q=60'
     },
     {
-        _id: '3', name: 'Sindhu Bhat', email: 'sindhu.bhat@example.com', age: 27, gender: 'Female', religion: 'Hindu', location: 'Hubballi',
-        profession: 'Doctor', education: 'MBBS', income: '₹15 LPA', caste: 'Brahmin',
+        _id: '3', name: 'Sindhu Bhat', email: 'sindhu.bhat@example.com', age: 27, gender: 'Female', location: 'Hubballi',
+        profession: 'Doctor', education: 'MBBS', income: '₹15 LPA',
         profilePicture: 'https://randomuser.me/api/portraits/women/68.jpg',
         aboutMe: 'Love cooking traditional dishes and helping others. Looking for a partner with similar values.',
         isApproved: true, interests: ['Classical Music', 'Cooking', 'Yoga'],
@@ -44,11 +44,11 @@ const INITIAL_PROFILES = [
         mobile: '9988776655', dob: '1997-01-12', motherTongue: 'Kannada', maritalStatus: 'Single', height: "5'6\"",
         workLocation: 'Hubballi', prefAgeRange: '28-33', prefLocation: 'Karnataka', prefEducation: 'Medical', prefProfession: 'Doctor/Professional',
         aadharCard: 'https://images.unsplash.com/photo-1544383333-5cf9833b378e?w=800&auto=format&fit=crop&q=60',
-        casteCertificate: 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&auto=format&fit=crop&q=60'
+        aadharCard: 'https://images.unsplash.com/photo-1544383333-5cf9833b378e?w=800&auto=format&fit=crop&q=60',
     },
     {
-        _id: '4', name: 'Karthik Rao', email: 'karthik.rao@example.com', age: 31, gender: 'Male', religion: 'Hindu', location: 'Mangaluru',
-        profession: 'Chartered Accountant', education: 'CA', income: '₹18 LPA', caste: 'Brahmin',
+        _id: '4', name: 'Karthik Rao', email: 'karthik.rao@example.com', age: 31, gender: 'Male', location: 'Mangaluru',
+        profession: 'Chartered Accountant', education: 'CA', income: '₹18 LPA',
         profilePicture: 'https://randomuser.me/api/portraits/men/45.jpg',
         aboutMe: 'Focused on career with deep respect for our heritage. Enjoy the coastal lifestyle.',
         isApproved: true, interests: ['Investment', 'Beach Walks', 'Yakshagana'],
@@ -63,8 +63,8 @@ const INITIAL_PROFILES = [
         aadharCard: 'https://images.unsplash.com/photo-1544383333-5cf9833b378e?w=800&auto=format&fit=crop&q=60'
     },
     {
-        _id: '5', name: 'Deepa Kulkarni', email: 'deepa.k@example.com', age: 27, gender: 'Female', religion: 'Hindu', location: 'Belagavi',
-        profession: 'Teacher', education: 'M.Sc, B.Ed', income: '₹8 LPA', caste: 'Brahmin',
+        _id: '5', name: 'Deepa Kulkarni', email: 'deepa.k@example.com', age: 27, gender: 'Female', location: 'Belagavi',
+        profession: 'Teacher', education: 'M.Sc, B.Ed', income: '₹8 LPA',
         profilePicture: 'https://randomuser.me/api/portraits/women/55.jpg',
         aboutMe: 'Passionate about education. I value simple living and honest conversations.',
         isApproved: true, interests: ['Teaching', 'Literature', 'Classical Music'],
@@ -76,11 +76,11 @@ const INITIAL_PROFILES = [
         mobile: '9008007006', dob: '1997-12-04', motherTongue: 'Kannada', maritalStatus: 'Single', height: "5'5\"",
         workLocation: 'Belagavi', prefAgeRange: '28-33', prefLocation: 'North Karnataka', prefEducation: 'Post Graduate', prefProfession: 'Any Professional',
         aadharCard: 'https://images.unsplash.com/photo-1544383333-5cf9833b378e?w=800&auto=format&fit=crop&q=60',
-        casteCertificate: 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800&auto=format&fit=crop&q=60'
+        aadharCard: 'https://images.unsplash.com/photo-1544383333-5cf9833b378e?w=800&auto=format&fit=crop&q=60',
     },
     {
-        _id: '6', name: 'Manoj Patil', email: 'manoj.patil@example.com', age: 33, gender: 'Male', religion: 'Hindu', location: 'Dharwad',
-        profession: 'Farmer & Entrepreneur', education: 'B.Sc Agriculture', income: '₹12 LPA', caste: 'Lingayat',
+        _id: '6', name: 'Manoj Patil', email: 'manoj.patil@example.com', age: 33, gender: 'Male', location: 'Dharwad',
+        profession: 'Farmer & Entrepreneur', education: 'B.Sc Agriculture', income: '₹12 LPA',
         profilePicture: 'https://randomuser.me/api/portraits/men/60.jpg',
         aboutMe: 'Grounded in our soil with a vision for modern agriculture. Looking for a family-oriented partner.',
         isApproved: true, interests: ['Agriculture', 'Nature Walks', 'Socializing'],
@@ -94,8 +94,8 @@ const INITIAL_PROFILES = [
         aadharCard: 'https://images.unsplash.com/photo-1544383333-5cf9833b378e?w=800&auto=format&fit=crop&q=60'
     },
     {
-        _id: '7', name: 'Rakshitha Shet', email: 'rakshitha.s@example.com', age: 25, gender: 'Female', religion: 'Hindu', location: 'Udupi',
-        profession: 'UI/UX Designer', education: 'B.Des', income: '₹9 LPA', caste: 'Shet',
+        _id: '7', name: 'Rakshitha Shet', email: 'rakshitha.s@example.com', age: 25, gender: 'Female', location: 'Udupi',
+        profession: 'UI/UX Designer', education: 'B.Des', income: '₹9 LPA',
         profilePicture: 'https://randomuser.me/api/portraits/women/72.jpg',
         aboutMe: 'Creative mind with a love for our coastal traditions. I enjoy design and folk arts.',
         isApproved: false, interests: ['Design', 'Coastal Cuisine', 'Photography'],
@@ -108,8 +108,8 @@ const INITIAL_PROFILES = [
         workLocation: 'Mangaluru', prefAgeRange: '26-30', prefLocation: 'Udupi/Mangaluru', prefEducation: 'Bachelors', prefProfession: 'Creative'
     },
     {
-        _id: '8', name: 'Abhishek Nayak', email: 'abhishek.n@example.com', age: 28, gender: 'Male', religion: 'Hindu', location: 'Shivamogga',
-        profession: 'Marketing Manager', education: 'MBA', income: '₹14 LPA', caste: 'Nayak',
+        _id: '8', name: 'Abhishek Nayak', email: 'abhishek.n@example.com', age: 28, gender: 'Male', location: 'Shivamogga',
+        profession: 'Marketing Manager', education: 'MBA', income: '₹14 LPA',
         profilePicture: 'https://randomuser.me/api/portraits/men/15.jpg',
         aboutMe: 'Dynamic professional who values our cultural roots. Looking for a partner who is balanced.',
         isApproved: false, interests: ['Marketing', 'Travel', 'Classical Dance'],
@@ -122,7 +122,7 @@ const INITIAL_PROFILES = [
         workLocation: 'Bengaluru', prefAgeRange: '23-27', prefLocation: 'Karnataka', prefEducation: 'Masters', prefProfession: 'Professional'
     },
     {
-        _id: 'd1', name: 'Rashmi', email: 'rashmi@example.com', age: 29, gender: 'Female', religion: 'Hindu', caste: 'Brahmin', location: 'Bengaluru/ Bangalore',
+        _id: 'd1', name: 'Rashmi', email: 'rashmi@example.com', age: 29, gender: 'Female', location: 'Bengaluru/ Bangalore',
         profession: 'Software Professional', education: 'B.E', income: '₹10 LPA',
         profilePicture: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=500&fit=cover',
         isApproved: true, interests: ['Coding', 'Yoga'],
@@ -130,7 +130,7 @@ const INITIAL_PROFILES = [
         workLocation: 'Bengaluru'
     },
     {
-        _id: 'd2', name: 'Anusha', email: 'anusha@example.com', age: 28, gender: 'Female', religion: 'Hindu', caste: 'Gowda', location: 'Uttara Kannada',
+        _id: 'd2', name: 'Anusha', email: 'anusha@example.com', age: 28, gender: 'Female', location: 'Uttara Kannada',
         profession: 'Software Professional', education: 'B.E', income: '₹12 LPA',
         profilePicture: '', // No photo demo
         membership: 'p3',
@@ -139,7 +139,7 @@ const INITIAL_PROFILES = [
         workLocation: 'Bengaluru'
     },
     {
-        _id: 'd3', name: 'Sowmya', email: 'sowmya@example.com', age: 27, gender: 'Female', religion: 'Hindu', caste: 'Lingayat', location: 'Mysuru',
+        _id: 'd3', name: 'Sowmya', email: 'sowmya@example.com', age: 27, gender: 'Female', location: 'Mysuru',
         profession: 'Doctor', education: 'MBBS', income: '₹18 LPA',
         profilePicture: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=500&fit=cover',
         isApproved: true, interests: ['Helping others', 'Cooking'],
@@ -309,7 +309,7 @@ export const getProfile = (id) => {
 
     // Fallback
     return mockResolve({
-        _id: 'mock_user_1', name: 'Demo User', email: 'demo@example.com', age: 28, gender: 'Male', religion: 'Hindu', caste: 'General', location: 'Mumbai', education: 'Masters in Management', profession: 'Senior Executive', income: '₹15 LPA', aboutMe: 'I am a balanced individual looking for a life partner who values family and dreams.', membership: 'Premium', interests: ['Reading', 'Travel', 'Movies'], profilePicture: 'https://randomuser.me/api/portraits/men/1.jpg'
+        _id: 'mock_user_1', name: 'Demo User', email: 'demo@example.com', age: 28, gender: 'Male', location: 'Mumbai', education: 'Masters in Management', profession: 'Senior Executive', income: '₹15 LPA', aboutMe: 'I am a balanced individual looking for a life partner who values family and dreams.', membership: 'Premium', interests: ['Reading', 'Travel', 'Movies'], profilePicture: 'https://randomuser.me/api/portraits/men/1.jpg'
     });
 };
 

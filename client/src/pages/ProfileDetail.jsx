@@ -320,32 +320,19 @@ const ProfileDetail = () => {
                             )}
 
                             {/* Verification Details */}
-                            {canViewVerification && (profile.aadharCard || profile.casteCertificate) && (
+                            {canViewVerification && profile.aadharCard && (
                                 <div>
                                     <h3 className="text-[10px] font-bold text-[#800020] uppercase tracking-[0.2em] mb-4 pb-2 border-b border-[#800020]/5">Verification Details</h3>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        {profile.aadharCard && (
-                                            <div className="bg-white p-4 rounded-xl shadow-sm border border-[#800020]/5 flex items-center gap-3">
-                                                <div className="w-10 h-10 bg-[#FFFDD0] text-[#D4AF37] rounded-lg flex items-center justify-center flex-shrink-0">
-                                                    <Shield size={16} />
-                                                </div>
-                                                <div>
-                                                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Aadhar Card</p>
-                                                    <p className="text-green-600 font-semibold text-sm">Verified</p>
-                                                </div>
+                                        <div className="bg-white p-4 rounded-xl shadow-sm border border-[#800020]/5 flex items-center gap-3">
+                                            <div className="w-10 h-10 bg-[#FFFDD0] text-[#D4AF37] rounded-lg flex items-center justify-center flex-shrink-0">
+                                                <Shield size={16} />
                                             </div>
-                                        )}
-                                        {profile.casteCertificate && (
-                                            <div className="bg-white p-4 rounded-xl shadow-sm border border-[#800020]/5 flex items-center gap-3">
-                                                <div className="w-10 h-10 bg-[#FFFDD0] text-[#D4AF37] rounded-lg flex items-center justify-center flex-shrink-0">
-                                                    <Book size={16} />
-                                                </div>
-                                                <div>
-                                                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Caste Certificate</p>
-                                                    <p className="text-green-600 font-semibold text-sm">Verified</p>
-                                                </div>
+                                            <div>
+                                                <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Aadhar Card</p>
+                                                <p className="text-green-600 font-semibold text-sm">Verified</p>
                                             </div>
-                                        )}
+                                        </div>
                                     </div>
                                 </div>
                             )}

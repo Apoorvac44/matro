@@ -61,7 +61,7 @@ const ProfileCard = ({ profile }) => {
     return (
         <div
             onClick={() => navigate(`/profile/${profileId}`)}
-            className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm mb-4 relative z-0 flex flex-col group transition-all hover:shadow-md cursor-pointer"
+            className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm relative z-0 flex flex-col group transition-all hover:shadow-md cursor-pointer"
         >
             {/* Image Section */}
             <div className="relative block aspect-square bg-gray-100 shrink-0 pointer-events-none">
@@ -101,7 +101,7 @@ const ProfileCard = ({ profile }) => {
             </div>
 
             {/* Info Section */}
-            <div className="p-2.5 relative bg-white pb-14 flex-1 flex flex-col min-h-0">
+            <div className="p-2.5 relative bg-white pb-4 flex-1 flex flex-col min-h-0">
                 <div className="flex justify-between items-start mb-1.5">
                     <div className="flex-1 min-w-0 pr-2">
                         <h3 className="font-bold text-gray-900 text-[15px] group-hover:text-[#800020] transition-colors truncate leading-tight">

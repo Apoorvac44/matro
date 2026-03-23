@@ -8,7 +8,7 @@ import {
     CheckCircle, Eye, EyeOff, Heart,
     ChevronRight, ChevronLeft, MapPin,
     Briefcase, GraduationCap, Coins,
-    ArrowRight, Sparkles, Image as ImageIcon
+    ArrowRight, Sparkles, Image as ImageIcon, ChevronDown, Loader2
 } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -35,8 +35,6 @@ const registrationSchema = z.object({
     confirmPassword: z.string(),
     // Step 2
     motherTongue: z.string().min(1, 'Mother tongue is required'),
-    religion: z.string().min(1, 'Religion is required'),
-    caste: z.string().min(1, 'Caste is required'),
     maritalStatus: z.enum(['Single', 'Divorced', 'Widowed', 'Other'], { required_error: 'Marital status is required' }),
     height: z.string().min(1, 'Height is required'),
     location: z.string().min(1, 'Location is required'),
@@ -52,8 +50,7 @@ const registrationSchema = z.object({
     prefEducation: z.string().optional(),
     prefProfession: z.string().optional(),
     // Step 5
-    casteCertificate: z.any().optional(),
-    aadharCard: z.any().optional(),
+    aadharCard: z.any().refine((file) => file && file.length > 0, 'Aadhar card is required'),
     // Step 6
     membership: z.string().default('p1'),
 }).refine((data) => data.password === data.confirmPassword, {
@@ -79,7 +76,7 @@ const Register = () => {
     const navigate = useNavigate();
     const [paymentMethod, setPaymentMethod] = useState('UPI');
     const [plans, setPlans] = useState([]);
-    const [casteFileName, setCasteFileName] = useState('');
+    const [loading, setLoading] = useState(false); // Added loading state
     const [aadharFileName, setAadharFileName] = useState('');
 
     const { register, handleSubmit, formState: { errors }, watch, trigger, setValue } = useForm({
@@ -120,15 +117,15 @@ const Register = () => {
             }
             setAge(calculatedAge);
         }
-    }, [dobValue]);
+    }, [dobValue, watch, setValue]);
 
     const nextStep = async () => {
         let fieldsToValidate = [];
         if (step === 1) fieldsToValidate = ['name', 'gender', 'dob', 'mobile', 'email', 'password', 'confirmPassword'];
-        if (step === 2) fieldsToValidate = ['religion', 'caste', 'motherTongue', 'maritalStatus', 'height', 'location'];
+        if (step === 2) fieldsToValidate = ['motherTongue', 'maritalStatus', 'height', 'location'];
         if (step === 3) fieldsToValidate = ['education', 'profession', 'workLocation'];
         if (step === 4) fieldsToValidate = ['prefAgeMin', 'prefAgeMax', 'prefLocation', 'prefEducation', 'prefProfession'];
-        if (step === 5) fieldsToValidate = ['casteCertificate', 'aadharCard'];
+        if (step === 5) fieldsToValidate = ['aadharCard'];
 
         const isValid = await trigger(fieldsToValidate);
         console.log(`Step ${step} validation - isValid:`, isValid);
@@ -174,30 +171,30 @@ const Register = () => {
                 });
             };
 
-            const aadharBase64 = await fileToBase64(data.aadharCard);
-            const casteBase64 = await fileToBase64(data.casteCertificate);
+            const aadharBase64 = await fileToBase64(data.aadharCard[0]); // Access the first file from FileList
 
             const finalData = {
                 ...data,
                 aadharCard: aadharBase64,
-                casteCertificate: casteBase64,
                 membership: data.membership || 'p1'
             };
 
-            console.log('Submitting Registration Data:', finalData);
-            const response = await api.register(finalData);
+            const result = await api.register(finalData);
+            const responseData = result.data; // Ensure we access .data from the mock resolve
 
             console.log("Registration successful, navigating to dashboard.");
             login({
                 ...finalData,
-                _id: response._id,
-                token: response.token,
+                _id: responseData._id,
+                token: responseData.token,
                 isAdmin: false
             });
             navigate('/dashboard');
         } catch (error) {
             console.error("Registration failed:", error);
-            // Optionally, show a toast or error message here
+            alert("Registration failed. Please check your connection and try again.");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -398,56 +395,30 @@ const Register = () => {
                                         exit={{ opacity: 0, x: -20 }}
                                         className="space-y-5"
                                     >
-
-
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <div className="space-y-1.5">
-                                                <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Religion *</label>
-                                                <select {...register('religion')} className="form-input-premium appearance-none">
-                                                    <option value="">Select</option>
-                                                    <option>Hindu</option>
-                                                    <option>Muslim</option>
-                                                    <option>Christian</option>
-                                                    <option>Sikh</option>
-                                                    <option>Jain</option>
-                                                    <option>Buddhist</option>
-                                                    <option>Other</option>
-                                                </select>
-                                                {errors.religion && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.religion.message}</p>}
-                                            </div>
-                                            <div className="space-y-1.5">
-                                                <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Caste *</label>
-                                                <input {...register('caste')} className="form-input-premium" placeholder="e.g. Brahmin, Vokkaliga" />
-                                                {errors.caste && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.caste.message}</p>}
-                                            </div>
+                                        <div className="space-y-1.5">
+                                            <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Mother Tongue *</label>
+                                            <select {...register('motherTongue')} className="form-input-premium appearance-none">
+                                                <option value="">Select</option>
+                                                <option>Hindi</option>
+                                                <option>Bengali</option>
+                                                <option>Marathi</option>
+                                                <option>Telugu</option>
+                                                <option>Tamil</option>
+                                                <option>Kannada</option>
+                                                <option>Other</option>
+                                            </select>
+                                            {errors.motherTongue && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.motherTongue.message}</p>}
                                         </div>
-
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <div className="space-y-1.5">
-                                                <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Mother Tongue *</label>
-                                                <select {...register('motherTongue')} className="form-input-premium appearance-none">
-                                                    <option value="">Select</option>
-                                                    <option>Hindi</option>
-                                                    <option>Bengali</option>
-                                                    <option>Marathi</option>
-                                                    <option>Telugu</option>
-                                                    <option>Tamil</option>
-                                                    <option>Kannada</option>
-                                                    <option>Other</option>
-                                                </select>
-                                                {errors.motherTongue && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.motherTongue.message}</p>}
-                                            </div>
-                                            <div className="space-y-1.5">
-                                                <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Marital Status *</label>
-                                                <select {...register('maritalStatus')} className="form-input-premium appearance-none">
-                                                    <option value="">Select</option>
-                                                    <option value="Single">Single</option>
-                                                    <option value="Divorced">Divorced</option>
-                                                    <option value="Widowed">Widowed</option>
-                                                    <option value="Other">Other</option>
-                                                </select>
-                                                {errors.maritalStatus && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.maritalStatus.message}</p>}
-                                            </div>
+                                        <div className="space-y-1.5">
+                                            <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Marital Status *</label>
+                                            <select {...register('maritalStatus')} className="form-input-premium appearance-none">
+                                                <option value="">Select</option>
+                                                <option value="Single">Single</option>
+                                                <option value="Divorced">Divorced</option>
+                                                <option value="Widowed">Widowed</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                            {errors.maritalStatus && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.maritalStatus.message}</p>}
                                         </div>
 
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -489,8 +460,22 @@ const Register = () => {
                                         <div className="space-y-1.5">
                                             <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Highest Education *</label>
                                             <div className="relative group">
-                                                <GraduationCap className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#800020] transition-colors" size={18} />
-                                                <input {...register('education')} className="form-input-premium" placeholder="e.g. MBA, B.Tech" />
+                                                <GraduationCap className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#800020] transition-colors z-10" size={18} />
+                                                <select {...register('education')} className="form-input-premium appearance-none pl-12">
+                                                    <option value="">Select Education</option>
+                                                    <option>B.E / B.Tech</option>
+                                                    <option>M.E / M.Tech</option>
+                                                    <option>MCA / BCA</option>
+                                                    <option>MBA / BBA</option>
+                                                    <option>MBBS / MD</option>
+                                                    <option>B.Com / M.Com</option>
+                                                    <option>B.Sc / M.Sc</option>
+                                                    <option>L.L.B / L.L.M</option>
+                                                    <option>Ph.D</option>
+                                                    <option>Diploma</option>
+                                                    <option>Others</option>
+                                                </select>
+                                                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
                                             </div>
                                             {errors.education && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.education.message}</p>}
                                         </div>
@@ -499,8 +484,23 @@ const Register = () => {
                                             <div className="space-y-1.5">
                                                 <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Profession *</label>
                                                 <div className="relative group">
-                                                    <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#800020] transition-colors" size={18} />
-                                                    <input {...register('profession')} className="form-input-premium" placeholder="e.g. Doctor" />
+                                                    <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#800020] transition-colors z-10" size={18} />
+                                                    <select {...register('profession')} className="form-input-premium appearance-none pl-12">
+                                                        <option value="">Select Profession</option>
+                                                        <option>Software Professional</option>
+                                                        <option>Engineer</option>
+                                                        <option>Doctor</option>
+                                                        <option>Business Owner</option>
+                                                        <option>Government Employee</option>
+                                                        <option>Teacher / Academician</option>
+                                                        <option>Accountant / CA</option>
+                                                        <option>Advocate / Legal</option>
+                                                        <option>Service Sector</option>
+                                                        <option>Civil Service (IAS/IPS)</option>
+                                                        <option>Not Working</option>
+                                                        <option>Others</option>
+                                                    </select>
+                                                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
                                                 </div>
                                                 {errors.profession && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.profession.message}</p>}
                                             </div>
@@ -604,63 +604,37 @@ const Register = () => {
                                             </div>
                                         </div>
 
-                                        <div className="space-y-1.5">
-                                            <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Aadhar Card (PDF)</label>
-                                            <div className="relative group cursor-pointer h-16 bg-[#F9FAFB/50] border-2 border-dashed border-gray-300 rounded-2xl flex items-center px-4 hover:border-[#800020] transition-colors focus-within:border-[#800020]">
-                                                <input
-                                                    type="file"
-                                                    accept=".pdf"
-                                                    {...register('aadharCard')}
-                                                    onChange={(e) => {
-                                                        const file = e.target.files[0];
-                                                        if (file) {
-                                                            setAadharFileName(file.name);
-                                                            setValue('aadharCard', file);
-                                                        }
-                                                    }}
-                                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                                />
-                                                <div className="flex items-center gap-3 w-full">
-                                                    <div className="w-8 h-8 rounded-lg bg-[#800020]/10 flex items-center justify-center text-[#800020]">
-                                                        <ImageIcon size={14} />
+                                        <div className="space-y-4">
+                                            {/* Aadhar Card Upload */}
+                                            <div className="bg-[#800020]/5 p-6 rounded-2xl border border-[#800020]/10">
+                                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                                    <div className="flex items-center gap-4">
+                                                        <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-[#800020] shadow-sm">
+                                                            <Shield size={24} />
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-sm font-black text-gray-900 uppercase tracking-widest">Aadhar Card *</p>
+                                                            <p className="text-[10px] text-gray-400 font-bold uppercase">Government Issued ID</p>
+                                                        </div>
                                                     </div>
-                                                    <span className="text-sm font-semibold text-gray-600 truncate flex-1">
-                                                        {aadharFileName || 'Upload Aadhar Card'}
-                                                    </span>
-                                                    <span className="text-[10px] font-bold text-[#D4AF37] uppercase tracking-widest bg-[#FFFDD0] px-3 py-1 rounded-full">
-                                                        Browse
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="space-y-1.5">
-                                            <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Caste Certificate (PDF)</label>
-                                            <div className="relative group cursor-pointer h-16 bg-[#F9FAFB/50] border-2 border-dashed border-gray-300 rounded-2xl flex items-center px-4 hover:border-[#800020] transition-colors focus-within:border-[#800020]">
-                                                <input
-                                                    type="file"
-                                                    accept=".pdf"
-                                                    {...register('casteCertificate')}
-                                                    onChange={(e) => {
-                                                        const file = e.target.files[0];
-                                                        if (file) {
-                                                            setCasteFileName(file.name);
-                                                            setValue('casteCertificate', file);
-                                                        }
-                                                    }}
-                                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                                />
-                                                <div className="flex items-center gap-3 w-full">
-                                                    <div className="w-8 h-8 rounded-lg bg-[#800020]/10 flex items-center justify-center text-[#800020]">
-                                                        <ImageIcon size={14} />
+                                                    <div className="relative group">
+                                                        <input
+                                                            type="file"
+                                                            accept=".pdf"
+                                                            {...register('aadharCard')}
+                                                            className="hidden"
+                                                            id="aadhar-upload"
+                                                        />
+                                                        <label
+                                                            htmlFor="aadhar-upload"
+                                                            className={`flex items-center gap-3 px-6 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest cursor-pointer transition-all ${watch('aadharCard')?.length > 0 ? 'bg-green-500 text-white' : 'bg-[#D4AF37] text-[#800020] hover:bg-white hover:shadow-lg'}`}
+                                                        >
+                                                            {watch('aadharCard')?.length > 0 ? <CheckCircle size={16} /> : <ImageIcon size={16} />}
+                                                            {watch('aadharCard')?.length > 0 ? 'Uploaded' : 'Upload PDF'}
+                                                        </label>
                                                     </div>
-                                                    <span className="text-sm font-semibold text-gray-600 truncate flex-1">
-                                                        {casteFileName || 'Upload Caste Certificate'}
-                                                    </span>
-                                                    <span className="text-[10px] font-bold text-[#D4AF37] uppercase tracking-widest bg-[#FFFDD0] px-3 py-1 rounded-full">
-                                                        Browse
-                                                    </span>
                                                 </div>
+                                                {errors.aadharCard && <p className="text-red-500 text-[10px] font-bold uppercase mt-2">{errors.aadharCard.message}</p>}
                                             </div>
                                         </div>
                                     </motion.div>
@@ -809,13 +783,21 @@ const Register = () => {
                                 ) : (
                                     <button
                                         type="button"
+                                        disabled={loading}
                                         onClick={handleSubmit(onSubmit, (err) => {
                                             console.log("Validation Errors:", err);
-                                            // Optionally alert or show a message
                                         })}
-                                        className="flex-[2] py-5 bg-[#800020] text-[#D4AF37] flex items-center justify-center gap-3 rounded-2xl font-bold uppercase tracking-[0.2em] text-[10px] shadow-xl shadow-[#800020]/20 hover:bg-[#600318] hover:-translate-y-1 hover:shadow-[#D4AF37]/10 transition-all active:scale-95"
+                                        className="flex-[2] py-5 bg-[#800020] text-[#D4AF37] flex items-center justify-center gap-3 rounded-2xl font-bold uppercase tracking-[0.2em] text-[10px] shadow-xl shadow-[#800020]/20 hover:bg-[#600318] hover:-translate-y-1 hover:shadow-[#D4AF37]/10 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
-                                        Create Account <ArrowRight size={16} />
+                                        {loading ? (
+                                            <>
+                                                <Loader2 size={16} className="animate-spin" /> Processing...
+                                            </>
+                                        ) : (
+                                            <>
+                                                Create Account <ArrowRight size={16} />
+                                            </>
+                                        )}
                                     </button>
                                 )}
                             </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { User, ArrowLeft, CheckCircle, Loader2, Heart, ShieldCheck, ChevronRight, Save, ChevronDown } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { User, ArrowLeft, CheckCircle, Loader2, Heart, ShieldCheck, ChevronRight, Save, ChevronDown, Image, Menu, X as XIcon } from 'lucide-react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as api from '../services/api';
 import { AuthContext } from '../context/AuthContext';
@@ -21,7 +21,7 @@ const FormRow = ({ label, required, children }) => (
 
 const EditProfile = ({ defaultTab }) => {
     const [formData, setFormData] = useState({
-        name: '', age: '', gender: '', religion: '', caste: '', location: '',
+        name: '', age: '', gender: '', location: '',
         education: '', profession: '', income: '', workLocation: '',
         interests: '', aboutMe: '', profilePicture: '',
         photos: [], // Gallery photos
@@ -29,7 +29,7 @@ const EditProfile = ({ defaultTab }) => {
         email: '',
         languagesKnown: '',
         prefAgeMin: '', prefAgeMax: '', prefLocation: '', prefEducation: '', prefProfession: '',
-        aadharCard: '', casteCertificate: '', membership: 'p1',
+        aadharCard: '', membership: 'p1',
         weight: '', bodyType: '', profileCreatedBy: '', eatingHabits: '', smokingHabits: '', drinkingHabits: '',
         timeOfBirth: '', star: '', raasi: '', kujaDosha: '', kulaDaiva: '', horoscope: '',
         familyType: '', familyStatus: '', brothers: '', sisters: '', ancestralOrigin: '',
@@ -84,15 +84,21 @@ const EditProfile = ({ defaultTab }) => {
     const [message, setMessage] = useState('');
     const [activeTab, setActiveTab] = useState('Basic Information');
     const [expandedSections, setExpandedSections] = useState(['Profile Info']); // Default open the first section
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const navigate = useNavigate();
     const { user, refreshUser } = useContext(AuthContext); // Added user to context destructuring
     const [completeness, setCompleteness] = useState(0);
 
+    const [searchParams] = useSearchParams();
+
     useEffect(() => {
-        if (defaultTab) {
+        const tab = searchParams.get('tab');
+        if (tab) {
+            setActiveTab(tab);
+        } else if (defaultTab) {
             setActiveTab(defaultTab);
         }
-    }, [defaultTab]);
+    }, [defaultTab, searchParams]);
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -102,8 +108,6 @@ const EditProfile = ({ defaultTab }) => {
                     name: data.name || '',
                     age: data.age || '',
                     gender: data.gender || '',
-                    religion: data.religion || '',
-                    caste: data.caste || '',
                     location: data.location || '',
                     education: data.education || '',
                     profession: data.profession || '',
@@ -124,8 +128,6 @@ const EditProfile = ({ defaultTab }) => {
                     prefEducation: data.prefEducation || '',
                     prefProfession: data.prefProfession || '',
                     email: data.email || '',
-                    aadharCard: data.aadharCard || '',
-                    casteCertificate: data.casteCertificate || '',
                     membership: data.membership || 'p1',
                     weight: data.weight || '',
                     bodyType: data.bodyType || '',
@@ -160,9 +162,6 @@ const EditProfile = ({ defaultTab }) => {
                     prefHeightMax: data.prefHeightMax || '',
                     prefPhysicalStatus: data.prefPhysicalStatus || '',
                     prefMotherTongue: data.prefMotherTongue || '',
-                    prefReligion: data.prefReligion || '',
-                    prefOtherReligionAllowed: data.prefOtherReligionAllowed || false,
-                    prefSubcaste: data.prefSubcaste || '',
                     prefStar: data.prefStar || '',
                     prefKujaDosham: data.prefKujaDosham || '',
                     prefEducationType: data.prefEducationType || '',
@@ -256,17 +255,36 @@ const EditProfile = ({ defaultTab }) => {
                 reader.onload = () => resolve(reader.result);
                 reader.onerror = (error) => reject(error);
             });
-            setFormData(prev => {
-                const updated = { ...prev, profilePicture: base64 };
-                setCompleteness(calculateCompleteness(updated));
-                return updated;
-            });
-            // Sync with global user state immediately
+
+            const updatedProfile = { ...formData, profilePicture: base64 };
+            setFormData(updatedProfile);
+            setCompleteness(calculateCompleteness(updatedProfile));
+
+            // Immediate Save for better UX
+            await api.updateProfile(updatedProfile);
             refreshUser();
+            setMessage('Profile photo updated successfully.');
+            setTimeout(() => setMessage(''), 3000);
         } catch (err) {
             console.error('File conversion error:', err);
+            alert('Failed to update profile photo.');
         } finally {
             setUploading(false);
+        }
+    };
+
+    const removeProfilePhoto = async () => {
+        const updatedProfile = { ...formData, profilePicture: '' };
+        setFormData(updatedProfile);
+        setCompleteness(calculateCompleteness(updatedProfile));
+
+        try {
+            await api.updateProfile(updatedProfile);
+            refreshUser();
+            setMessage('Profile photo removed.');
+            setTimeout(() => setMessage(''), 3000);
+        } catch (err) {
+            console.error('Error removing profile photo:', err);
         }
     };
 
@@ -287,7 +305,15 @@ const EditProfile = ({ defaultTab }) => {
                 reader.onload = () => resolve(reader.result);
                 reader.onerror = (error) => reject(error);
             });
-            setFormData({ ...formData, [field]: base64 });
+            const updatedProfile = { ...formData, [field]: base64 };
+            setFormData(updatedProfile);
+            setCompleteness(calculateCompleteness(updatedProfile));
+
+            // Immediate Save
+            await api.updateProfile(updatedProfile);
+            refreshUser();
+            setMessage(`${field.charAt(0).toUpperCase() + field.slice(1)} updated successfully.`);
+            setTimeout(() => setMessage(''), 3000);
         } catch (err) {
             console.error('Document conversion error:', err);
         } finally {
@@ -321,14 +347,19 @@ const EditProfile = ({ defaultTab }) => {
                 })
             );
 
-            setFormData(prev => {
-                const updated = {
-                    ...prev,
-                    photos: [...prev.photos, ...newPhotos]
-                };
-                setCompleteness(calculateCompleteness(updated));
-                return updated;
-            });
+            const updatedProfile = {
+                ...formData,
+                photos: [...(formData.photos || []), ...newPhotos]
+            };
+
+            setFormData(updatedProfile);
+            setCompleteness(calculateCompleteness(updatedProfile));
+
+            // Immediate Save for better UX
+            await api.updateProfile(updatedProfile);
+            refreshUser();
+            setMessage('Gallery photos added successfully.');
+            setTimeout(() => setMessage(''), 3000);
         } catch (err) {
             alert(err.message || 'Error uploading photos');
             console.error(err);
@@ -337,11 +368,19 @@ const EditProfile = ({ defaultTab }) => {
         }
     };
 
-    const removeGalleryPhoto = (index) => {
-        setFormData(prev => ({
-            ...prev,
-            photos: prev.photos.filter((_, i) => i !== index)
-        }));
+    const removeGalleryPhoto = async (index) => {
+        const newPhotos = formData.photos.filter((_, i) => i !== index);
+        const updatedProfile = { ...formData, photos: newPhotos };
+
+        setFormData(updatedProfile);
+        setCompleteness(calculateCompleteness(updatedProfile));
+
+        try {
+            await api.updateProfile(updatedProfile);
+            refreshUser();
+        } catch (err) {
+            console.error('Error removing gallery photo:', err);
+        }
     };
 
     if (loading) return (
@@ -356,23 +395,31 @@ const EditProfile = ({ defaultTab }) => {
         <div className="bg-[#F9FAFB] min-h-screen pt-24 pb-20 px-4 md:px-8">
             <div className="max-w-7xl mx-auto">
                 {/* Header Area */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
-                    <div>
-                        <motion.span
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="text-[10px] font-bold uppercase tracking-[0.5em] text-[#D4AF37] mb-2 block"
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 bg-white p-8 rounded-3xl shadow-sm border border-gray-100 relative">
+                    <div className="flex items-center gap-4">
+                        <button
+                            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                            className="lg:hidden w-10 h-10 rounded-xl bg-[#800020]/5 flex items-center justify-center text-[#800020] hover:bg-[#800020]/10 transition-all border border-[#800020]/10"
                         >
-                            Profile details
-                        </motion.span>
-                        <h1 className="text-3xl font-serif font-black text-gray-900 italic flex items-center gap-4">
-                            Edit Profile
-                            <Link to={`/profile/${user?._id || user?.id}`} className="text-sm font-sans font-bold text-[#D4AF37] hover:text-[#800020] underline transition-colors normal-case tracking-normal">View my profile</Link>
-                        </h1>
+                            <Menu size={20} />
+                        </button>
+                        <div>
+                            <motion.span
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                className="text-[10px] font-bold uppercase tracking-[0.5em] text-[#D4AF37] mb-2 block"
+                            >
+                                Profile details
+                            </motion.span>
+                            <h1 className="text-xl sm:text-3xl font-serif font-black text-gray-900 italic flex flex-wrap items-center gap-2 sm:gap-4">
+                                Edit Profile
+                                <Link to={`/profile/${user?._id || user?.id}`} className="text-[#800020]/40 text-[10px] sm:text-xs font-bold uppercase tracking-widest hover:text-[#800020] transition-colors border-b border-[#800020]/20 pb-0.5 inline-block">View my profile</Link>
+                            </h1>
+                        </div>
                     </div>
                     <button
                         onClick={() => navigate('/dashboard')}
-                        className="w-12 h-12 rounded-full bg-[#F8F9FA] flex items-center justify-center text-[#800020] hover:bg-gray-100 transition-all border border-gray-200 group flex-shrink-0"
+                        className="w-12 h-12 rounded-full bg-[#F8F9FA] flex items-center justify-center text-[#800020] hover:bg-gray-100 transition-all border border-gray-200 group flex-shrink-0 absolute top-8 right-8 md:relative md:top-0 md:right-0"
                     >
                         <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
                     </button>
@@ -388,87 +435,127 @@ const EditProfile = ({ defaultTab }) => {
                     </motion.div>
                 )}
 
-                <div className="flex flex-col md:flex-row gap-8 items-start">
+                <div className="flex flex-col md:flex-row gap-8 items-start relative">
                     {/* Sidebar Navigation */}
-                    <div className="w-full lg:w-72 flex-shrink-0 bg-white shadow-[0_0_5px_rgba(0,0,0,0.1)] border border-gray-200 overflow-hidden sticky top-28">
-                        {/* Profile Photo Preview */}
-                        <div className="p-6 bg-white border-b border-gray-100 flex flex-col items-center">
-                            <div className="relative group">
-                                <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-[#800020]/10 shadow-lg bg-gray-50 flex items-center justify-center">
-                                    {formData.profilePicture ? (
-                                        <img src={formData.profilePicture} alt="Profile" className="w-full h-full object-cover" />
-                                    ) : (
-                                        <User size={48} className="text-gray-300" />
-                                    )}
+                    <AnimatePresence>
+                        {(isSidebarOpen || window.innerWidth >= 1024) && (
+                            <motion.div
+                                initial={{ x: -300, opacity: 0 }}
+                                animate={{ x: 0, opacity: 1 }}
+                                exit={{ x: -300, opacity: 0 }}
+                                className={`fixed inset-y-0 left-0 z-50 w-72 bg-white shadow-2xl lg:shadow-[0_0_5px_rgba(0,0,0,0.1)] border-r border-gray-200 overflow-hidden lg:sticky lg:top-28 lg:z-0 lg:block ${!isSidebarOpen && 'hidden lg:block'}`}
+                            >
+                                <div className="lg:hidden p-4 flex justify-between items-center bg-[#800020] text-[#D4AF37]">
+                                    <span className="font-serif font-bold italic">Menu</span>
+                                    <button onClick={() => setIsSidebarOpen(false)}><XIcon size={20} /></button>
                                 </div>
-                                <button
-                                    type="button"
-                                    onClick={() => setActiveTab('Photos')}
-                                    className="absolute bottom-1 right-1 w-8 h-8 bg-[#800020] text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
-                                >
-                                    <Heart size={14} fill="currentColor" />
-                                </button>
-                            </div>
-                            <h3 className="mt-4 font-serif font-black text-gray-900 italic text-lg">{formData.name || 'Your Name'}</h3>
-                            <p className="text-[10px] font-bold text-[#D4AF37] uppercase tracking-[0.2em] mt-1">Profile Completeness: {completeness}%</p>
-                        </div>
-                        <div className="flex flex-col">
-                            {sidebarSections.map((section, idx) => {
-                                const isExpanded = expandedSections.includes(section.title);
-                                return (
-                                    <div key={idx} className="mb-px last:mb-0">
+                                {/* Profile Photo Preview */}
+                                <div className="p-6 bg-white border-b border-gray-100 flex flex-col items-center">
+                                    <div className="relative group">
                                         <div
-                                            onClick={() => {
-                                                setExpandedSections(prev =>
-                                                    prev.includes(section.title)
-                                                        ? prev.filter(t => t !== section.title)
-                                                        : [...prev, section.title]
-                                                );
-                                            }}
-                                            className="w-full flex items-center justify-between px-6 py-4 bg-[#800020]/5 text-[#800020] border-b border-[#800020]/10 font-serif font-bold italic text-[16px] cursor-pointer hover:bg-[#800020]/10 transition-colors select-none"
+                                            className="w-32 h-32 rounded-full overflow-hidden border-4 border-[#800020]/10 shadow-lg bg-gray-50 flex items-center justify-center cursor-pointer group hover:border-[#800020]/30 transition-all relative"
+                                            onClick={() => document.getElementById('sidebar-photo-upload').click()}
                                         >
-                                            {section.title}
-                                            {isExpanded ? <ChevronDown size={16} className="text-[#800020]/60" /> : <ChevronRight size={16} className="text-[#800020]/40" />}
-                                        </div>
-                                        <AnimatePresence>
-                                            {isExpanded && (
-                                                <motion.div
-                                                    initial={{ height: 0, opacity: 0 }}
-                                                    animate={{ height: 'auto', opacity: 1 }}
-                                                    exit={{ height: 0, opacity: 0 }}
-                                                    className="overflow-hidden flex flex-col"
-                                                >
-                                                    {section.items.map((item, itemIdx) => (
-                                                        <button
-                                                            key={itemIdx}
-                                                            type="button"
-                                                            onClick={() => {
-                                                                setActiveTab(item.id);
-                                                                if (window.innerWidth < 1024) {
-                                                                    const el = document.getElementById('main-form-content');
-                                                                    if (el) el.scrollIntoView({ behavior: 'smooth' });
-                                                                }
-                                                            }}
-                                                            className={`w-full flex items-center justify-between px-6 py-3.5 text-left border-b border-gray-50 last:border-0 hover:bg-[#FFFDD0]/30 transition-all ${activeTab === item.id ? 'bg-[#FFFDD0]/50 border-l-4 border-l-[#800020] pl-5' : 'bg-white'}`}
-                                                        >
-                                                            <span className={`text-[13px] font-bold ${activeTab === item.id ? 'text-[#800020]' : 'text-gray-600'}`}>
-                                                                {item.label}
-                                                            </span>
-                                                            {item.action && (
-                                                                <span className="text-[11px] font-black uppercase tracking-widest text-[#D4AF37] group-hover:text-[#800020] transition-colors">
-                                                                    {item.action}
-                                                                </span>
-                                                            )}
-                                                        </button>
-                                                    ))}
-                                                </motion.div>
+                                            {formData.profilePicture ? (
+                                                <img src={formData.profilePicture} alt="Profile" className="w-full h-full object-cover group-hover:opacity-80 transition-opacity" />
+                                            ) : (
+                                                <User size={48} className="text-gray-300" />
                                             )}
-                                        </AnimatePresence>
+                                            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                                                <Image size={24} className="text-white" />
+                                            </div>
+                                            <input
+                                                type="file"
+                                                id="sidebar-photo-upload"
+                                                className="hidden"
+                                                accept="image/*"
+                                                onChange={handleFileChange}
+                                            />
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => setActiveTab('Photos')}
+                                            className="absolute bottom-1 right-1 w-8 h-8 bg-[#800020] text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform z-10"
+                                        >
+                                            <Heart size={14} fill="currentColor" />
+                                        </button>
                                     </div>
-                                );
-                            })}
-                        </div>
-                    </div>
+                                    <h3 className="mt-4 font-serif font-black text-gray-900 italic text-lg">{formData.name || 'Your Name'}</h3>
+                                    <p className="text-[10px] font-bold text-[#D4AF37] uppercase tracking-[0.2em] mt-1">Profile Completeness: {completeness}%</p>
+                                </div>
+                                <div className="flex flex-col">
+                                    {sidebarSections.map((section, idx) => {
+                                        const isExpanded = expandedSections.includes(section.title);
+                                        return (
+                                            <div key={idx} className="mb-px last:mb-0">
+                                                <div
+                                                    onClick={() => {
+                                                        setExpandedSections(prev =>
+                                                            prev.includes(section.title)
+                                                                ? prev.filter(t => t !== section.title)
+                                                                : [...prev, section.title]
+                                                        );
+                                                    }}
+                                                    className="w-full flex items-center justify-between px-6 py-4 bg-[#800020]/5 text-[#800020] border-b border-[#800020]/10 font-serif font-bold italic text-[16px] cursor-pointer hover:bg-[#800020]/10 transition-colors select-none"
+                                                >
+                                                    {section.title}
+                                                    {isExpanded ? <ChevronDown size={16} className="text-[#800020]/60" /> : <ChevronRight size={16} className="text-[#800020]/40" />}
+                                                </div>
+                                                <AnimatePresence>
+                                                    {isExpanded && (
+                                                        <motion.div
+                                                            initial={{ height: 0, opacity: 0 }}
+                                                            animate={{ height: 'auto', opacity: 1 }}
+                                                            exit={{ height: 0, opacity: 0 }}
+                                                            className="overflow-hidden flex flex-col"
+                                                        >
+                                                            {section.items.map((item, itemIdx) => (
+                                                                <button
+                                                                    key={itemIdx}
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        setActiveTab(item.id);
+                                                                        setIsSidebarOpen(false); // Close on mobile after selection
+                                                                        if (window.innerWidth < 1024) {
+                                                                            const el = document.getElementById('main-form-content');
+                                                                            if (el) el.scrollIntoView({ behavior: 'smooth' });
+                                                                        }
+                                                                    }}
+                                                                    className={`w-full flex items-center justify-between px-6 py-3.5 text-left border-b border-gray-50 last:border-0 hover:bg-[#FFFDD0]/30 transition-all ${activeTab === item.id ? 'bg-[#FFFDD0]/50 border-l-4 border-l-[#800020] pl-5' : 'bg-white'}`}
+                                                                >
+                                                                    <span className={`text-[13px] font-bold ${activeTab === item.id ? 'text-[#800020]' : 'text-gray-600'}`}>
+                                                                        {item.label}
+                                                                    </span>
+                                                                    {item.action && (
+                                                                        <span className="text-[11px] font-black uppercase tracking-widest text-[#D4AF37] group-hover:text-[#800020] transition-colors">
+                                                                            {item.action}
+                                                                        </span>
+                                                                    )}
+                                                                </button>
+                                                            ))}
+                                                        </motion.div>
+                                                    )}
+                                                </AnimatePresence>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
+                    {/* Backdrop for mobile sidebar */}
+                    <AnimatePresence>
+                        {isSidebarOpen && (
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                onClick={() => setIsSidebarOpen(false)}
+                                className="fixed inset-0 bg-black/40 z-40 lg:hidden backdrop-blur-sm"
+                            />
+                        )}
+                    </AnimatePresence>
 
                     {/* Main Content Form */}
                     <div id="main-form-content" className="flex-1 w-full bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-10 relative">
@@ -507,23 +594,6 @@ const EditProfile = ({ defaultTab }) => {
 
                                             <FormRow label="Name" required>
                                                 <input type="text" name="name" value={formData.name} onChange={handleChange} className="form-input-premium max-w-md" placeholder="Enter Full Name" />
-                                            </FormRow>
-
-                                            <FormRow label="Religion" required>
-                                                <select name="religion" value={formData.religion} onChange={handleChange} className="form-input-premium max-w-md appearance-none">
-                                                    <option value="">Select</option>
-                                                    <option>Hindu</option>
-                                                    <option>Muslim</option>
-                                                    <option>Christian</option>
-                                                    <option>Sikh</option>
-                                                    <option>Jain</option>
-                                                    <option>Buddhist</option>
-                                                    <option>Other</option>
-                                                </select>
-                                            </FormRow>
-
-                                            <FormRow label="Caste" required>
-                                                <input type="text" name="caste" value={formData.caste} onChange={handleChange} className="form-input-premium max-w-md" placeholder="e.g. Brahmin, Vokkaliga" />
                                             </FormRow>
 
                                             <FormRow label="Date of Birth" required>
@@ -614,7 +684,23 @@ const EditProfile = ({ defaultTab }) => {
                                     {activeTab === 'Education & Occupation' && (
                                         <div className="space-y-2">
                                             <FormRow label="Highest Education" required>
-                                                <input type="text" name="education" value={formData.education} onChange={handleChange} className="form-input-premium max-w-md" placeholder="e.g. B.Tech, MBA" />
+                                                <div className="relative group w-full max-w-md">
+                                                    <select name="education" value={formData.education} onChange={handleChange} className="form-input-premium appearance-none pr-10">
+                                                        <option value="">Select Education</option>
+                                                        <option>B.E / B.Tech</option>
+                                                        <option>M.E / M.Tech</option>
+                                                        <option>MCA / BCA</option>
+                                                        <option>MBA / BBA</option>
+                                                        <option>MBBS / MD</option>
+                                                        <option>B.Com / M.Com</option>
+                                                        <option>B.Sc / M.Sc</option>
+                                                        <option>L.L.B / L.L.M</option>
+                                                        <option>Ph.D</option>
+                                                        <option>Diploma</option>
+                                                        <option>Others</option>
+                                                    </select>
+                                                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                                                </div>
                                             </FormRow>
                                             <FormRow label="College / Institution">
                                                 <input type="text" name="collegeInstitution" value={formData.collegeInstitution} onChange={handleChange} className="form-input-premium max-w-md" placeholder="Search for College / Institution" />
@@ -632,7 +718,24 @@ const EditProfile = ({ defaultTab }) => {
                                                 </div>
                                             </FormRow>
                                             <FormRow label="Occupation" required>
-                                                <input type="text" name="profession" value={formData.profession} onChange={handleChange} className="form-input-premium max-w-md" placeholder="e.g. Software Professional" />
+                                                <div className="relative group w-full max-w-md">
+                                                    <select name="profession" value={formData.profession} onChange={handleChange} className="form-input-premium appearance-none pr-10">
+                                                        <option value="">Select Profession</option>
+                                                        <option>Software Professional</option>
+                                                        <option>Engineer</option>
+                                                        <option>Doctor</option>
+                                                        <option>Business Owner</option>
+                                                        <option>Government Employee</option>
+                                                        <option>Teacher / Academician</option>
+                                                        <option>Accountant / CA</option>
+                                                        <option>Advocate / Legal</option>
+                                                        <option>Service Sector</option>
+                                                        <option>Civil Service (IAS/IPS)</option>
+                                                        <option>Not Working</option>
+                                                        <option>Others</option>
+                                                    </select>
+                                                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                                                </div>
                                             </FormRow>
                                             <FormRow label="Occupation in Detail">
                                                 <input type="text" name="occupationDetail" value={formData.occupationDetail} onChange={handleChange} className="form-input-premium max-w-md" placeholder="Occupation Details" />
@@ -666,29 +769,11 @@ const EditProfile = ({ defaultTab }) => {
                                                     <span className="text-xs text-gray-400 font-bold hidden sm:block">Optional but recommended</span>
                                                 </div>
                                             </FormRow>
-                                            <FormRow label="Family Value" required>
-                                                <div className="flex gap-4 items-center flex-wrap h-full pt-3">
-                                                    {['Orthodox', 'Traditional', 'Moderate', 'Liberal'].map(val => (
-                                                        <label key={val} className="flex items-center gap-2 cursor-pointer text-sm font-bold text-gray-700">
-                                                            <input type="radio" name="familyValue" value={val} checked={formData.familyValue === val} onChange={handleChange} className="accent-[#800020] w-4 h-4" /> {val}
-                                                        </label>
-                                                    ))}
-                                                </div>
-                                            </FormRow>
                                             <FormRow label="Family Type" required>
                                                 <div className="flex gap-6 items-center flex-wrap h-full pt-3">
                                                     {['Joint family', 'Nuclear family'].map(type => (
                                                         <label key={type} className="flex items-center gap-2 cursor-pointer text-sm font-bold text-gray-700">
                                                             <input type="radio" name="familyType" value={type} checked={formData.familyType === type} onChange={handleChange} className="accent-[#800020] w-4 h-4" /> {type}
-                                                        </label>
-                                                    ))}
-                                                </div>
-                                            </FormRow>
-                                            <FormRow label="Family Status" required>
-                                                <div className="flex gap-4 items-center flex-wrap h-full pt-3">
-                                                    {['Middle class', 'Upper middle class', 'Rich / Affluent'].map(status => (
-                                                        <label key={status} className="flex items-center gap-2 cursor-pointer text-sm font-bold text-gray-700">
-                                                            <input type="radio" name="familyStatus" value={status} checked={formData.familyStatus === status} onChange={handleChange} className="accent-[#800020] w-4 h-4" /> {status}
                                                         </label>
                                                     ))}
                                                 </div>
@@ -959,32 +1044,28 @@ const EditProfile = ({ defaultTab }) => {
                                                 </div>
                                             </div>
 
-                                            {/* Photo Gallery Section */}
-                                            <div className="bg-white p-2 md:p-4 rounded-3xl">
-                                                <div className="flex items-center justify-between mb-8">
+                                            {/* PHOTO GALLERY SECTION */}
+                                            <div className="space-y-8">
+                                                <div className="flex items-center justify-between">
                                                     <div>
-                                                        <h3 className="text-xl font-serif font-black italic text-gray-900">Photo Gallery</h3>
-                                                        <p className="text-xs text-gray-400 font-bold mt-1 uppercase tracking-widest">Upload up to 6 photos of your interests, travels, and lifestyle.</p>
+                                                        <h4 className="text-xl font-serif font-black italic text-gray-900">Photo Gallery</h4>
+                                                        <p className="text-sm text-gray-500">Showcase your lifestyle and personality with up to 10 more photos.</p>
                                                     </div>
                                                     <div className="text-right">
                                                         <span className="text-2xl font-serif font-black italic text-[#800020]">{formData.photos?.length || 0}</span>
                                                         <span className="text-gray-300 font-serif italic mx-1">/</span>
-                                                        <span className="text-sm font-serif text-gray-400 italic">6</span>
+                                                        <span className="text-sm font-serif text-gray-400 italic">10</span>
                                                     </div>
                                                 </div>
 
                                                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                                                     {/* Existing Photos */}
                                                     {formData.photos?.map((photo, idx) => (
-                                                        <div key={idx} className="group relative aspect-square rounded-2xl overflow-hidden bg-gray-100 border border-gray-100 shadow-sm">
+                                                        <div key={idx} className="group relative aspect-square rounded-2xl overflow-hidden bg-gray-100 border border-gray-100 shadow-sm transition-transform hover:scale-[1.02]">
                                                             <img src={photo} alt="" className="w-full h-full object-cover" />
                                                             <button
                                                                 type="button"
-                                                                onClick={() => {
-                                                                    const newPhotos = [...formData.photos];
-                                                                    newPhotos.splice(idx, 1);
-                                                                    setFormData(prev => ({ ...prev, photos: newPhotos }));
-                                                                }}
+                                                                onClick={() => removeGalleryPhoto(idx)}
                                                                 className="absolute top-2 right-2 w-8 h-8 bg-white/90 text-red-600 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
                                                             >
                                                                 <Heart size={14} fill="currentColor" />
@@ -993,33 +1074,18 @@ const EditProfile = ({ defaultTab }) => {
                                                     ))}
 
                                                     {/* Add Photo Button */}
-                                                    {(formData.photos?.length || 0) < 6 && (
+                                                    {(formData.photos?.length || 0) < 10 && (
                                                         <label className="aspect-square rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-2 hover:border-[#800020]/30 hover:bg-gray-50/50 transition-all cursor-pointer group">
                                                             <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 group-hover:text-[#800020] transition-colors">
-                                                                <User size={24} />
+                                                                <Image size={14} />
                                                             </div>
-                                                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Add Photo</span>
+                                                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest text-center px-2">Add Gallery Photo</span>
                                                             <input
                                                                 type="file"
                                                                 multiple
                                                                 accept="image/*"
                                                                 className="hidden"
-                                                                onChange={(e) => {
-                                                                    const files = Array.from(e.target.files);
-                                                                    const remaining = 6 - (formData.photos?.length || 0);
-                                                                    const toAdd = files.slice(0, remaining);
-
-                                                                    toAdd.forEach(file => {
-                                                                        const reader = new FileReader();
-                                                                        reader.onloadend = () => {
-                                                                            setFormData(prev => ({
-                                                                                ...prev,
-                                                                                photos: [...(prev.photos || []), reader.result]
-                                                                            }));
-                                                                        };
-                                                                        reader.readAsDataURL(file);
-                                                                    });
-                                                                }}
+                                                                onChange={handleGalleryPhotoUpload}
                                                             />
                                                         </label>
                                                     )}
@@ -1113,8 +1179,6 @@ const EditProfile = ({ defaultTab }) => {
                                     {/* TRUST BADGE */}
                                     {activeTab === 'Trust Badge' && (
                                         <div className="space-y-6">
-                                            <p className="text-sm font-bold text-gray-500 mb-6 bg-gray-50 p-4 rounded-xl border border-gray-100">Upload your government ID and Caste certificate to verify your authenticity. Verified profiles get 3x more visibility.</p>
-
                                             <FormRow label="Aadhar Card">
                                                 <div className="w-full max-w-md form-input-premium !p-3">
                                                     {formData.aadharCard ? (
@@ -1125,21 +1189,6 @@ const EditProfile = ({ defaultTab }) => {
                                                     ) : (
                                                         <div className="flex items-center gap-3">
                                                             <input type="file" accept=".pdf,image/*" onChange={(e) => handleDocumentChange(e, 'aadharCard')} className="w-full text-xs file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:uppercase file:tracking-widest file:bg-[#800020] file:text-[#D4AF37] hover:file:bg-[#600318] file:cursor-pointer" disabled={uploading} />
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </FormRow>
-
-                                            <FormRow label="Caste Certificate">
-                                                <div className="w-full max-w-md form-input-premium !p-3">
-                                                    {formData.casteCertificate ? (
-                                                        <div className="flex justify-between items-center bg-white rounded-lg p-3 border border-gray-100 shadow-sm">
-                                                            <span className="text-green-600 font-bold text-xs flex items-center gap-2 uppercase tracking-widest"><ShieldCheck size={16} /> Uploaded</span>
-                                                            <button type="button" onClick={() => setFormData({ ...formData, casteCertificate: '' })} className="text-red-500 hover:text-red-700 font-bold text-[10px] uppercase tracking-widest">Remove</button>
-                                                        </div>
-                                                    ) : (
-                                                        <div className="flex items-center gap-3">
-                                                            <input type="file" accept=".pdf,image/*" onChange={(e) => handleDocumentChange(e, 'casteCertificate')} className="w-full text-xs file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:uppercase file:tracking-widest file:bg-[#800020] file:text-[#D4AF37] hover:file:bg-[#600318] file:cursor-pointer" disabled={uploading} />
                                                         </div>
                                                     )}
                                                 </div>
@@ -1218,7 +1267,7 @@ const EditProfile = ({ defaultTab }) => {
                     box-shadow: 0 4px 12px rgba(128, 0, 32, 0.05);
                 }
             `}</style>
-        </div>
+        </div >
     );
 };
 

@@ -68,12 +68,6 @@ const Home = () => {
                 </div>
             </section>
 
-            {/* Profile Completeness Card (if logged in) */}
-            {user && (
-                <div className="container mx-auto px-6 lg:px-24 mb-12">
-                    <ProfileCompletenessCard />
-                </div>
-            )}
 
             {/* Premium Features Section */}
             <section className="py-8 md:py-12 bg-white relative">

@@ -106,9 +106,13 @@ const Navbar = () => {
                                         <div className="mx-6 mb-6 p-4 bg-gradient-to-br from-[#FFFDD0] to-[#FFF8E7] rounded-3xl border border-[#D4AF37]/10 relative overflow-hidden text-center">
                                             <div className="absolute -right-2 -bottom-2 opacity-5 scale-150 rotate-12"><Star size={60} /></div>
                                             <h4 className="text-[11px] font-black text-[#800020] leading-tight mb-3 px-4">Upgrade membership to call/chat with matches</h4>
-                                            <button className="px-6 py-2 bg-[#F06262] text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-[#e05252] transition-colors shadow-lg shadow-[#F06262]/20">
+                                            <Link
+                                                to="/edit-profile?tab=Photos"
+                                                onClick={() => setShowProfileDropdown(false)}
+                                                className="inline-block px-6 py-2 bg-[#F06262] text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-[#e05252] transition-colors shadow-lg shadow-[#F06262]/20"
+                                            >
                                                 Upgrade now
-                                            </button>
+                                            </Link>
                                         </div>
 
                                         {/* Menu Items */}

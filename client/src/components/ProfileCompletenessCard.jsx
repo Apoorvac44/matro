@@ -61,9 +61,9 @@ const ProfileCompletenessCard = ({ userProfile }) => {
                 </div>
 
                 <div className="flex flex-wrap gap-4">
-                    <ProfileActionButton icon={<ShieldCheck size={20} className="text-blue-500" />} label="Verify Profile" bg="bg-blue-50" onClick={() => navigate('/edit-profile')} />
-                    <ProfileActionButton icon={<Home size={20} className="text-orange-500" />} label="Family Details" bg="bg-orange-50" onClick={() => navigate('/edit-profile')} />
-                    <ProfileActionButton icon={<Music size={20} className="text-pink-500" />} label="Add Hobbies" bg="bg-pink-50" onClick={() => navigate('/edit-profile')} />
+                    <ProfileActionButton icon={<ShieldCheck size={20} className="text-blue-500" />} label="Verify Profile" bg="bg-blue-50" onClick={() => navigate('/edit-profile?tab=Photos')} />
+                    <ProfileActionButton icon={<Home size={20} className="text-orange-500" />} label="Family Details" bg="bg-orange-50" onClick={() => navigate('/edit-profile?tab=Family Details')} />
+                    <ProfileActionButton icon={<Music size={20} className="text-pink-500" />} label="Add Hobbies" bg="bg-pink-50" onClick={() => navigate('/edit-profile?tab=Hobbies & Interest')} />
                 </div>
             </div>
         </div>
