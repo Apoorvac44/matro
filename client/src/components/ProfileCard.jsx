@@ -61,10 +61,10 @@ const ProfileCard = ({ profile }) => {
     return (
         <div
             onClick={() => navigate(`/profile/${profileId}`)}
-            className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm relative z-0 flex flex-col group transition-all hover:shadow-md cursor-pointer"
+            className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm relative z-0 flex flex-col group transition-all hover:shadow-md cursor-pointer w-full h-full"
         >
             {/* Image Section */}
-            <div className="relative block aspect-square bg-gray-100 shrink-0 pointer-events-none">
+            <div className="relative w-full aspect-square bg-gray-100 shrink-0 pointer-events-none overflow-hidden">
                 {imgSrc && !imgError ? (
                     <img
                         src={imgSrc}
@@ -78,20 +78,24 @@ const ProfileCard = ({ profile }) => {
                     </div>
                 )}
 
-                {/* Top-left Sash (Newly Joined) - Styled like screenshot corner */}
-                <div className="absolute top-0 left-0 w-20 h-20 overflow-hidden pointer-events-none z-10">
-                    <div className="absolute top-0 left-0 bg-[#800020] text-[#D4AF37] text-[8px] font-bold py-1 w-28 text-center -rotate-45 origin-bottom-right -translate-x-10 translate-y-2 shadow-sm uppercase tracking-tighter">
-                        Newly<br />Joined
+                {/* Top-left Sash (Newly Joined) - Shown for profiles < 7 days old */}
+                {(!profile.createdAt || (new Date() - new Date(profile.createdAt)) < 7 * 24 * 60 * 60 * 1000) && (
+                    <div className="absolute top-0 left-0 w-24 h-24 overflow-hidden pointer-events-none z-10">
+                        <div className="absolute top-4 -left-8 bg-[#800020] text-[#D4AF37] text-[9px] font-black py-1 w-32 text-center -rotate-45 shadow-lg uppercase tracking-widest border-y border-[#D4AF37]/20">
+                            Newly Joined
+                        </div>
                     </div>
-                </div>
+                )}
 
-                {/* Top-right Shortlist pill */}
+
+
+                {/* Top-right Shortlist button - compact on mobile */}
                 <button
-                    className="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-white text-[11px] font-semibold px-3 py-1.5 rounded-full flex items-center gap-1.5 hover:bg-black transition z-20"
+                    className="absolute top-2 right-2 bg-black/60 backdrop-blur-md text-white p-2 rounded-full flex items-center justify-center hover:bg-black transition z-20 sm:p-1.5 sm:px-3 sm:py-1.5 sm:gap-1.5 sm:rounded-full"
                     onClick={(e) => { e.stopPropagation(); e.preventDefault(); console.log('Shortlisted'); }}
                 >
                     <Bookmark size={12} className="fill-transparent" />
-                    Shortlist
+                    <span className="hidden sm:inline text-[11px] font-semibold">Shortlist</span>
                 </button>
 
                 {/* Bottom-right Photo count */}
@@ -101,39 +105,9 @@ const ProfileCard = ({ profile }) => {
             </div>
 
             {/* Info Section */}
-            <div className="p-2.5 relative bg-white pb-4 flex-1 flex flex-col min-h-0">
-                <div className="flex justify-between items-start mb-1.5">
-                    <div className="flex-1 min-w-0 pr-2">
-                        <h3 className="font-bold text-gray-900 text-[15px] group-hover:text-[#800020] transition-colors truncate leading-tight">
-                            {profile.name}
-                        </h3>
-                        <p className="text-[10px] text-gray-500 mt-0.5 truncate font-medium">
-                            {shortId} | Last seen few hours ago
-                        </p>
-                    </div>
-                    {/* Circular Action Icons - Side by Side on Right */}
-                    <div className="flex gap-2 shrink-0 pt-0.5">
-                        <button
-                            onClick={(e) => { e.stopPropagation(); e.preventDefault(); }}
-                            className="w-8 h-8 rounded-full border border-orange-100 flex items-center justify-center text-orange-500 hover:bg-orange-50 transition-colors z-20 shadow-sm bg-white"
-                        >
-                            <Phone size={14} />
-                        </button>
-                        <button
-                            onClick={(e) => { e.stopPropagation(); e.preventDefault(); navigate(`/chat/${profileId}`); }}
-                            className="w-8 h-8 rounded-full border border-green-100 flex items-center justify-center text-green-500 hover:bg-green-50 transition-colors z-20 shadow-sm bg-white"
-                        >
-                            <MessageSquare size={14} />
-                        </button>
-                    </div>
-                </div>
-
-                <div className="text-[11px] text-gray-600 leading-snug line-clamp-2 mb-1.5 font-medium">
-                    {profile.age || '26'} Yrs • 5'4" • {profile.education || 'MCA'} • {profile.profession || 'Software Professional'} • {profile.location || 'Mysuru'}
-                </div>
-
-                {/* Bottom Action Buttons - Side by Side */}
-                <div className="mt-auto pt-1 flex justify-between gap-2.5 z-20 overflow-visible">
+            <div className="p-2.5 relative bg-white pb-3 flex-1 flex flex-col min-h-0">
+                {/* Action Buttons - Moved to Top of Info Section */}
+                <div className="flex justify-between gap-2 z-20 overflow-visible mb-2">
                     <button
                         onClick={(e) => { e.stopPropagation(); e.preventDefault(); handleInterest(false); }}
                         className="flex-1 py-1.5 px-3 flex items-center justify-center gap-1.5 bg-white rounded-full border border-gray-200 text-gray-700 font-bold transition-all hover:bg-gray-50 shadow-sm active:scale-95"
@@ -164,6 +138,40 @@ const ProfileCard = ({ profile }) => {
                             </>
                         )}
                     </button>
+                </div>
+
+                <div className="flex justify-between items-start mb-1.5">
+                    <div className="flex-1 min-w-0 pr-2">
+                        <h3 className="font-bold text-gray-900 text-[14px] sm:text-[15px] group-hover:text-[#800020] transition-colors truncate leading-tight flex items-center gap-1">
+                            {profile.name}
+                            {profile.isApproved && (
+                                <CheckCircle size={14} className="text-[#800020] fill-[#D4AF37] shrink-0" strokeWidth={3} />
+                            )}
+                        </h3>
+                        <p className="text-[10px] text-gray-500 mt-0.5 truncate font-medium">
+                            {shortId} | Last seen few hours ago
+                        </p>
+                    </div>
+                    {/* Circular Action Icons - Side by Side on Right */}
+                    <div className="flex gap-2 shrink-0 pt-0.5">
+                        <a
+                            href={`tel:${profile.mobile || ''}`}
+                            onClick={(e) => { e.stopPropagation(); if (!profile.mobile) { e.preventDefault(); alert('Phone number not available'); } }}
+                            className="w-8 h-8 rounded-full border border-orange-100 flex items-center justify-center text-orange-500 hover:bg-orange-50 transition-colors z-20 shadow-sm bg-white"
+                        >
+                            <Phone size={14} />
+                        </a>
+                        <button
+                            onClick={(e) => { e.stopPropagation(); e.preventDefault(); navigate(`/chat/${profileId}`); }}
+                            className="w-8 h-8 rounded-full border border-green-100 flex items-center justify-center text-green-500 hover:bg-green-50 transition-colors z-20 shadow-sm bg-white"
+                        >
+                            <MessageSquare size={14} />
+                        </button>
+                    </div>
+                </div>
+
+                <div className="text-[11px] text-gray-600 leading-snug line-clamp-2 mb-1.5 font-medium">
+                    {profile.age || '26'} Yrs • 5'4" • {profile.education || 'MCA'} • {profile.profession || 'Software Professional'} • {profile.location || 'Mysuru'}
                 </div>
             </div>
         </div>

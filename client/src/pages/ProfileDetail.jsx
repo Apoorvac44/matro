@@ -71,12 +71,12 @@ const ProfileDetail = () => {
     const isPremium = normalizedPlan === 'Premium';
 
     const canViewMobile = isGold || isPremium;
-    const canViewAstrological = isPremium;
-    const canViewEducation = isPremium;
-    const canViewFamily = !isFree;
-    const canViewPartnerPref = !isFree;
-    const canViewAboutYou = !isFree;
-    const canViewVerification = !isFree;
+    const canViewAstrological = true;
+    const canViewEducation = true;
+    const canViewFamily = true;
+    const canViewPartnerPref = true;
+    const canViewAboutYou = true;
+    const canViewVerification = true;
 
     return (
         <div className="min-h-screen pb-12 pt-4 px-6 bg-white">
@@ -111,23 +111,25 @@ const ProfileDetail = () => {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                            <button
-                                onClick={handleInterest}
-                                disabled={interestSent}
-                                className={`py-4 rounded-xl font-bold flex flex-col items-center gap-2 transition-all ${interestSent ? 'bg-green-50 text-green-600' : 'bg-[#800020] text-[#D4AF37] hover:bg-[#600318] shadow-lg shadow-[#800020]/20'}`}
-                            >
-                                {interestSent ? <CheckCircle size={24} /> : <Heart size={24} className="fill-[#D4AF37]" />}
-                                <span className="text-[10px] uppercase tracking-widest">{interestSent ? 'Interest Sent' : 'Interested'}</span>
-                            </button>
-                            <button
-                                onClick={handleChat}
-                                className="py-4 rounded-xl bg-white border border-[#800020]/10 text-[#800020] flex flex-col items-center gap-2 font-bold hover:bg-[#800020]/5 transition-all"
-                            >
-                                <MessageSquare size={24} />
-                                <span className="text-[10px] uppercase tracking-widest">Message</span>
-                            </button>
-                        </div>
+                        {currentUser?._id !== id && (
+                            <div className="grid grid-cols-2 gap-4">
+                                <button
+                                    onClick={handleInterest}
+                                    disabled={interestSent}
+                                    className={`py-4 rounded-none font-bold flex flex-col items-center gap-2 transition-all ${interestSent ? 'bg-green-50 text-green-600' : 'bg-[#800020] text-[#D4AF37] hover:bg-[#600318] shadow-lg shadow-[#800020]/20'}`}
+                                >
+                                    {interestSent ? <CheckCircle size={24} /> : <Heart size={24} className="fill-[#D4AF37]" />}
+                                    <span className="text-[10px] uppercase tracking-widest">{interestSent ? 'Interest Sent' : 'Interested'}</span>
+                                </button>
+                                <button
+                                    onClick={handleChat}
+                                    className="py-4 rounded-none bg-white border border-[#800020]/10 text-[#800020] flex flex-col items-center gap-2 font-bold hover:bg-[#800020]/5 transition-all"
+                                >
+                                    <MessageSquare size={24} />
+                                    <span className="text-[10px] uppercase tracking-widest">Message</span>
+                                </button>
+                            </div>
+                        )}
                     </div>
 
                     <div className="w-full lg:w-2/3 space-y-8">
@@ -174,6 +176,8 @@ const ProfileDetail = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {[
                                         { icon: <Users size={16} />, label: 'Marital Status', value: <span className="text-gray-900 font-semibold">{profile.maritalStatus || 'Not Specified'}</span> },
+                                        { icon: <Shield size={16} />, label: 'Religion', value: <span className="text-gray-900 font-semibold">{profile.religion || 'Hindu'}</span> },
+                                        { icon: <Users size={16} />, label: 'Caste', value: <span className="text-gray-900 font-semibold">{profile.caste || 'Not Specified'}</span> },
                                         { icon: <Ruler size={16} />, label: 'Height', value: <span className="text-gray-900 font-semibold">{profile.height || 'Not Specified'}</span> },
                                         { icon: <Languages size={16} />, label: 'Mother Tongue', value: <span className="text-gray-900 font-semibold">{profile.motherTongue || 'Not Specified'}</span> },
                                         { icon: <Cake size={16} />, label: 'Date of Birth', value: <span className="text-gray-900 font-semibold">{profile.dob || '12-Aug-1996'}</span> },
@@ -226,7 +230,6 @@ const ProfileDetail = () => {
                                             { icon: <Clock size={16} />, label: 'Time of Birth', value: <span className="text-gray-900 font-semibold">{profile.timeOfBirth || '10:30 AM'}</span> },
                                             { icon: <Star size={16} />, label: 'Star / Nakshatra', value: <span className="text-gray-900 font-semibold">{profile.star || 'Rohini'}</span> },
                                             { icon: <Moon size={16} />, label: 'Raasi / Moon Sign', value: <span className="text-gray-900 font-semibold">{profile.raasi || 'Vrushabha'}</span> },
-                                            { icon: <AlertTriangle size={16} />, label: 'Kuja Dosha', value: <span className="text-gray-900 font-semibold">{profile.kujaDosha || 'No'}</span> },
                                             { icon: <Home size={16} />, label: 'Kula Daiva', value: <span className="text-gray-900 font-semibold">{profile.kulaDaiva || 'Tirupati Balaji'}</span> },
                                             { icon: <Activity size={16} />, label: 'Horoscope Matching', value: <span className="text-gray-900 font-semibold">{profile.horoscope || 'Yes'}</span> }
                                         ].map((item, idx) => (
@@ -324,13 +327,22 @@ const ProfileDetail = () => {
                                 <div>
                                     <h3 className="text-[10px] font-bold text-[#800020] uppercase tracking-[0.2em] mb-4 pb-2 border-b border-[#800020]/5">Verification Details</h3>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="bg-white p-4 rounded-xl shadow-sm border border-[#800020]/5 flex items-center gap-3">
+                                        <div className="bg-white p-4 rounded-xl shadow-sm border border-[#800020]/5 flex items-center gap-3 cursor-pointer hover:bg-gray-50 transition-colors" onClick={() => profile.aadharCard && setSelectedPhoto(profile.aadharCard)}>
                                             <div className="w-10 h-10 bg-[#FFFDD0] text-[#D4AF37] rounded-lg flex items-center justify-center flex-shrink-0">
                                                 <Shield size={16} />
                                             </div>
                                             <div>
                                                 <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Aadhar Card</p>
-                                                <p className="text-green-600 font-semibold text-sm">Verified</p>
+                                                <p className={profile.aadharCard ? "text-green-600 font-semibold text-sm" : "text-amber-500 font-semibold text-sm"}>{profile.aadharCard ? 'Verified' : 'Pending Verification'}</p>
+                                            </div>
+                                        </div>
+                                        <div className="bg-white p-4 rounded-xl shadow-sm border border-[#800020]/5 flex items-center gap-3 cursor-pointer hover:bg-gray-50 transition-colors" onClick={() => profile.casteCertificate && setSelectedPhoto(profile.casteCertificate)}>
+                                            <div className="w-10 h-10 bg-[#FFFDD0] text-[#D4AF37] rounded-lg flex items-center justify-center flex-shrink-0">
+                                                <Book size={16} />
+                                            </div>
+                                            <div>
+                                                <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Caste Certificate</p>
+                                                <p className={profile.casteCertificate ? "text-green-600 font-semibold text-sm" : "text-amber-500 font-semibold text-sm"}>{profile.casteCertificate ? 'Verified' : 'Not Uploaded'}</p>
                                             </div>
                                         </div>
                                     </div>

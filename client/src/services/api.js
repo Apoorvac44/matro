@@ -267,7 +267,7 @@ export const register = (formData) => {
     const newUser = {
         ...formData,
         _id: 'u_' + Date.now(),
-        isApproved: false,
+        isApproved: true,  // Auto-approve so users can login after registering
         isBlocked: false,
         interests: [],
         photos: [],
@@ -512,4 +512,17 @@ export const getSettings = () => {
     });
 };
 
-export default { login, register, getProfile, updateProfile, getProfiles, sendInterest, toggleFavorite, sendMessage, getConversations, getMessages, getAdminUsers, toggleApproval, getDashboardStats, getFavorites, getInterestsReceived, getInterestsSent, getGallery, addGalleryPhoto, deleteGalleryPhoto, createMembershipPlan, updateMembershipPlan, deleteMembershipPlan, getMembershipPlans, updateSettings, getSettings };
+export const getCountries = () => {
+    // Attempt to fetch from real API if possible, otherwise return mock
+    return fetch('/api/countries')
+        .then(res => res.json())
+        .catch(() => [
+            { name: 'India', code: 'IN' },
+            { name: 'United States', code: 'US' },
+            { name: 'United Kingdom', code: 'GB' },
+            { name: 'Canada', code: 'CA' },
+            { name: 'Australia', code: 'AU' }
+        ]);
+};
+
+export default { login, register, getProfile, updateProfile, getProfiles, sendInterest, toggleFavorite, sendMessage, getConversations, getMessages, getAdminUsers, toggleApproval, getDashboardStats, getFavorites, getInterestsReceived, getInterestsSent, getGallery, addGalleryPhoto, deleteGalleryPhoto, createMembershipPlan, updateMembershipPlan, deleteMembershipPlan, getMembershipPlans, updateSettings, getSettings, getCountries };

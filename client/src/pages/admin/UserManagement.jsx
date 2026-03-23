@@ -474,10 +474,18 @@ const UserManagement = () => {
                                                 <h3 className="text-xs font-black uppercase tracking-[0.3em] text-[#800020]">Vision for Partner</h3>
                                             </div>
                                             <div className="grid grid-cols-2 gap-6">
-                                                <DetailItem label="Preferred Age" value={selectedUser?.prefAgeRange || 'Any'} />
+                                                <DetailItem label="Preferred Age Range" value={
+                                                    selectedUser?.prefAgeMin && selectedUser?.prefAgeMax
+                                                        ? `${selectedUser.prefAgeMin} – ${selectedUser.prefAgeMax} Years`
+                                                        : selectedUser?.prefAgeMin
+                                                            ? `${selectedUser.prefAgeMin}+ Years`
+                                                            : 'Any'
+                                                } />
                                                 <DetailItem label="Preferred Location" value={selectedUser?.prefLocation || 'Flexible'} />
                                                 <DetailItem label="Preferred Education" value={selectedUser?.prefEducation || 'Any'} />
                                                 <DetailItem label="Preferred Profession" value={selectedUser?.prefProfession || 'Any'} />
+                                                <DetailItem label="Profile Created By" value={selectedUser?.profileCreatedBy || 'Self'} />
+                                                <DetailItem label="Membership Plan" value={selectedUser?.membership || 'Free'} />
                                             </div>
                                         </section>
 
@@ -494,6 +502,11 @@ const UserManagement = () => {
                                                     label="Aadhar Card"
                                                     status={selectedUser?.aadharCard ? "Uploaded" : "Pending"}
                                                     imageUrl={selectedUser?.aadharCard}
+                                                />
+                                                <DocumentItem
+                                                    label="Caste Certificate"
+                                                    status={selectedUser?.casteCertificate ? "Uploaded" : "Pending"}
+                                                    imageUrl={selectedUser?.casteCertificate}
                                                 />
                                             </div>
                                         </section>

@@ -13,10 +13,9 @@ const MainLayout = () => {
         window.scrollTo(0, 0);
     }, [pathname]);
 
-    // Only hide navbar on profile pages if we want that custom full-screen feel, 
-    // but the user wants "similar to all other pages" so let's check Explore.
     const hideNavbar = pathname.startsWith('/profile/');
-    const showBottomNav = user && (pathname === '/' || pathname === '/explore' || pathname === '/dashboard' || pathname.startsWith('/chat/'));
+    const showBottomNav = !!user && !pathname.startsWith('/admin');
+    const hideFooter = showBottomNav; // Hide footer on mobile when bottom nav is shown
 
     return (
         <div className="flex flex-col min-h-screen">
@@ -25,7 +24,7 @@ const MainLayout = () => {
                 <Outlet />
             </main>
             {showBottomNav && <BottomNav />}
-            <Footer />
+            {!hideFooter && <Footer />}
         </div>
     );
 };

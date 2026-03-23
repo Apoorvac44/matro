@@ -78,19 +78,41 @@ const Dashboard = () => {
         <div className="min-h-screen bg-[#FFFDD0]/20 flex flex-col">
 
 
-            {/* Premium Search */}
-            <div className="px-6 py-6 bg-white/50 backdrop-blur-sm border-b border-[#800020]/5 mb-6">
-                <div className="max-w-4xl mx-auto relative text-center">
-                    <h2 className="text-3xl font-serif italic text-gray-900 mb-8">Find Your Match</h2>
-                    <div className="relative max-w-2xl mx-auto">
-                        <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-[#9CA3AF]" size={20} />
-                        <input
-                            type="text"
-                            placeholder="Search by community, values, or city..."
-                            className="w-full pl-16 pr-8 py-5 rounded-[2rem] bg-white border border-[#800020]/10 text-sm font-medium outline-none focus:ring-4 focus:ring-[#800020]/5 shadow-xl transition-all"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
+            {/* Refined Header & Profile Quick Access */}
+            <div className="px-6 py-12 bg-white/50 backdrop-blur-sm border-b border-[#800020]/5 mb-12">
+                <div className="max-w-4xl mx-auto text-center">
+                    <h2 className="text-4xl md:text-5xl font-serif italic text-gray-900 mb-12 font-black tracking-tight">Find Your Match</h2>
+
+                    {/* Desktop-friendly Profile Card */}
+                    <div className="max-w-sm md:max-w-4xl mx-auto bg-white rounded-[2.5rem] p-8 md:p-10 shadow-2xl border border-[#800020]/5 flex flex-col md:flex-row md:items-center md:justify-between gap-6 md:gap-8 relative transition-transform hover:scale-[1.01]">
+                        <div className="flex items-center gap-6 px-2">
+                            <div className="w-20 h-20 md:w-32 md:h-32 rounded-3xl overflow-hidden border-4 border-[#800020]/5 shadow-inner shrink-0 bg-[#FFFDD0]/30 flex items-center justify-center">
+                                {fullProfile?.profilePicture ? (
+                                    <img src={fullProfile.profilePicture} alt={fullProfile.name} className="w-full h-full object-cover" />
+                                ) : (
+                                    <img src="https://cdn-icons-png.flaticon.com/512/3667/3667231.png" alt="Couple" className="p-3 opacity-80" />
+                                )}
+                            </div>
+                            <div className="text-left">
+                                <h3 className="text-2xl md:text-4xl font-serif font-black italic text-gray-900 lowercase">{user?.name || 'apoorva c'}</h3>
+                                <p className="text-[10px] md:text-xs font-black text-[#D4AF37] uppercase tracking-[0.2em] mt-2">Manage your account details</p>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col sm:flex-row md:flex-col lg:flex-row gap-3 w-full md:w-[320px] lg:w-auto">
+                            <Link
+                                to={`/profile/${user?._id || user?.id}`}
+                                className="w-full lg:min-w-[200px] py-4 md:py-5 bg-[#800020] text-[#D4AF37] rounded-2xl font-black text-[11px] md:text-xs uppercase tracking-[0.2em] hover:bg-[#600318] transition-all shadow-lg active:scale-95 border border-[#800020] text-center"
+                            >
+                                View My Profile
+                            </Link>
+                            <Link
+                                to="/edit-profile"
+                                className="w-full lg:min-w-[200px] py-4 md:py-5 bg-white text-[#800020] border-2 border-[#800020]/10 rounded-2xl font-black text-[11px] md:text-xs uppercase tracking-[0.2em] hover:bg-gray-50 transition-all active:scale-95 text-center"
+                            >
+                                Edit Profile
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </div>

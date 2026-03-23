@@ -8,7 +8,7 @@ import {
     CheckCircle, Eye, EyeOff, Heart,
     ChevronRight, ChevronLeft, MapPin,
     Briefcase, GraduationCap, Coins,
-    ArrowRight, Sparkles, Image as ImageIcon, ChevronDown, Loader2
+    ArrowRight, Sparkles, Image as ImageIcon, ChevronDown, Loader2, Shield
 } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -35,6 +35,9 @@ const registrationSchema = z.object({
     confirmPassword: z.string(),
     // Step 2
     motherTongue: z.string().min(1, 'Mother tongue is required'),
+    religion: z.string().default('Hindu'),
+    caste: z.string().min(1, 'Caste is required'),
+    customCaste: z.string().optional(),
     maritalStatus: z.enum(['Single', 'Divorced', 'Widowed', 'Other'], { required_error: 'Marital status is required' }),
     height: z.string().min(1, 'Height is required'),
     location: z.string().min(1, 'Location is required'),
@@ -50,7 +53,8 @@ const registrationSchema = z.object({
     prefEducation: z.string().optional(),
     prefProfession: z.string().optional(),
     // Step 5
-    aadharCard: z.any().refine((file) => file && file.length > 0, 'Aadhar card is required'),
+    aadharCard: z.any().refine((file) => file && file.length > 0, 'Aadhaar card is required'),
+    casteCertificate: z.any().optional(),
     // Step 6
     membership: z.string().default('p1'),
 }).refine((data) => data.password === data.confirmPassword, {
@@ -64,6 +68,14 @@ const registrationSchema = z.object({
 }, {
     message: "Maximum age cannot be less than minimum age",
     path: ["prefAgeMax"],
+}).refine((data) => {
+    if (data.caste === 'Other' && (!data.customCaste || data.customCaste.trim() === '')) {
+        return false;
+    }
+    return true;
+}, {
+    message: "Please specify your caste",
+    path: ["customCaste"]
 });
 
 const Register = () => {
@@ -78,6 +90,7 @@ const Register = () => {
     const [plans, setPlans] = useState([]);
     const [loading, setLoading] = useState(false); // Added loading state
     const [aadharFileName, setAadharFileName] = useState('');
+    const [casteCertificateFileName, setCasteCertificateFileName] = useState('');
 
     const { register, handleSubmit, formState: { errors }, watch, trigger, setValue } = useForm({
         resolver: zodResolver(registrationSchema),
@@ -85,6 +98,7 @@ const Register = () => {
     });
 
     const dobValue = watch('dob');
+    const selectedCaste = watch('caste');
     useEffect(() => {
         const fetchPlans = async () => {
             try {
@@ -122,24 +136,25 @@ const Register = () => {
     const nextStep = async () => {
         let fieldsToValidate = [];
         if (step === 1) fieldsToValidate = ['name', 'gender', 'dob', 'mobile', 'email', 'password', 'confirmPassword'];
-        if (step === 2) fieldsToValidate = ['motherTongue', 'maritalStatus', 'height', 'location'];
+        if (step === 2) fieldsToValidate = ['motherTongue', 'religion', 'caste', 'customCaste', 'maritalStatus', 'height', 'location'];
         if (step === 3) fieldsToValidate = ['education', 'profession', 'workLocation'];
         if (step === 4) fieldsToValidate = ['prefAgeMin', 'prefAgeMax', 'prefLocation', 'prefEducation', 'prefProfession'];
         if (step === 5) fieldsToValidate = ['aadharCard'];
 
         const isValid = await trigger(fieldsToValidate);
-        console.log(`Step ${step} validation - isValid:`, isValid);
 
-        if (!isValid) {
-            console.log("Validation errors:", errors);
+        // Block step 5 → 6 if document is not uploaded
+        if (step === 5) {
+            const aadharFile = watch('aadharCard');
+            if (!aadharFile || aadharFile.length === 0) {
+                // If form isn't already showing error, trigger it
+                await trigger(['aadharCard']);
+                alert('Please upload your AADHAAR CARD document to proceed.');
+                return;
+            }
         }
 
         if (isValid) {
-            if (step === 1 && !otpVerified) {
-                alert('Please verify your mobile number first');
-                return;
-            }
-            console.log(`Transitioning from step ${step} to ${step + 1}`);
             setStep(step + 1);
             window.scrollTo(0, 0);
         }
@@ -172,10 +187,15 @@ const Register = () => {
             };
 
             const aadharBase64 = await fileToBase64(data.aadharCard[0]); // Access the first file from FileList
+            const casteCertificateBase64 = data.casteCertificate && data.casteCertificate.length > 0
+                ? await fileToBase64(data.casteCertificate[0])
+                : null;
 
             const finalData = {
                 ...data,
+                caste: data.caste === 'Other' ? data.customCaste : data.caste,
                 aadharCard: aadharBase64,
+                casteCertificate: casteCertificateBase64,
                 membership: data.membership || 'p1'
             };
 
@@ -199,12 +219,12 @@ const Register = () => {
     };
 
     const renderProgress = () => (
-        <div className="mb-10">
+        <div className="mb-6">
             <div className="flex justify-between items-center mb-4">
                 <span className="text-[10px] font-bold text-[#800020] uppercase tracking-[0.3em]">Phase {step} of 6</span>
                 <span className="text-[10px] font-bold text-[#D4AF37] uppercase tracking-widest">{Math.round((step / 6) * 100)}% Complete</span>
             </div>
-            <div className="h-1.5 bg-[#FFFDD0] rounded-full overflow-hidden border border-[#D4AF37]/10">
+            <div className="h-1.5 bg-[#FFFDD0] rounded-none overflow-hidden border border-[#D4AF37]/10">
                 <motion.div
                     className="h-full bg-gradient-to-r from-[#800020] to-[#D4AF37]"
                     initial={{ width: 0 }}
@@ -216,11 +236,11 @@ const Register = () => {
     );
 
     return (
-        <div className="min-h-screen bg-[#FFFDD0]/20 flex items-center justify-center p-4 md:p-8 pt-8">
-            <div className="max-w-6xl w-full bg-white rounded-[2rem] md:rounded-[3rem] shadow-2xl shadow-[#800020]/5 overflow-hidden md:overflow-hidden flex flex-col md:flex-row min-h-[auto] md:min-h-[750px] border border-[#800020]/5">
+        <div className="min-h-screen bg-[#FFFDD0]/20 flex items-center justify-center p-4 md:p-6 pt-6">
+            <div className="max-w-4xl w-full bg-white rounded-none shadow-2xl shadow-[#800020]/5 overflow-hidden flex flex-col md:flex-row border border-[#800020]/5">
 
                 {/* Left Section - Premium Sidebar */}
-                <div className="hidden lg:flex w-2/5 bg-[#800020] relative overflow-hidden flex-col justify-center p-16 text-white">
+                <div className="hidden lg:flex w-[35%] bg-[#800020] relative overflow-hidden flex-col justify-center p-10 text-white">
                     <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')] opacity-10"></div>
                     <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#D4AF37]/10 rounded-full blur-[100px] -mr-32 -mt-32"></div>
 
@@ -230,42 +250,42 @@ const Register = () => {
                         transition={{ duration: 1 }}
                         className="relative z-10"
                     >
-                        <div className="bg-[#D4AF37]/20 w-16 h-16 rounded-2xl flex items-center justify-center mb-10 shadow-lg border border-[#D4AF37]/30">
-                            <Heart className="text-[#D4AF37] fill-[#D4AF37]/20" size={32} />
+                        <div className="bg-[#D4AF37]/20 w-12 h-12 rounded-none flex items-center justify-center mb-8 shadow-lg border border-[#D4AF37]/30">
+                            <Heart className="text-[#D4AF37] fill-[#D4AF37]/20" size={24} />
                         </div>
-                        <h2 className="text-5xl font-serif font-black leading-tight mb-8 italic text-white/95">
+                        <h2 className="text-3xl font-serif font-black leading-tight mb-6 italic text-white/95">
                             The Art of Connection
                         </h2>
-                        <p className="text-[#D4AF37] text-lg font-medium leading-relaxed max-w-xs">
+                        <p className="text-[#D4AF37] text-base font-medium leading-relaxed max-w-xs">
                             Step into a sanctuary where hearts align and destinies converge.
                         </p>
                     </motion.div>
 
-                    <div className="mt-auto relative z-10 grid grid-cols-2 gap-4">
-                        <div className="bg-white/5 backdrop-blur-xl p-6 rounded-[2rem] border border-white/10 shadow-lg">
-                            <h4 className="font-serif text-3xl font-bold text-[#D4AF37] mb-1">100%</h4>
-                            <p className="text-[9px] text-white/50 uppercase font-bold tracking-widest">100% Verified</p>
+                    <div className="mt-auto relative z-10 grid grid-cols-2 gap-3 sm:gap-4">
+                        <div className="bg-white/5 backdrop-blur-xl p-4 sm:p-6 rounded-none border border-white/10 shadow-lg flex flex-col items-center justify-center text-center min-h-[100px]">
+                            <h4 className="font-serif text-2xl sm:text-3xl font-bold text-[#D4AF37] mb-1">100%</h4>
+                            <p className="text-[8px] sm:text-[9px] text-white/50 uppercase font-bold tracking-widest leading-tight">100% Verified</p>
                         </div>
-                        <div className="bg-white/5 backdrop-blur-xl p-6 rounded-[2rem] border border-white/10 shadow-lg">
-                            <h4 className="font-serif text-3xl font-bold text-[#D4AF37] mb-1">Secure</h4>
-                            <p className="text-[9px] text-white/50 uppercase font-bold tracking-widest">Privacy PACT</p>
+                        <div className="bg-white/5 backdrop-blur-xl p-4 sm:p-6 rounded-none border border-white/10 shadow-lg flex flex-col items-center justify-center text-center min-h-[100px]">
+                            <h4 className="font-serif text-2xl sm:text-3xl font-bold text-[#D4AF37] mb-1 leading-none">Secure</h4>
+                            <p className="text-[8px] sm:text-[9px] text-white/50 uppercase font-bold tracking-widest leading-tight mt-1">Privacy PACT</p>
                         </div>
                     </div>
                 </div>
 
                 {/* Right Section - Form */}
-                <div className="flex-1 p-6 md:p-20 relative">
+                <div className="flex-1 p-6 md:p-12 relative">
                     <div className="max-w-xl mx-auto h-full flex flex-col">
-                        <div className="mb-12 text-center lg:text-left">
+                        <div className="mb-8 text-center lg:text-left">
                             <motion.span
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
-                                className="text-[10px] font-bold uppercase tracking-[0.5em] text-[#D4AF37] mb-3 block"
+                                className="text-[10px] font-bold uppercase tracking-[0.5em] text-[#D4AF37] mb-2 block"
                             >
                                 Begin Your Eternal Journey
                             </motion.span>
-                            <h1 className="text-4xl font-serif font-black text-gray-900 mb-3 italic">Milana Matrimony</h1>
-                            <p className="text-gray-400 font-medium text-sm">Finding the partner meant for your eternal destiny.</p>
+                            <h1 className="text-3xl font-serif font-black text-gray-900 mb-2 italic">Milana Matrimony</h1>
+                            <p className="text-gray-400 font-medium text-xs">Finding the partner meant for your eternal destiny.</p>
                         </div>
 
                         {renderProgress()}
@@ -278,7 +298,7 @@ const Register = () => {
                                         initial={{ opacity: 0, x: 20 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         exit={{ opacity: 0, x: -20 }}
-                                        className="space-y-5"
+                                        className="space-y-4"
                                     >
                                         <div className="space-y-1.5">
                                             <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Profile Created By *</label>
@@ -333,11 +353,11 @@ const Register = () => {
                                                 <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Mobile Number *</label>
                                                 <div className="relative group">
                                                     <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#800020] transition-colors" size={18} />
-                                                    <input {...register('mobile')} className="form-input-premium" placeholder="10-digit number" />
+                                                    <input {...register('mobile')} className="form-input-premium !pr-28" placeholder="10-digit number" />
                                                     <button
                                                         type="button"
                                                         onClick={() => setOtpSent(true)}
-                                                        className="absolute right-2 top-1/2 -translate-y-1/2 px-3 py-1 bg-[#800020] text-white text-[10px] font-black rounded-lg uppercase tracking-widest hover:bg-[#112240] transition-colors"
+                                                        className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-2 bg-[#800020] text-white text-[10px] font-black rounded-none uppercase tracking-widest hover:bg-[#112240] transition-all shadow-md active:scale-95"
                                                     >
                                                         {otpSent ? 'Resend' : 'Send OTP'}
                                                     </button>
@@ -347,8 +367,8 @@ const Register = () => {
                                         </div>
 
                                         {otpSent && !otpVerified && (
-                                            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="p-4 bg-blue-50 rounded-2xl border border-blue-100 flex gap-4 items-center">
-                                                <input maxLength={4} onChange={(e) => { if (e.target.value === '1234') setOtpVerified(true); }} className="w-32 px-4 py-2 rounded-xl bg-white border border-blue-200 outline-none font-bold text-center tracking-[0.5em]" placeholder="1234" />
+                                            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="p-4 bg-blue-50 rounded-none border border-blue-100 flex gap-4 items-center">
+                                                <input maxLength={4} onChange={(e) => { if (e.target.value === '1234') setOtpVerified(true); }} className="w-32 px-4 py-2 rounded-none bg-white border border-blue-200 outline-none font-bold text-center tracking-[0.5em]" placeholder="1234" />
                                                 <p className="text-xs font-bold text-[#800020]">Enter "1234" to verify (Mock)</p>
                                             </motion.div>
                                         )}
@@ -393,8 +413,36 @@ const Register = () => {
                                         initial={{ opacity: 0, x: 20 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         exit={{ opacity: 0, x: -20 }}
-                                        className="space-y-5"
+                                        className="space-y-4"
                                     >
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="space-y-1.5">
+                                                <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Religion *</label>
+                                                <select {...register('religion')} disabled className="form-input-premium appearance-none bg-gray-100 cursor-not-allowed text-gray-500">
+                                                    <option value="Hindu">Hindu</option>
+                                                </select>
+                                                {errors.religion && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.religion.message}</p>}
+                                            </div>
+                                            <div className="space-y-1.5">
+                                                <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Caste *</label>
+                                                <select {...register('caste')} className="form-input-premium appearance-none">
+                                                    <option value="">Select Option</option>
+                                                    <option value="Kshatriya Komarpanth">Kshatriya Komarpanth</option>
+                                                    <option value="Other">Other</option>
+                                                </select>
+                                                {errors.caste && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.caste.message}</p>}
+                                            </div>
+                                        </div>
+
+                                        {selectedCaste === 'Other' && (
+                                            <div className="space-y-1.5 p-4 bg-orange-50 border border-orange-100 rounded-none">
+                                                <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Please Specify Caste *</label>
+                                                <input {...register('customCaste')} type="text" placeholder="Enter your caste" className="form-input-premium bg-white" />
+                                                {errors.customCaste && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.customCaste.message}</p>}
+                                                <p className="text-[10px] text-orange-600 font-bold mt-2">Please note since you are creating a profile for other caste, your profile won't be visible in our portal. But still you can search for the profile and get matches.</p>
+                                            </div>
+                                        )}
+
                                         <div className="space-y-1.5">
                                             <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Mother Tongue *</label>
                                             <select {...register('motherTongue')} className="form-input-premium appearance-none">
@@ -455,7 +503,7 @@ const Register = () => {
                                         initial={{ opacity: 0, x: 20 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         exit={{ opacity: 0, x: -20 }}
-                                        className="space-y-5"
+                                        className="space-y-4"
                                     >
                                         <div className="space-y-1.5">
                                             <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Highest Education *</label>
@@ -540,8 +588,8 @@ const Register = () => {
                                         exit={{ opacity: 0, x: -20 }}
                                         className="space-y-6"
                                     >
-                                        <div className="p-6 bg-blue-50 rounded-3xl border border-blue-100 flex items-center gap-4">
-                                            <div className="bg-[#800020] p-3 rounded-2xl shadow-lg">
+                                        <div className="p-6 bg-blue-50 rounded-none border border-blue-100 flex items-center gap-4">
+                                            <div className="bg-[#800020] p-3 rounded-none shadow-lg">
                                                 <Sparkles className="text-white" size={24} />
                                             </div>
                                             <div>
@@ -594,8 +642,8 @@ const Register = () => {
                                         exit={{ opacity: 0, x: -20 }}
                                         className="space-y-6"
                                     >
-                                        <div className="p-6 bg-yellow-50 rounded-3xl border border-yellow-100 flex items-center gap-4 mb-6">
-                                            <div className="bg-[#D4AF37] p-3 rounded-2xl shadow-lg">
+                                        <div className="p-6 bg-yellow-50 rounded-none border border-yellow-100 flex items-center gap-4 mb-6">
+                                            <div className="bg-[#D4AF37] p-3 rounded-none shadow-lg">
                                                 <CheckCircle className="text-white" size={24} />
                                             </div>
                                             <div>
@@ -605,36 +653,118 @@ const Register = () => {
                                         </div>
 
                                         <div className="space-y-4">
-                                            {/* Aadhar Card Upload */}
-                                            <div className="bg-[#800020]/5 p-6 rounded-2xl border border-[#800020]/10">
-                                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                                    <div className="flex items-center gap-4">
-                                                        <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-[#800020] shadow-sm">
-                                                            <Shield size={24} />
+                                            {/* Aadhar Card Upload - Responsive */}
+                                            <div className="bg-[#800020]/5 p-5 rounded-none border-2 border-dashed border-[#800020]/20 transition-all hover:border-[#800020]/40">
+                                                <div className="flex flex-col gap-4">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-10 h-10 bg-white rounded-none flex items-center justify-center text-[#800020] shadow-sm shrink-0">
+                                                            <Shield size={20} />
                                                         </div>
                                                         <div>
-                                                            <p className="text-sm font-black text-gray-900 uppercase tracking-widest">Aadhar Card *</p>
-                                                            <p className="text-[10px] text-gray-400 font-bold uppercase">Government Issued ID</p>
+                                                            <p className="text-sm font-black text-gray-900 uppercase tracking-widest">Aadhaar Card <span className="text-red-500">*</span></p>
+                                                            <p className="text-[10px] text-gray-400 font-bold">Required • PDF format • Government ID</p>
                                                         </div>
                                                     </div>
-                                                    <div className="relative group">
-                                                        <input
-                                                            type="file"
-                                                            accept=".pdf"
-                                                            {...register('aadharCard')}
-                                                            className="hidden"
-                                                            id="aadhar-upload"
-                                                        />
-                                                        <label
-                                                            htmlFor="aadhar-upload"
-                                                            className={`flex items-center gap-3 px-6 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest cursor-pointer transition-all ${watch('aadharCard')?.length > 0 ? 'bg-green-500 text-white' : 'bg-[#D4AF37] text-[#800020] hover:bg-white hover:shadow-lg'}`}
-                                                        >
-                                                            {watch('aadharCard')?.length > 0 ? <CheckCircle size={16} /> : <ImageIcon size={16} />}
-                                                            {watch('aadharCard')?.length > 0 ? 'Uploaded' : 'Upload PDF'}
-                                                        </label>
-                                                    </div>
+
+                                                    {(() => {
+                                                        const { ref, onChange: rhfOnChange, ...regProps } = register('aadharCard');
+                                                        return (
+                                                            <input
+                                                                type="file"
+                                                                accept=".pdf,image/*"
+                                                                {...regProps}
+                                                                ref={ref}
+                                                                className="hidden"
+                                                                id="aadhar-upload"
+                                                                onChange={(e) => {
+                                                                    rhfOnChange(e);
+                                                                    const file = e.target.files?.[0];
+                                                                    if (file) setAadharFileName(file.name);
+                                                                }}
+                                                            />
+                                                        );
+                                                    })()}
+
+                                                    <label
+                                                        htmlFor="aadhar-upload"
+                                                        className={`w-full flex items-center justify-center gap-3 py-4 rounded-none font-bold text-[11px] uppercase tracking-widest cursor-pointer transition-all active:scale-95 ${aadharFileName
+                                                            ? 'bg-green-500 text-white shadow-lg shadow-green-500/20'
+                                                            : 'bg-[#800020] text-[#D4AF37] hover:bg-[#600318] shadow-lg shadow-[#800020]/20'
+                                                            }`}
+                                                    >
+                                                        {aadharFileName ? (
+                                                            <><CheckCircle size={16} /> Uploaded ✓</>
+                                                        ) : (
+                                                            <><ImageIcon size={16} /> Tap to Upload Document</>
+                                                        )}
+                                                    </label>
+
+                                                    {aadharFileName && (
+                                                        <div className="flex items-center gap-2 px-3 py-2 bg-green-50 rounded-none border border-green-100">
+                                                            <CheckCircle size={14} className="text-green-500 shrink-0" />
+                                                            <p className="text-xs font-bold text-green-700 truncate">{aadharFileName}</p>
+                                                        </div>
+                                                    )}
                                                 </div>
                                                 {errors.aadharCard && <p className="text-red-500 text-[10px] font-bold uppercase mt-2">{errors.aadharCard.message}</p>}
+                                                {!aadharFileName && (
+                                                    <p className="text-[10px] text-[#800020]/60 font-bold uppercase tracking-widest mt-3 text-center">📄 Upload Aadhaar Card to proceed to next step</p>
+                                                )}
+                                            </div>
+
+                                            {/* Caste Certificate Upload - Optional */}
+                                            <div className="bg-[#D4AF37]/5 p-5 rounded-none border-2 border-dashed border-[#D4AF37]/20 transition-all hover:border-[#D4AF37]/40">
+                                                <div className="flex flex-col gap-4">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-10 h-10 bg-white rounded-none flex items-center justify-center text-[#D4AF37] shadow-sm shrink-0">
+                                                            <ImageIcon size={20} />
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-sm font-black text-gray-900 uppercase tracking-widest">Caste Certificate</p>
+                                                            <p className="text-[10px] text-gray-400 font-bold">Optional • PDF/Image format</p>
+                                                        </div>
+                                                    </div>
+
+                                                    {(() => {
+                                                        const { ref, onChange: rhfOnChange, ...regProps } = register('casteCertificate');
+                                                        return (
+                                                            <input
+                                                                type="file"
+                                                                accept=".pdf,image/*"
+                                                                {...regProps}
+                                                                ref={ref}
+                                                                className="hidden"
+                                                                id="caste-upload"
+                                                                onChange={(e) => {
+                                                                    rhfOnChange(e);
+                                                                    const file = e.target.files?.[0];
+                                                                    if (file) setCasteCertificateFileName(file.name);
+                                                                }}
+                                                            />
+                                                        );
+                                                    })()}
+
+                                                    <label
+                                                        htmlFor="caste-upload"
+                                                        className={`w-full flex items-center justify-center gap-3 py-4 rounded-none font-bold text-[11px] uppercase tracking-widest cursor-pointer transition-all active:scale-95 ${casteCertificateFileName
+                                                            ? 'bg-green-500 text-white shadow-lg shadow-green-500/20'
+                                                            : 'bg-[#D4AF37] text-[#800020] hover:bg-[#B38D15] shadow-lg shadow-[#D4AF37]/20'
+                                                            }`}
+                                                    >
+                                                        {casteCertificateFileName ? (
+                                                            <><CheckCircle size={16} /> Uploaded ✓</>
+                                                        ) : (
+                                                            <><ImageIcon size={16} /> Tap to Upload Certificate</>
+                                                        )}
+                                                    </label>
+
+                                                    {casteCertificateFileName && (
+                                                        <div className="flex items-center gap-2 px-3 py-2 bg-green-50 rounded-none border border-green-100">
+                                                            <CheckCircle size={14} className="text-green-500 shrink-0" />
+                                                            <p className="text-xs font-bold text-green-700 truncate">{casteCertificateFileName}</p>
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
                                     </motion.div>
@@ -657,7 +787,7 @@ const Register = () => {
                                                         <div
                                                             key={plan._id}
                                                             onClick={() => setValue('membership', plan._id)}
-                                                            className={`flex flex-col p-6 rounded-[2.5rem] border-2 cursor-pointer transition-all select-none relative ${isSelected ? 'border-[#800020] shadow-xl scale-[1.02]' : 'border-gray-100 hover:border-[#800020]/20 bg-gray-50/50'}`}
+                                                            className={`flex flex-col p-6 rounded-none border-2 cursor-pointer transition-all select-none relative ${isSelected ? 'border-[#800020] shadow-xl scale-[1.02]' : 'border-gray-100 hover:border-[#800020]/20 bg-gray-50/50'}`}
                                                             style={{ backgroundColor: isSelected ? '#ffffff' : undefined }}
                                                         >
                                                             <div className="flex justify-between items-start mb-4">
@@ -697,18 +827,18 @@ const Register = () => {
                                         </div>
 
                                         <div className="space-y-6">
-                                            <div className="flex flex-col sm:flex-row gap-4 p-2 bg-[#F8F9FA] rounded-2xl border border-gray-100">
+                                            <div className="flex flex-col sm:flex-row gap-4 p-2 bg-[#F8F9FA] rounded-none border border-gray-100">
                                                 <button
                                                     type="button"
                                                     onClick={() => setPaymentMethod('UPI')}
-                                                    className={`flex-1 py-3 px-4 rounded-xl font-bold text-[10px] uppercase tracking-widest transition-all ${paymentMethod === 'UPI' ? 'bg-[#800020] text-[#D4AF37] shadow-lg' : 'text-gray-400 hover:text-[#800020]'}`}
+                                                    className={`flex-1 py-3 px-4 rounded-none font-bold text-[10px] uppercase tracking-widest transition-all ${paymentMethod === 'UPI' ? 'bg-[#800020] text-[#D4AF37] shadow-lg' : 'text-gray-400 hover:text-[#800020]'}`}
                                                 >
                                                     UPI ID
                                                 </button>
                                                 <button
                                                     type="button"
                                                     onClick={() => setPaymentMethod('Card')}
-                                                    className={`flex-1 py-3 px-4 rounded-xl font-bold text-[10px] uppercase tracking-widest transition-all ${paymentMethod === 'Card' ? 'bg-[#800020] text-[#D4AF37] shadow-lg' : 'text-gray-400 hover:text-[#800020]'}`}
+                                                    className={`flex-1 py-3 px-4 rounded-none font-bold text-[10px] uppercase tracking-widest transition-all ${paymentMethod === 'Card' ? 'bg-[#800020] text-[#D4AF37] shadow-lg' : 'text-gray-400 hover:text-[#800020]'}`}
                                                 >
                                                     Credit / Debit Card
                                                 </button>
@@ -717,7 +847,7 @@ const Register = () => {
                                             <motion.div
                                                 initial={{ opacity: 0, y: 10 }}
                                                 animate={{ opacity: 1, y: 0 }}
-                                                className="p-8 bg-[#800020] rounded-[2.5rem] text-[#D4AF37] border border-[#D4AF37]/20 relative overflow-hidden group"
+                                                className="p-8 bg-[#800020] rounded-none text-[#D4AF37] border border-[#D4AF37]/20 relative overflow-hidden group"
                                             >
                                                 <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/natural-paper.png')] opacity-10"></div>
                                                 <div className="relative z-10">
@@ -725,7 +855,7 @@ const Register = () => {
                                                         <div className="space-y-6">
                                                             <div className="space-y-2">
                                                                 <label className="text-[10px] font-black uppercase tracking-widest opacity-60">Enter your UPI ID</label>
-                                                                <input type="text" placeholder="yourname@upi" className="w-full bg-white/10 border border-[#D4AF37]/30 rounded-xl px-4 py-3 text-white placeholder:text-white/30 outline-none focus:border-[#D4AF37]" />
+                                                                <input type="text" placeholder="yourname@upi" className="w-full bg-white/10 border border-[#D4AF37]/30 rounded-none px-4 py-3 text-white placeholder:text-white/30 outline-none focus:border-[#D4AF37]" />
                                                             </div>
                                                             <p className="text-[10px] font-bold uppercase tracking-widest text-center opacity-80 pt-4">Activation follow verified payment.</p>
                                                         </div>
@@ -733,16 +863,16 @@ const Register = () => {
                                                         <div className="space-y-6">
                                                             <div className="space-y-2">
                                                                 <label className="text-[10px] font-black uppercase tracking-widest opacity-60">Card Number</label>
-                                                                <input type="text" placeholder="•••• •••• •••• ••••" className="w-full bg-white/10 border border-[#D4AF37]/30 rounded-xl px-4 py-3 text-white placeholder:text-white/30 outline-none focus:border-[#D4AF37]" />
+                                                                <input type="text" placeholder="•••• •••• •••• ••••" className="w-full bg-white/10 border border-[#D4AF37]/30 rounded-none px-4 py-3 text-white placeholder:text-white/30 outline-none focus:border-[#D4AF37]" />
                                                             </div>
                                                             <div className="grid grid-cols-2 gap-4">
                                                                 <div className="space-y-2">
                                                                     <label className="text-[10px] font-black uppercase tracking-widest opacity-60">Expiry Date</label>
-                                                                    <input type="text" placeholder="MM/YY" className="w-full bg-white/10 border border-[#D4AF37]/30 rounded-xl px-4 py-3 text-white placeholder:text-white/30 outline-none focus:border-[#D4AF37]" />
+                                                                    <input type="text" placeholder="MM/YY" className="w-full bg-white/10 border border-[#D4AF37]/30 rounded-none px-4 py-3 text-white placeholder:text-white/30 outline-none focus:border-[#D4AF37]" />
                                                                 </div>
                                                                 <div className="space-y-2">
                                                                     <label className="text-[10px] font-black uppercase tracking-widest opacity-60">CVV</label>
-                                                                    <input type="password" placeholder="•••" className="w-full bg-white/10 border border-[#D4AF37]/30 rounded-xl px-4 py-3 text-white placeholder:text-white/30 outline-none focus:border-[#D4AF37]" />
+                                                                    <input type="password" placeholder="•••" className="w-full bg-white/10 border border-[#D4AF37]/30 rounded-none px-4 py-3 text-white placeholder:text-white/30 outline-none focus:border-[#D4AF37]" />
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -766,7 +896,7 @@ const Register = () => {
                                     <button
                                         type="button"
                                         onClick={prevStep}
-                                        className="flex-1 py-5 flex items-center justify-center gap-3 rounded-2xl bg-white text-gray-400 font-bold uppercase tracking-[0.2em] text-[10px] hover:bg-[#800020]/5 hover:text-[#800020] hover:border-[#800020]/20 transition-all border border-gray-100 shadow-sm active:scale-95"
+                                        className="flex-1 py-5 flex items-center justify-center gap-3 rounded-none bg-white text-gray-400 font-bold uppercase tracking-[0.2em] text-[10px] hover:bg-[#800020]/5 hover:text-[#800020] hover:border-[#800020]/20 transition-all border border-gray-100 shadow-sm active:scale-95"
                                     >
                                         <ChevronLeft size={16} /> Back
                                     </button>
@@ -776,7 +906,7 @@ const Register = () => {
                                     <button
                                         type="button"
                                         onClick={nextStep}
-                                        className="flex-[2] py-5 bg-[#800020] text-[#D4AF37] flex items-center justify-center gap-3 rounded-2xl font-bold uppercase tracking-[0.2em] text-[10px] shadow-xl shadow-[#800020]/20 hover:bg-[#600318] hover:-translate-y-1 hover:shadow-[#D4AF37]/10 transition-all active:scale-95"
+                                        className="flex-[2] py-5 bg-[#800020] text-[#D4AF37] flex items-center justify-center gap-3 rounded-none font-bold uppercase tracking-[0.2em] text-[10px] shadow-xl shadow-[#800020]/20 hover:bg-[#600318] hover:-translate-y-1 hover:shadow-[#D4AF37]/10 transition-all active:scale-95"
                                     >
                                         Save & Continue <ChevronRight size={16} />
                                     </button>
@@ -787,7 +917,7 @@ const Register = () => {
                                         onClick={handleSubmit(onSubmit, (err) => {
                                             console.log("Validation Errors:", err);
                                         })}
-                                        className="flex-[2] py-5 bg-[#800020] text-[#D4AF37] flex items-center justify-center gap-3 rounded-2xl font-bold uppercase tracking-[0.2em] text-[10px] shadow-xl shadow-[#800020]/20 hover:bg-[#600318] hover:-translate-y-1 hover:shadow-[#D4AF37]/10 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="flex-[2] py-5 bg-[#800020] text-[#D4AF37] flex items-center justify-center gap-3 rounded-none font-bold uppercase tracking-[0.2em] text-[10px] shadow-xl shadow-[#800020]/20 hover:bg-[#600318] hover:-translate-y-1 hover:shadow-[#D4AF37]/10 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         {loading ? (
                                             <>
@@ -818,7 +948,7 @@ const Register = () => {
                     padding: 1.15rem 1.15rem 1.15rem 3.5rem;
                     background: #F9FAFB/50;
                     border: 1.5px solid #F3F4F6;
-                    border-radius: 1.5rem;
+                    border-radius: 0;
                     font-size: 0.825rem;
                     font-weight: 600;
                     color: #111827;

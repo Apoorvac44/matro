@@ -54,9 +54,9 @@ const Interests = () => {
 
     return (
         <div className="min-h-screen bg-white">
-            <div className="flex max-w-[1440px] mx-auto min-h-screen pt-20">
-                {/* Sidebar */}
-                <div className="w-80 border-r border-gray-100 p-8 hidden md:block overflow-y-auto">
+            <div className="flex max-w-[1440px] mx-auto min-h-screen pt-4 md:pt-14">
+                {/* Sidebar - Desktop only */}
+                <div className="w-72 border-r border-gray-100 p-8 hidden md:block overflow-y-auto shrink-0">
                     {sidebarItems.map((item, idx) => (
                         item.type === 'header' ? (
                             <h3 key={idx} className={`text-sm font-black text-gray-900 uppercase tracking-widest mb-4 ${item.className || ''}`}>
@@ -75,10 +75,31 @@ const Interests = () => {
                     ))}
                 </div>
 
+                {/* Mobile Tab Pills */}
+                <div className="block md:hidden fixed top-16 left-0 w-full z-20 bg-white border-b border-gray-100 px-4 pt-2 pb-3">
+                    <div className="flex gap-2 overflow-x-auto no-scrollbar">
+                        {[
+                            { id: 'received_all', label: `Received (${interests.received.length})` },
+                            { id: 'received_pending', label: 'Pending' },
+                            { id: 'received_accepted', label: 'Accepted' },
+                            { id: 'sent_all', label: `Sent (${interests.sent.length})` },
+                            { id: 'sent_pending', label: 'Sent Pending' },
+                        ].map(t => (
+                            <button
+                                key={t.id}
+                                onClick={() => setActiveTab(t.id)}
+                                className={`shrink-0 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${activeTab === t.id ? 'bg-[#800020] text-white' : 'bg-gray-100 text-gray-500'}`}
+                            >
+                                {t.label}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
                 {/* Main Content */}
-                <div className="flex-1 bg-gray-50/30 p-8 md:p-12 overflow-y-auto">
+                <div className="flex-1 bg-gray-50/30 p-4 md:p-8 overflow-y-auto mt-16 md:mt-0">
                     <div className="max-w-4xl mx-auto">
-                        <div className="flex items-center justify-between mb-8">
+                        <div className="flex items-center justify-between mb-4">
                             <div>
                                 <h1 className="text-2xl font-black text-gray-900 uppercase tracking-tight flex items-center gap-3">
                                     {activeTab.includes('received') ? 'All interests received' : 'All interests sent'}

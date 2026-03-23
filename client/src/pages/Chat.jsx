@@ -105,24 +105,27 @@ const Chat = () => {
                             <Loader2 size={32} className="animate-spin text-[#800020]" />
                         </div>
                     ) : messages.length > 0 ? (
-                        messages.map((msg, index) => (
-                            <motion.div
-                                key={index}
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className={`flex ${msg.sender === user._id ? 'justify-end' : 'justify-start'}`}
-                            >
-                                <div className={`max-w-[80%] md:max-w-[70%] p-5 rounded-3xl text-sm font-medium leading-relaxed shadow-sm ${msg.sender === user._id
-                                    ? 'bg-[#800020] text-white rounded-tr-none'
-                                    : 'bg-white text-gray-700 rounded-tl-none border border-gray-100'
-                                    }`}>
-                                    {msg.content}
-                                    <div className={`text-[8px] mt-2 font-bold opacity-60 text-right`}>
-                                        {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        messages.map((msg, index) => {
+                            const isMine = msg.sender === user?._id || msg.sender === 'mock_user_1';
+                            return (
+                                <motion.div
+                                    key={index}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className={`flex ${isMine ? 'justify-end' : 'justify-start'}`}
+                                >
+                                    <div className={`max-w-[80%] md:max-w-[70%] p-5 rounded-3xl text-sm font-medium leading-relaxed shadow-sm ${isMine
+                                        ? 'bg-[#800020] text-white rounded-tr-none'
+                                        : 'bg-white text-gray-700 rounded-tl-none border border-gray-100'
+                                        }`}>
+                                        {msg.content}
+                                        <div className={`text-[8px] mt-2 font-bold opacity-60 text-right`}>
+                                            {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        </div>
                                     </div>
-                                </div>
-                            </motion.div>
-                        ))
+                                </motion.div>
+                            );
+                        })
                     ) : (
                         <div className="flex flex-col items-center justify-center h-full text-center py-8">
                             <div className="w-12 h-12 bg-[#FFFDD0] rounded-full flex items-center justify-center text-[#D4AF37] mb-2">

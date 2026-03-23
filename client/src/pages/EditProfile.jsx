@@ -6,7 +6,15 @@ import * as api from '../services/api';
 import { AuthContext } from '../context/AuthContext';
 import { calculateCompleteness } from '../utils/completeness';
 
-// Sidebar definition moved inside component to support dynamic labels
+
+const raasiOptions = ['Mesha', 'Vrishabha', 'Mithuna', 'Karka', 'Simha', 'Kanya', 'Tula', 'Vrischika', 'Dhanu', 'Makara', 'Kumbha', 'Meena'];
+const nakshatraOptions = [
+    'Ashwini', 'Bharani', 'Krittika', 'Rohini', 'Mrigashira', 'Ardra', 'Punarvasu', 'Pushya', 'Ashlesha',
+    'Magha', 'Purva Phalguni', 'Uttara Phalguni', 'Hasta', 'Chitra', 'Swati', 'Vishakha', 'Anuradha', 'Jyeshtha',
+    'Mula', 'Purva Ashadha', 'Uttara Ashadha', 'Shravana', 'Dhanishta', 'Shatabhisha', 'Purva Bhadrapada', 'Uttara Bhadrapada', 'Revati'
+];
+const gothraOptions = ['Vishnu', 'Shiva', 'Kashyapa', 'Bharadwaj', 'Vishvamitra', 'Gautama', 'Jamadagni', 'Atri', 'Vashistha', 'Agastya', 'Angirasa', 'Bhrigu', 'Other'];
+
 
 const FormRow = ({ label, required, children }) => (
     <div className="flex flex-row items-start py-5 border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-colors px-2 sm:px-4 rounded-xl">
@@ -27,6 +35,7 @@ const EditProfile = ({ defaultTab }) => {
         photos: [], // Gallery photos
         mobile: '', dob: '', motherTongue: '', maritalStatus: '', height: '',
         email: '',
+        religion: 'Hindu', caste: '', customCaste: '',
         languagesKnown: '',
         prefAgeMin: '', prefAgeMax: '', prefLocation: '', prefEducation: '', prefProfession: '',
         aadharCard: '', membership: 'p1',
@@ -73,7 +82,8 @@ const EditProfile = ({ defaultTab }) => {
                 { id: 'Change Password', label: 'Change Password', action: '' },
                 { id: 'Deactivate Profile', label: 'Deactivate Profile', action: '' },
                 { id: 'Delete Profile', label: 'Delete Profile', action: '' },
-                { id: 'Manage Alert', label: 'Manage Alert', action: '' }
+                { id: 'Manage Alert', label: 'Manage Alert', action: '' },
+                { id: 'Logout', label: 'Logout', action: '' }
             ]
         }
     ];
@@ -86,13 +96,29 @@ const EditProfile = ({ defaultTab }) => {
     const [expandedSections, setExpandedSections] = useState(['Profile Info']); // Default open the first section
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const navigate = useNavigate();
-    const { user, refreshUser } = useContext(AuthContext); // Added user to context destructuring
+    const { user, refreshUser, logout } = useContext(AuthContext); // Added user to context destructuring
     const [completeness, setCompleteness] = useState(0);
+    const [countries, setCountries] = useState([]);
+    const [showCountrySuggestions, setShowCountrySuggestions] = useState({ citizenship: false, living: false });
+
 
     const [searchParams] = useSearchParams();
 
     useEffect(() => {
+        const fetchCountries = async () => {
+            try {
+                const data = await api.getCountries();
+                setCountries(data);
+            } catch (err) {
+                console.error('Error fetching countries:', err);
+            }
+        };
+        fetchCountries();
+    }, []);
+
+    useEffect(() => {
         const tab = searchParams.get('tab');
+
         if (tab) {
             setActiveTab(tab);
         } else if (defaultTab) {
@@ -105,6 +131,7 @@ const EditProfile = ({ defaultTab }) => {
             try {
                 const { data } = await api.getProfile();
                 const dataMap = {
+                    _id: data._id || data.id || '',
                     name: data.name || '',
                     age: data.age || '',
                     gender: data.gender || '',
@@ -128,6 +155,9 @@ const EditProfile = ({ defaultTab }) => {
                     prefEducation: data.prefEducation || '',
                     prefProfession: data.prefProfession || '',
                     email: data.email || '',
+                    religion: data.religion || 'Hindu',
+                    caste: (data.caste === 'Kshatriya Komarpanth' || !data.caste) ? (data.caste || '') : 'Other',
+                    customCaste: (data.caste && data.caste !== 'Kshatriya Komarpanth') ? data.caste : '',
                     membership: data.membership || 'p1',
                     weight: data.weight || '',
                     bodyType: data.bodyType || '',
@@ -175,7 +205,8 @@ const EditProfile = ({ defaultTab }) => {
                     prefDrinkingHabits: data.prefDrinkingHabits || [],
                     prefIncome: data.prefIncome || 'Any',
                     aboutPartner: data.aboutPartner || '',
-                    photos: data.photos || []
+                    photos: data.photos || [],
+                    casteCertificate: data.casteCertificate || ''
                 };
                 setFormData(dataMap);
                 setCompleteness(calculateCompleteness(dataMap));
@@ -223,6 +254,7 @@ const EditProfile = ({ defaultTab }) => {
         try {
             const profileData = {
                 ...formData,
+                caste: formData.caste === 'Other' ? formData.customCaste : formData.caste,
                 interests: Array.isArray(formData.interests)
                     ? formData.interests
                     : formData.interests.split(',').map(i => i.trim()).filter(i => i !== '')
@@ -325,9 +357,9 @@ const EditProfile = ({ defaultTab }) => {
         const files = Array.from(e.target.files);
         if (!files.length) return;
 
-        const remainingSlots = 10 - formData.photos.length;
+        const remainingSlots = 6 - formData.photos.length;
         if (remainingSlots <= 0) {
-            alert('You can only upload up to 10 gallery photos.');
+            alert('You can only upload up to 6 gallery photos.');
             return;
         }
 
@@ -392,10 +424,10 @@ const EditProfile = ({ defaultTab }) => {
     );
 
     return (
-        <div className="bg-[#F9FAFB] min-h-screen pt-24 pb-20 px-4 md:px-8">
+        <div className="bg-[#F9FAFB] min-h-screen pt-16 pb-20 px-4 md:px-8">
             <div className="max-w-7xl mx-auto">
                 {/* Header Area */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 bg-white p-8 rounded-3xl shadow-sm border border-gray-100 relative">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6 bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative">
                     <div className="flex items-center gap-4">
                         <button
                             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -411,9 +443,14 @@ const EditProfile = ({ defaultTab }) => {
                             >
                                 Profile details
                             </motion.span>
-                            <h1 className="text-xl sm:text-3xl font-serif font-black text-gray-900 italic flex flex-wrap items-center gap-2 sm:gap-4">
+                            <h1 className="text-xl sm:text-3xl font-serif font-black text-gray-900 italic flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-6">
                                 Edit Profile
-                                <Link to={`/profile/${user?._id || user?.id}`} className="text-[#800020]/40 text-[10px] sm:text-xs font-bold uppercase tracking-widest hover:text-[#800020] transition-colors border-b border-[#800020]/20 pb-0.5 inline-block">View my profile</Link>
+                                <Link
+                                    to={`/profile/${formData?._id || user?._id || user?.id}`}
+                                    className="bg-[#800020] text-[#D4AF37] px-6 py-2.5 rounded-none font-black text-[10px] uppercase tracking-widest hover:bg-[#600318] transition-all shadow-lg shadow-[#800020]/20 flex items-center gap-2 active:scale-95"
+                                >
+                                    <User size={14} /> View My Profile
+                                </Link>
                             </h1>
                         </div>
                     </div>
@@ -514,6 +551,11 @@ const EditProfile = ({ defaultTab }) => {
                                                                     key={itemIdx}
                                                                     type="button"
                                                                     onClick={() => {
+                                                                        if (item.id === 'Logout') {
+                                                                            logout();
+                                                                            navigate('/login');
+                                                                            return;
+                                                                        }
                                                                         setActiveTab(item.id);
                                                                         setIsSidebarOpen(false); // Close on mobile after selection
                                                                         if (window.innerWidth < 1024) {
@@ -561,7 +603,7 @@ const EditProfile = ({ defaultTab }) => {
                     <div id="main-form-content" className="flex-1 w-full bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-10 relative">
                         <div className="flex justify-between items-center mb-8 border-b border-gray-100 pb-6">
                             <h2 className="text-2xl font-serif font-black text-gray-900 italic">
-                                {activeTab}
+                                {activeTab === 'Photos' ? 'Profile Photos' : activeTab}
                             </h2>
                             {activeTab === 'Basic Information' && (
                                 <span className="text-xs font-bold text-gray-400">Fields marked as <span className="text-red-500">*</span> are Mandatory</span>
@@ -652,7 +694,28 @@ const EditProfile = ({ defaultTab }) => {
                                                 </div>
                                             </FormRow>
 
+                                            <FormRow label="Religion" required>
+                                                <select name="religion" value={formData.religion} disabled className="form-input-premium max-w-md appearance-none bg-gray-100 cursor-not-allowed text-gray-500">
+                                                    <option value="Hindu">Hindu</option>
+                                                </select>
+                                            </FormRow>
 
+                                            <FormRow label="Caste" required>
+                                                <div className="w-full">
+                                                    <select name="caste" value={formData.caste} onChange={handleChange} className="form-input-premium max-w-md appearance-none">
+                                                        <option value="">Select Option</option>
+                                                        <option value="Kshatriya Komarpanth">Kshatriya Komarpanth</option>
+                                                        <option value="Other">Other</option>
+                                                    </select>
+                                                    {formData.caste === 'Other' && (
+                                                        <div className="mt-4 p-4 bg-orange-50 border border-orange-100 rounded-2xl max-w-md">
+                                                            <label className="text-xs font-black text-gray-700 uppercase tracking-widest block mb-1.5">Please Specify Caste *</label>
+                                                            <input type="text" name="customCaste" value={formData.customCaste} onChange={handleChange} placeholder="Enter your caste" className="form-input-premium bg-white w-full" />
+                                                            <p className="text-[10px] text-orange-600 font-bold mt-2">Please note since you are creating a profile for other caste, your profile won't be visible in our portal. But still you can search for the profile and get matches.</p>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </FormRow>
 
                                             <FormRow label="Mother Tongue" required>
                                                 <select name="motherTongue" value={formData.motherTongue} onChange={handleChange} className="form-input-premium max-w-md appearance-none">
@@ -900,16 +963,10 @@ const EditProfile = ({ defaultTab }) => {
                                             </FormRow>
 
                                             <FormRow label="Star">
-                                                <input type="text" name="prefStar" value={formData.prefStar} onChange={handleChange} className="form-input-premium max-w-md" placeholder="e.g. Any" />
-                                            </FormRow>
-                                            <FormRow label={<span className="flex items-center">Kuja Dosham <CheckCircle className="w-4 h-4 text-green-500 ml-1" /></span>}>
-                                                <div className="flex gap-4 items-center flex-wrap h-full pt-3">
-                                                    {['Doesn\'t matter', 'Yes', 'No'].map(v => (
-                                                        <label key={v} className="flex items-center gap-2 cursor-pointer text-sm font-bold text-gray-700">
-                                                            <input type="radio" name="prefKujaDosham" value={v} checked={formData.prefKujaDosham === v} onChange={handleChange} className="accent-[#800020] w-4 h-4" /> {v}
-                                                        </label>
-                                                    ))}
-                                                </div>
+                                                <select name="prefStar" value={formData.prefStar} onChange={handleChange} className="form-input-premium max-w-md appearance-none cursor-pointer">
+                                                    <option value="">Any</option>
+                                                    {nakshatraOptions.map(n => <option key={n} value={n}>{n}</option>)}
+                                                </select>
                                             </FormRow>
                                             <FormRow label={<span className="flex items-center">Education <CheckCircle className="w-4 h-4 text-green-500 ml-1" /></span>}>
                                                 <div className="flex flex-col gap-3">
@@ -930,10 +987,62 @@ const EditProfile = ({ defaultTab }) => {
                                                 <input type="text" name="prefOccupation" value={formData.prefOccupation} onChange={handleChange} className="form-input-premium max-w-md" placeholder="e.g. Any" />
                                             </FormRow>
                                             <FormRow label="Citizenship">
-                                                <input type="text" name="prefCitizenship" value={formData.prefCitizenship} onChange={handleChange} className="form-input-premium max-w-md" placeholder="e.g. Any" />
+                                                <div className="relative w-full max-w-md">
+                                                    <input
+                                                        type="text"
+                                                        name="prefCitizenship"
+                                                        value={formData.prefCitizenship}
+                                                        onChange={handleChange}
+                                                        onFocus={() => setShowCountrySuggestions({ ...showCountrySuggestions, citizenship: true })}
+                                                        onBlur={() => setTimeout(() => setShowCountrySuggestions({ ...showCountrySuggestions, citizenship: false }), 200)}
+                                                        className="form-input-premium w-full"
+                                                        placeholder="e.g. India"
+                                                    />
+                                                    {showCountrySuggestions.citizenship && formData.prefCitizenship && (
+                                                        <div className="absolute z-50 w-full bg-white border border-gray-100 rounded-xl shadow-xl mt-1 max-h-40 overflow-y-auto">
+                                                            {countries
+                                                                .filter(c => c.name.toLowerCase().includes(formData.prefCitizenship.toLowerCase()))
+                                                                .map(c => (
+                                                                    <div
+                                                                        key={c.code}
+                                                                        className="p-3 hover:bg-gray-50 cursor-pointer text-sm font-bold text-gray-700"
+                                                                        onClick={() => setFormData({ ...formData, prefCitizenship: c.name })}
+                                                                    >
+                                                                        {c.name}
+                                                                    </div>
+                                                                ))}
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </FormRow>
                                             <FormRow label={<span className="flex items-center">Country Living In <CheckCircle className="w-4 h-4 text-green-500 ml-1" /></span>}>
-                                                <input type="text" name="prefCountryLiving" value={formData.prefCountryLiving} onChange={handleChange} className="form-input-premium max-w-md" placeholder="e.g. Any" />
+                                                <div className="relative w-full max-w-md">
+                                                    <input
+                                                        type="text"
+                                                        name="prefCountryLiving"
+                                                        value={formData.prefCountryLiving}
+                                                        onChange={handleChange}
+                                                        onFocus={() => setShowCountrySuggestions({ ...showCountrySuggestions, living: true })}
+                                                        onBlur={() => setTimeout(() => setShowCountrySuggestions({ ...showCountrySuggestions, living: false }), 200)}
+                                                        className="form-input-premium w-full"
+                                                        placeholder="e.g. India"
+                                                    />
+                                                    {showCountrySuggestions.living && formData.prefCountryLiving && (
+                                                        <div className="absolute z-50 w-full bg-white border border-gray-100 rounded-xl shadow-xl mt-1 max-h-40 overflow-y-auto">
+                                                            {countries
+                                                                .filter(c => c.name.toLowerCase().includes(formData.prefCountryLiving.toLowerCase()))
+                                                                .map(c => (
+                                                                    <div
+                                                                        key={c.code}
+                                                                        className="p-3 hover:bg-gray-50 cursor-pointer text-sm font-bold text-gray-700"
+                                                                        onClick={() => setFormData({ ...formData, prefCountryLiving: c.name })}
+                                                                    >
+                                                                        {c.name}
+                                                                    </div>
+                                                                ))}
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </FormRow>
                                             <FormRow label={<span className="flex items-center">Food Habits <CheckCircle className="w-4 h-4 text-green-500 ml-1" /></span>}>
                                                 <div className="grid grid-cols-2 gap-y-3 pt-3 max-w-sm">
@@ -1049,12 +1158,12 @@ const EditProfile = ({ defaultTab }) => {
                                                 <div className="flex items-center justify-between">
                                                     <div>
                                                         <h4 className="text-xl font-serif font-black italic text-gray-900">Photo Gallery</h4>
-                                                        <p className="text-sm text-gray-500">Showcase your lifestyle and personality with up to 10 more photos.</p>
+                                                        <p className="text-sm text-gray-500">Showcase your lifestyle and personality with up to 6 more photos.</p>
                                                     </div>
                                                     <div className="text-right">
                                                         <span className="text-2xl font-serif font-black italic text-[#800020]">{formData.photos?.length || 0}</span>
                                                         <span className="text-gray-300 font-serif italic mx-1">/</span>
-                                                        <span className="text-sm font-serif text-gray-400 italic">10</span>
+                                                        <span className="text-sm font-serif text-gray-400 italic">6</span>
                                                     </div>
                                                 </div>
 
@@ -1074,7 +1183,7 @@ const EditProfile = ({ defaultTab }) => {
                                                     ))}
 
                                                     {/* Add Photo Button */}
-                                                    {(formData.photos?.length || 0) < 10 && (
+                                                    {(formData.photos?.length || 0) < 6 && (
                                                         <label className="aspect-square rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-2 hover:border-[#800020]/30 hover:bg-gray-50/50 transition-all cursor-pointer group">
                                                             <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 group-hover:text-[#800020] transition-colors">
                                                                 <Image size={14} />
@@ -1146,22 +1255,22 @@ const EditProfile = ({ defaultTab }) => {
                                                 <input type="time" name="timeOfBirth" value={formData.timeOfBirth} onChange={handleChange} className="form-input-premium w-40" />
                                             </FormRow>
                                             <FormRow label="Star / Nakshatra">
-                                                <input type="text" name="star" value={formData.star} onChange={handleChange} className="form-input-premium max-w-md" placeholder="e.g. Rohini" />
+                                                <select name="star" value={formData.star} onChange={handleChange} className="form-input-premium max-w-md appearance-none cursor-pointer">
+                                                    <option value="">Select Nakshatra</option>
+                                                    {nakshatraOptions.map(n => <option key={n} value={n}>{n}</option>)}
+                                                </select>
                                             </FormRow>
                                             <FormRow label="Gothra">
-                                                <input type="text" name="gothra" value={formData.gothra} onChange={handleChange} className="form-input-premium max-w-md" placeholder="e.g. Kashyapa" />
+                                                <select name="gothra" value={formData.gothra} onChange={handleChange} className="form-input-premium max-w-md appearance-none cursor-pointer">
+                                                    <option value="">Select Gothra</option>
+                                                    {gothraOptions.map(g => <option key={g} value={g}>{g}</option>)}
+                                                </select>
                                             </FormRow>
                                             <FormRow label="Raasi">
-                                                <input type="text" name="raasi" value={formData.raasi} onChange={handleChange} className="form-input-premium max-w-md" placeholder="e.g. Vrishabha" />
-                                            </FormRow>
-                                            <FormRow label="Kuja Dosha">
-                                                <div className="flex gap-6 items-center flex-wrap h-full pt-3">
-                                                    {['Yes', 'No', 'Don\'t Know'].map(v => (
-                                                        <label key={v} className="flex items-center gap-2 cursor-pointer text-sm font-bold text-gray-700">
-                                                            <input type="radio" name="kujaDosha" value={v} checked={formData.kujaDosha === v} onChange={handleChange} className="accent-[#800020] w-4 h-4" /> {v}
-                                                        </label>
-                                                    ))}
-                                                </div>
+                                                <select name="raasi" value={formData.raasi} onChange={handleChange} className="form-input-premium max-w-md appearance-none cursor-pointer">
+                                                    <option value="">Select Raasi</option>
+                                                    {raasiOptions.map(r => <option key={r} value={r}>{r}</option>)}
+                                                </select>
                                             </FormRow>
                                             <FormRow label="Kula Daiva">
                                                 <input type="text" name="kulaDaiva" value={formData.kulaDaiva} onChange={handleChange} className="form-input-premium max-w-md" placeholder="Family Deity" />
@@ -1179,7 +1288,7 @@ const EditProfile = ({ defaultTab }) => {
                                     {/* TRUST BADGE */}
                                     {activeTab === 'Trust Badge' && (
                                         <div className="space-y-6">
-                                            <FormRow label="Aadhar Card">
+                                            <FormRow label="AADHAAR CARD">
                                                 <div className="w-full max-w-md form-input-premium !p-3">
                                                     {formData.aadharCard ? (
                                                         <div className="flex justify-between items-center bg-white rounded-lg p-3 border border-gray-100 shadow-sm">
@@ -1189,6 +1298,21 @@ const EditProfile = ({ defaultTab }) => {
                                                     ) : (
                                                         <div className="flex items-center gap-3">
                                                             <input type="file" accept=".pdf,image/*" onChange={(e) => handleDocumentChange(e, 'aadharCard')} className="w-full text-xs file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:uppercase file:tracking-widest file:bg-[#800020] file:text-[#D4AF37] hover:file:bg-[#600318] file:cursor-pointer" disabled={uploading} />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </FormRow>
+
+                                            <FormRow label="CASTE CERTIFICATE">
+                                                <div className="w-full max-w-md form-input-premium !p-3">
+                                                    {formData.casteCertificate ? (
+                                                        <div className="flex justify-between items-center bg-white rounded-lg p-3 border border-gray-100 shadow-sm">
+                                                            <span className="text-green-600 font-bold text-xs flex items-center gap-2 uppercase tracking-widest"><ShieldCheck size={16} /> Uploaded</span>
+                                                            <button type="button" onClick={() => setFormData({ ...formData, casteCertificate: '' })} className="text-red-500 hover:text-red-700 font-bold text-[10px] uppercase tracking-widest">Remove</button>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="flex items-center gap-3">
+                                                            <input type="file" accept=".pdf,image/*" onChange={(e) => handleDocumentChange(e, 'casteCertificate')} className="w-full text-xs file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:uppercase file:tracking-widest file:bg-[#800020] file:text-[#D4AF37] hover:file:bg-[#600318] file:cursor-pointer" disabled={uploading} />
                                                         </div>
                                                     )}
                                                 </div>

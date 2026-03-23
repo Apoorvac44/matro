@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
-import { Heart, User, MessageSquare, Compass, Home, Menu, X, Shield, LogOut, Users, Bell, Search, ChevronDown, ChevronRight, Settings, HelpCircle, Trophy, Star, Sparkles, BookOpen } from 'lucide-react';
+import { Heart, User, MessageSquare, Compass, Home, Menu, X, Shield, LogOut, Users, Bell, Search, ChevronDown, ChevronRight, Settings, HelpCircle, Trophy, Star, Sparkles, BookOpen, LayoutDashboard } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Navbar = () => {
@@ -34,8 +34,8 @@ const Navbar = () => {
         { name: 'Matches', path: '/explore', icon: <Users size={20} /> },
         { name: 'Interests', path: '/interests', icon: <Heart size={20} /> },
         { name: 'Messages', path: '/chat/inbox', icon: <MessageSquare size={20} /> },
-        { name: 'Search', path: '/search', icon: <Search size={20} /> },
-        { name: 'Notification', path: '/notifications', icon: <Bell size={20} /> },
+        { name: 'Profile', path: '/dashboard', icon: <User size={20} /> },
+        { name: 'Notification', path: '/notifications', icon: <Bell size={20} />, iconOnly: true },
     ];
 
     const navLinks = user ? privateLinks : publicLinks;
@@ -61,7 +61,7 @@ const Navbar = () => {
                             <span className={`transition-colors ${location.pathname === link.path ? 'text-[#D4AF37]' : 'text-[#D4AF37]/60'}`}>
                                 {link.icon}
                             </span>
-                            {link.name}
+                            {!link.iconOnly && link.name}
                         </Link>
                     ))}
 
@@ -92,7 +92,7 @@ const Navbar = () => {
                                         className="absolute top-full right-0 mt-3 w-80 bg-white rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.15)] border border-gray-100 overflow-hidden z-[110]"
                                     >
                                         {/* User Info Header */}
-                                        <div className="p-6 pb-4 text-center">
+                                        <div className="p-5 pb-2 text-center">
                                             <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest">{user.name}</h3>
                                             <div className="flex items-center justify-center gap-1.5 mt-1 text-[#D4AF37]">
                                                 <div className="bg-[#800020] p-1 rounded-full"><Heart size={8} className="fill-[#D4AF37]" /></div>
@@ -103,7 +103,7 @@ const Navbar = () => {
                                         </div>
 
                                         {/* Upgrade Banner */}
-                                        <div className="mx-6 mb-6 p-4 bg-gradient-to-br from-[#FFFDD0] to-[#FFF8E7] rounded-3xl border border-[#D4AF37]/10 relative overflow-hidden text-center">
+                                        <div className="mx-6 mb-4 p-3 bg-gradient-to-br from-[#FFFDD0] to-[#FFF8E7] rounded-3xl border border-[#D4AF37]/10 relative overflow-hidden text-center">
                                             <div className="absolute -right-2 -bottom-2 opacity-5 scale-150 rotate-12"><Star size={60} /></div>
                                             <h4 className="text-[11px] font-black text-[#800020] leading-tight mb-3 px-4">Upgrade membership to call/chat with matches</h4>
                                             <Link
@@ -116,13 +116,14 @@ const Navbar = () => {
                                         </div>
 
                                         {/* Menu Items */}
-                                        <div className="px-2 pb-4 space-y-0.5 max-h-[400px] overflow-y-auto custom-scrollbar">
+                                        <div className="px-2 pb-1 space-y-0.5 max-h-[280px] overflow-y-auto custom-scrollbar">
+                                            <DropdownLink to="/dashboard" icon={<Home size={16} />} label="Profile" />
                                             <DropdownLink to="/edit-profile" icon={<User size={16} />} label="Edit Profile" />
                                             <DropdownLink to="/edit-preferences" icon={<Settings size={16} />} label="Edit Preferences" />
                                             <DropdownLink to="/horoscope" icon={<Sparkles size={16} />} label="View/Edit Horoscope" />
 
-                                            <div className="px-5 py-4 mt-2">
-                                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Support & feedback</p>
+                                            <div className="px-5 py-2">
+                                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Support & feedback</p>
                                                 <div className="space-y-1">
                                                     <DropdownItem
                                                         icon={<Settings size={16} />}
@@ -148,20 +149,20 @@ const Navbar = () => {
                                                     />
                                                 </div>
                                             </div>
+                                        </div>
 
-                                            <div className="pt-2 border-t border-gray-50 bg-gray-50/50">
-                                                <button
-                                                    onClick={() => { logout(); setShowProfileDropdown(false); navigate('/login'); }}
-                                                    className="w-full h-12 px-6 flex items-center justify-between text-gray-500 hover:text-[#800020] transition-colors group"
-                                                >
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm group-hover:shadow group-hover:text-red-500 transition-all">
-                                                            <LogOut size={14} />
-                                                        </div>
-                                                        <span className="text-[11px] font-black uppercase tracking-widest">Logout</span>
+                                        <div className="pt-2 border-t border-gray-50 bg-gray-50/50">
+                                            <button
+                                                onClick={() => { logout(); setShowProfileDropdown(false); navigate('/login'); }}
+                                                className="w-full h-12 px-6 flex items-center justify-between text-gray-500 hover:text-[#800020] transition-colors group"
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm group-hover:shadow group-hover:text-red-500 transition-all">
+                                                        <LogOut size={14} />
                                                     </div>
-                                                </button>
-                                            </div>
+                                                    <span className="text-[11px] font-black uppercase tracking-widest">Logout</span>
+                                                </div>
+                                            </button>
                                         </div>
                                     </motion.div>
                                 )}
@@ -272,7 +273,7 @@ const Navbar = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
-        </nav>
+        </nav >
     );
 };
 
