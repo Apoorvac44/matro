@@ -20,7 +20,7 @@ const Explore = () => {
     // Quick Filter States
     const [sortBy, setSortBy] = useState('Relevance');
     const [showNewlyJoined, setShowNewlyJoined] = useState(false);
-    const [showNotSeen, setShowNotSeen] = useState(false);
+
     const [showWithPhoto, setShowWithPhoto] = useState(false);
     const [showWithHoroscope, setShowWithHoroscope] = useState(false);
     const [showMutualMatches, setShowMutualMatches] = useState(false);
@@ -92,7 +92,7 @@ const Explore = () => {
     });
 
     if (showNewlyJoined) derivedProfiles = [...derivedProfiles].reverse();
-    if (showNotSeen) derivedProfiles = derivedProfiles.filter((_, i) => i % 3 !== 0);
+
 
     if (sortBy === 'Age (Low to High)') {
         derivedProfiles.sort((a, b) => (parseInt(a.age) || 99) - (parseInt(b.age) || 99));
@@ -290,13 +290,6 @@ const Explore = () => {
                         Sort by: {sortBy} <ChevronDown size={14} className="text-gray-400" />
                     </button>
                 </div>
-
-                <button
-                    onClick={() => setShowNotSeen(!showNotSeen)}
-                    className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full border text-[12px] font-medium shrink-0 transition-colors shadow-sm ${showNotSeen ? 'border-[#800020] bg-red-50 text-[#800020]' : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'}`}
-                >
-                    Not seen
-                </button>
 
                 <button
                     onClick={() => setShowWithPhoto(!showWithPhoto)}

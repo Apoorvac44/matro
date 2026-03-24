@@ -232,38 +232,6 @@ const Navbar = () => {
 
                                         {isProfile && user && (
                                             <div className="flex flex-col gap-6 pl-10 -mt-2">
-                                                <Link
-                                                    to="/edit-preferences"
-                                                    onClick={() => setIsOpen(false)}
-                                                    className="flex items-center gap-4 text-lg font-serif italic text-gray-500 hover:text-[#800020] transition-all group"
-                                                >
-                                                    <span className="p-3 rounded-xl bg-gray-50 text-gray-400 group-hover:bg-[#800020]/5 group-hover:text-[#800020] shadow-sm"><Settings size={20} /></span>
-                                                    <span>Edit Preferences</span>
-                                                </Link>
-                                                <Link
-                                                    to="/horoscope"
-                                                    onClick={() => setIsOpen(false)}
-                                                    className="flex items-center gap-4 text-lg font-serif italic text-gray-500 hover:text-[#800020] transition-all group"
-                                                >
-                                                    <span className="p-3 rounded-xl bg-gray-50 text-gray-400 group-hover:bg-[#800020]/5 group-hover:text-[#800020] shadow-sm"><Sparkles size={20} /></span>
-                                                    <span>View/Edit Horoscope</span>
-                                                </Link>
-                                                <Link
-                                                    to="/edit-profile?tab=Settings"
-                                                    onClick={() => setIsOpen(false)}
-                                                    className="flex items-center gap-4 text-lg font-serif italic text-gray-500 hover:text-[#800020] transition-all group"
-                                                >
-                                                    <span className="p-3 rounded-xl bg-gray-50 text-gray-400 group-hover:bg-[#800020]/5 group-hover:text-[#800020] shadow-sm"><Settings size={20} /></span>
-                                                    <span>Settings</span>
-                                                </Link>
-                                                <Link
-                                                    to="/help"
-                                                    onClick={() => setIsOpen(false)}
-                                                    className="flex items-center gap-4 text-lg font-serif italic text-gray-500 hover:text-[#800020] transition-all group"
-                                                >
-                                                    <span className="p-3 rounded-xl bg-gray-50 text-gray-400 group-hover:bg-[#800020]/5 group-hover:text-[#800020] shadow-sm"><HelpCircle size={20} /></span>
-                                                    <span>Help</span>
-                                                </Link>
                                                 <button
                                                     onClick={() => { logout(); setIsOpen(false); navigate('/login'); }}
                                                     className="flex items-center gap-4 text-lg font-serif italic text-gray-500 hover:text-[#800020] transition-all group text-left"
