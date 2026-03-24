@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Calendar, Mail, Lock, Phone, User, MapPin, Briefcase, GraduationCap, Heart, Sparkles, CheckCircle, Eye, EyeOff, Coins, Shield, Image as ImageIcon, Ruler, Users, Info } from 'lucide-react';
+import { Calendar, Mail, Lock, Phone, User, MapPin, Briefcase, GraduationCap, Heart, Sparkles, CheckCircle, Eye, EyeOff, Coins, Shield, Image as ImageIcon, Ruler, Users, Info, ChevronDown, ChevronLeft, ChevronRight, Loader2, ArrowRight } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as api from '../services/api';
