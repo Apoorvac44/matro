@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import * as api from '../services/api';
-import { User, MapPin, CupSoda, Book, Briefcase, Heart, MessageSquare, Check, CheckCircle, X, Shield, Image as ImageIcon, ArrowLeft, Clock, GraduationCap, Send, Sparkles, Loader2, CreditCard, CalendarDays, Cake, Phone, Languages, Users, Ruler, Wallet, Building, Lock, Scale, UserPlus, Utensils, Cigarette, Wine, Moon, Sun, Home, Activity, Star, AlertTriangle } from 'lucide-react';
+import { User, MapPin, CupSoda, Book, Briefcase, Heart, MessageSquare, Check, CheckCircle, X, Shield, Image as ImageIcon, ArrowLeft, Clock, GraduationCap, Send, Sparkles, Loader2, CreditCard, CalendarDays, Cake, Phone, Languages, Users, Ruler, Wallet, Building, Lock, Scale, UserPlus, Utensils, Cigarette, Wine, Moon, Sun, Home, Activity, Star, AlertTriangle, Camera } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const ProfileDetail = () => {
@@ -94,20 +94,29 @@ const ProfileDetail = () => {
                 <div className="flex flex-col lg:flex-row gap-12">
                     {/* Left Column: Photo & Actions */}
                     <div className="w-full lg:w-1/3">
-                        <div className="bg-white p-4 rounded-3xl shadow-lg mb-8">
-                            <div className="aspect-square rounded-full overflow-hidden bg-gray-100 border-4 border-[#800020]/5 shadow-inner">
+                        <div className="bg-white p-6 md:p-4 rounded-[2rem] md:rounded-3xl shadow-sm md:shadow-lg mb-8 flex items-center gap-6 md:flex-col md:text-center shrink-0 w-full border border-[#800020]/5 md:border-none">
+                            <div className="w-24 h-24 sm:w-32 sm:h-32 lg:w-48 lg:h-48 mx-auto xl:w-full xl:h-auto xl:aspect-square rounded-full overflow-hidden bg-gray-100 border-[3px] md:border-4 border-[#800020]/10 shadow-inner shrink-0 cursor-pointer" onClick={() => profile.profilePicture && setSelectedPhoto(profile.profilePicture)}>
                                 {profile.profilePicture ? (
                                     <img
                                         src={profile.profilePicture}
                                         alt={profile.name}
-                                        className="w-full h-full object-cover cursor-pointer"
-                                        onClick={() => setSelectedPhoto(profile.profilePicture)}
+                                        className="w-full h-full object-cover hover:scale-105 transition-transform"
                                     />
                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-gray-300">
-                                        <User size={80} />
+                                    <div
+                                        className="w-full h-full flex items-center justify-center text-gray-300 cursor-pointer hover:bg-gray-50 transition-colors"
+                                        onClick={() => setSelectedPhoto('https://cdn-icons-png.flaticon.com/512/3667/3667231.png')}
+                                    >
+                                        <User size={60} />
                                     </div>
                                 )}
+                            </div>
+                            <div className="md:hidden flex-1 overflow-hidden">
+                                <h1 className="text-2xl font-bold text-gray-900 mb-1 truncate">{profile.name}</h1>
+                                <div className="flex flex-col gap-1 text-xs font-semibold text-gray-500">
+                                    <span className="flex items-center gap-1.5"><Clock size={12} className="text-[#800020]" /> {profile.age ? `${profile.age} Years` : 'Age Not Specified'}</span>
+                                    <span className="flex items-center gap-1.5"><MapPin size={12} className="text-[#800020]" /> {profile.location || 'Location Not Specified'}</span>
+                                </div>
                             </div>
                         </div>
 
@@ -160,11 +169,11 @@ const ProfileDetail = () => {
                             </motion.div>
                         )}
 
-                        <div>
+                        <div className="hidden md:block">
                             <h1 className="text-4xl font-bold text-gray-900 mb-4">{profile.name}</h1>
                             <div className="flex flex-wrap items-center gap-6 text-sm font-semibold text-gray-500">
-                                <span className="flex items-center gap-2"><Clock size={16} /> {profile.age} Years</span>
-                                <span className="flex items-center gap-2"><User size={16} /> {profile.gender}</span>
+                                <span className="flex items-center gap-2"><Clock size={16} /> {profile.age ? `${profile.age} Years` : 'Age Not Specified'}</span>
+                                <span className="flex items-center gap-2"><User size={16} /> {profile.gender || 'Not Specified'}</span>
                             </div>
                         </div>
 
@@ -255,6 +264,10 @@ const ProfileDetail = () => {
                                         {[
                                             { icon: <Home size={16} />, label: 'Family Type', value: profile.familyType || 'Not Specified' },
                                             { icon: <Shield size={16} />, label: 'Family Status', value: profile.familyStatus || 'Not Specified' },
+                                            { icon: <User size={16} />, label: "Father's Name", value: profile.fatherName || 'Not Specified' },
+                                            { icon: <Briefcase size={16} />, label: "Father's Occupation", value: profile.fatherOccupation || 'Not Specified' },
+                                            { icon: <User size={16} />, label: "Mother's Name", value: profile.motherName || 'Not Specified' },
+                                            { icon: <Briefcase size={16} />, label: "Mother's Occupation", value: profile.motherOccupation || 'Not Specified' },
                                             { icon: <MapPin size={16} />, label: 'Ancestral Origin', value: profile.ancestralOrigin || 'Not Specified' },
                                             { icon: <Users size={16} />, label: 'Brothers', value: profile.brothers || 'Not Specified' },
                                             { icon: <Users size={16} />, label: 'Sisters', value: profile.sisters || 'Not Specified' }
@@ -279,7 +292,9 @@ const ProfileDetail = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                     {[
                                         canViewEducation ? { icon: <GraduationCap size={16} />, label: 'Education', value: profile.education || 'Not Specified' } : null,
+                                        { icon: <Book size={16} />, label: 'Field of Study', value: profile.educationDetail || 'Not Specified' },
                                         { icon: <Briefcase size={16} />, label: 'Profession', value: profile.profession || 'Not Specified' },
+                                        { icon: <Building size={16} />, label: 'Company', value: profile.occupationDetail || 'Not Specified' },
                                         { icon: <Wallet size={16} />, label: 'Income', value: profile.income || 'Not Specified' },
                                         { icon: <Building size={16} />, label: 'Work Location', value: profile.workLocation || 'Not Specified' },
                                         { icon: <MapPin size={16} />, label: 'Current Location', value: profile.location || 'Not Specified' }
@@ -373,15 +388,18 @@ const ProfileDetail = () => {
                                 </div>
                             )}
 
-                            {profile.photos && profile.photos.length > 0 && (
+                            {(profile.photos?.length > 0 || (currentUser?._id === id)) && (
                                 <div>
-                                    <h3 className="text-[10px] font-bold text-[#800020] uppercase tracking-[0.2em] mb-6 pb-2 border-b border-[#800020]/5">Photo Gallery</h3>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-5 gap-6 md:gap-8">
-                                        {profile.photos.map((photo, index) => (
+                                    <h3 className="text-[10px] font-bold text-[#800020] uppercase tracking-[0.2em] mb-6 pb-2 border-b border-[#800020]/5 flex items-center justify-between">
+                                        <span>Photo Gallery</span>
+                                        {profile.photos?.length > 0 && <span className="text-gray-400 font-medium">{profile.photos.length} Photos</span>}
+                                    </h3>
+                                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-5 gap-4 md:gap-8">
+                                        {profile.photos?.map((photo, index) => (
                                             <div
                                                 key={index}
                                                 onClick={() => setSelectedPhoto(photo)}
-                                                className="aspect-square rounded-[2rem] overflow-hidden border-2 border-white shadow-md group cursor-pointer hover:shadow-xl transition-all"
+                                                className="aspect-[3/4] sm:aspect-square rounded-[2rem] overflow-hidden border-2 border-gray-100 shadow-sm md:shadow-md group cursor-pointer hover:border-[#800020]/30 transition-all bg-gray-50"
                                             >
                                                 <img
                                                     src={photo}
@@ -391,6 +409,18 @@ const ProfileDetail = () => {
                                                 />
                                             </div>
                                         ))}
+
+                                        {currentUser?._id === id && (profile.photos?.length || 0) < 6 && (
+                                            <div
+                                                onClick={() => navigate('/gallery')}
+                                                className="aspect-[3/4] sm:aspect-square rounded-[2rem] border-2 border-dashed border-gray-200 hover:border-[#800020]/40 bg-gray-50/50 hover:bg-[#FFFDD0] flex flex-col items-center justify-center cursor-pointer transition-all gap-2 md:gap-3 group"
+                                            >
+                                                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-white flex items-center justify-center shadow-sm group-hover:shadow border border-gray-100 group-hover:border-[#D4AF37]/30 text-gray-400 group-hover:text-[#800020] transition-all">
+                                                    <Camera size={20} className="md:w-6 md:h-6" />
+                                                </div>
+                                                <span className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-gray-500 group-hover:text-[#800020]">Add Photo</span>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             )}

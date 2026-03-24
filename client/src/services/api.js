@@ -131,6 +131,11 @@ const INITIAL_PROFILES = [
     },
     {
         _id: 'd2', name: 'Anusha', email: 'anusha@example.com', age: 28, gender: 'Female', location: 'Uttara Kannada',
+        ancestralOrigin: 'Kumta, Uttara Kannada',
+        fatherName: 'Gajanan Hegde',
+        motherName: 'Laxmi Hegde',
+        fatherOccupation: 'Retired Government Employee',
+        motherOccupation: 'Homemaker',
         profession: 'Software Professional', education: 'B.E', income: '₹12 LPA',
         profilePicture: '', // No photo demo
         membership: 'p3',

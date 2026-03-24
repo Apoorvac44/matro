@@ -3,32 +3,42 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import {
-    User, Mail, Lock, Phone, Calendar,
-    CheckCircle, Eye, EyeOff, Heart,
-    ChevronRight, ChevronLeft, MapPin,
-    Briefcase, GraduationCap, Coins,
-    ArrowRight, Sparkles, Image as ImageIcon, ChevronDown, Loader2, Shield
-} from 'lucide-react';
+import { Calendar, Mail, Lock, Phone, User, MapPin, Briefcase, GraduationCap, Heart, Sparkles, CheckCircle, Eye, EyeOff, Coins, Shield, Image as ImageIcon, Ruler, Users, Info } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as api from '../services/api';
+
+const calculateDetailedAge = (dobString) => {
+    if (!dobString) return null;
+    const dob = new Date(dobString);
+    const today = new Date();
+
+    let years = today.getFullYear() - dob.getFullYear();
+    let months = today.getMonth() - dob.getMonth();
+    let days = today.getDate() - dob.getDate();
+
+    if (days < 0) {
+        months -= 1;
+        const lastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+        days += lastMonth.getDate();
+    }
+    if (months < 0) {
+        years -= 1;
+        months += 12;
+    }
+
+    return { years, months, days };
+};
 
 const registrationSchema = z.object({
     // Step 1
     profileCreatedBy: z.enum(['Self', 'Parent', 'Sibling', 'Friend', 'Relative', 'Other'], { required_error: 'Please select who is creating the profile' }),
     name: z.string().min(2, 'Name must be at least 2 characters'),
     gender: z.enum(['Male', 'Female', 'Other'], { required_error: 'Gender is required' }),
-    dob: z.string().min(1, 'Date of birth is required').refine((val) => {
-        const birthDate = new Date(val);
-        const today = new Date();
-        let calculatedAge = today.getFullYear() - birthDate.getFullYear();
-        const m = today.getMonth() - birthDate.getMonth();
-        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-            calculatedAge--;
-        }
-        return calculatedAge >= 18;
-    }, { message: 'You must be at least 18 years old' }),
+    dob: z.string().min(1, 'Date of birth is required').refine(val => {
+        const age = new Date().getFullYear() - new Date(val).getFullYear();
+        return age >= 18;
+    }, 'Must be at least 18 years old'),
     mobile: z.string().regex(/^[0-9]{10}$/, 'Mobile number must be 10 digits'),
     email: z.string().email('Invalid email address'),
     password: z.string().min(6, 'Password must be at least 6 characters'),
@@ -40,12 +50,17 @@ const registrationSchema = z.object({
     customCaste: z.string().optional(),
     maritalStatus: z.enum(['Single', 'Divorced', 'Widowed', 'Other'], { required_error: 'Marital status is required' }),
     height: z.string().min(1, 'Height is required'),
+    weight: z.string().optional(),
     location: z.string().min(1, 'Location is required'),
     // Step 3
     education: z.string().min(1, 'Education is required'),
+    educationDetail: z.string().optional(),
     profession: z.string().min(1, 'Profession is required'),
+    occupationDetail: z.string().optional(),
     income: z.string().optional(),
     workLocation: z.string().min(1, 'Work location is required'),
+    fatherName: z.string().optional(),
+    motherName: z.string().optional(),
     // Step 4
     prefAgeMin: z.string().optional().refine(val => !val || /^[0-9]+$/.test(val), "Must be a number").refine(val => !val || parseInt(val) >= 18, "Min age is 18"),
     prefAgeMax: z.string().optional().refine(val => !val || /^[0-9]+$/.test(val), "Must be a number").refine(val => !val || parseInt(val) >= 18, "Min age is 18"),
@@ -136,8 +151,8 @@ const Register = () => {
     const nextStep = async () => {
         let fieldsToValidate = [];
         if (step === 1) fieldsToValidate = ['name', 'gender', 'dob', 'mobile', 'email', 'password', 'confirmPassword'];
-        if (step === 2) fieldsToValidate = ['motherTongue', 'religion', 'caste', 'customCaste', 'maritalStatus', 'height', 'location'];
-        if (step === 3) fieldsToValidate = ['education', 'profession', 'workLocation'];
+        if (step === 2) fieldsToValidate = ['motherTongue', 'religion', 'caste', 'customCaste', 'maritalStatus', 'height', 'weight', 'location'];
+        if (step === 3) fieldsToValidate = ['education', 'educationDetail', 'profession', 'occupationDetail', 'workLocation', 'fatherName', 'motherName'];
         if (step === 4) fieldsToValidate = ['prefAgeMin', 'prefAgeMax', 'prefLocation', 'prefEducation', 'prefProfession'];
         if (step === 5) fieldsToValidate = ['aadharCard'];
 
@@ -344,8 +359,24 @@ const Register = () => {
                                                 <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Date of Birth * {age && `(${age} years)`}</label>
                                                 <div className="relative group">
                                                     <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#800020] transition-colors" size={18} />
-                                                    <input type="date" {...register('dob')} className="form-input-premium" />
+                                                    <input
+                                                        type="date"
+                                                        {...register('dob')}
+                                                        max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split('T')[0]}
+                                                        className="form-input-premium"
+                                                    />
                                                 </div>
+                                                {watch('dob') && (
+                                                    <div className="mt-1 px-4 py-1.5 bg-blue-50/50 rounded-lg flex items-center gap-2 border border-blue-100/50">
+                                                        <Info size={12} className="text-[#800020]" />
+                                                        <span className="text-[10px] font-bold text-[#800020] uppercase tracking-wider">
+                                                            Age: {(() => {
+                                                                const age = calculateDetailedAge(watch('dob'));
+                                                                return `${age.years} Yrs, ${age.months} Mos, ${age.days} Days`;
+                                                            })()}
+                                                        </span>
+                                                    </div>
+                                                )}
                                                 {errors.dob && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.dob.message}</p>}
                                             </div>
 
@@ -486,6 +517,16 @@ const Register = () => {
                                                 {errors.height && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.height.message}</p>}
                                             </div>
                                             <div className="space-y-1.5">
+                                                <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Weight</label>
+                                                <select {...register('weight')} className="form-input-premium appearance-none">
+                                                    <option value="">Select</option>
+                                                    {Array.from({ length: 111 }, (_, i) => i + 40).map(w => (
+                                                        <option key={w} value={`${w} kg`}>{w} kg</option>
+                                                    ))}
+                                                </select>
+                                                {errors.weight && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.weight.message}</p>}
+                                            </div>
+                                            <div className="space-y-1.5">
                                                 <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Location *</label>
                                                 <div className="relative group">
                                                     <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#800020] transition-colors" size={18} />
@@ -528,6 +569,11 @@ const Register = () => {
                                             {errors.education && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.education.message}</p>}
                                         </div>
 
+                                        <div className="space-y-1.5">
+                                            <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Field of Study</label>
+                                            <input {...register('educationDetail')} className="form-input-premium" placeholder="e.g. Computer Science, Mechanical Eng." />
+                                        </div>
+
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div className="space-y-1.5">
                                                 <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Profession *</label>
@@ -553,6 +599,10 @@ const Register = () => {
                                                 {errors.profession && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.profession.message}</p>}
                                             </div>
                                             <div className="space-y-1.5">
+                                                <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Company</label>
+                                                <input {...register('occupationDetail')} className="form-input-premium" placeholder="e.g. Google, Microsoft, Self Employed" />
+                                            </div>
+                                            <div className="space-y-1.5">
                                                 <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Annual Income</label>
                                                 <div className="relative group">
                                                     <Coins className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#800020] transition-colors" size={18} />
@@ -576,6 +626,17 @@ const Register = () => {
                                                 <input {...register('workLocation')} className="form-input-premium" placeholder="Company City, State" />
                                             </div>
                                             {errors.workLocation && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.workLocation.message}</p>}
+                                        </div>
+
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="space-y-1.5">
+                                                <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Father's Name</label>
+                                                <input {...register('fatherName')} className="form-input-premium" placeholder="Father's Full Name" />
+                                            </div>
+                                            <div className="space-y-1.5">
+                                                <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Mother's Name</label>
+                                                <input {...register('motherName')} className="form-input-premium" placeholder="Mother's Full Name" />
+                                            </div>
                                         </div>
                                     </motion.div>
                                 )}
@@ -603,13 +664,23 @@ const Register = () => {
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="space-y-1">
                                                     <div className="relative group">
-                                                        <input type="number" {...register('prefAgeMin')} className="form-input-premium" placeholder="Min Age (e.g. 21)" />
+                                                        <select {...register('prefAgeMin')} className="form-input-premium appearance-none">
+                                                            <option value="">Min Age</option>
+                                                            {Array.from({ length: 53 }, (_, i) => i + 18).map(age => (
+                                                                <option key={age} value={age}>{age} Years</option>
+                                                            ))}
+                                                        </select>
                                                     </div>
                                                     {errors.prefAgeMin && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.prefAgeMin.message}</p>}
                                                 </div>
                                                 <div className="space-y-1">
                                                     <div className="relative group">
-                                                        <input type="number" {...register('prefAgeMax')} className="form-input-premium" placeholder="Max Age (e.g. 30)" />
+                                                        <select {...register('prefAgeMax')} className="form-input-premium appearance-none">
+                                                            <option value="">Max Age</option>
+                                                            {Array.from({ length: 53 }, (_, i) => i + 18).map(age => (
+                                                                <option key={age} value={age}>{age} Years</option>
+                                                            ))}
+                                                        </select>
                                                     </div>
                                                     {errors.prefAgeMax && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.prefAgeMax.message}</p>}
                                                 </div>
@@ -624,11 +695,26 @@ const Register = () => {
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div className="space-y-1.5">
                                                 <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Preferred Education</label>
-                                                <input {...register('prefEducation')} className="form-input-premium" placeholder="e.g. Masters" />
+                                                <select {...register('prefEducation')} className="form-input-premium appearance-none">
+                                                    <option value="">Any Education</option>
+                                                    <option>Master's Degree</option>
+                                                    <option>Bachelor's Degree</option>
+                                                    <option>Doctorate</option>
+                                                    <option>Diploma</option>
+                                                    <option>Other</option>
+                                                </select>
                                             </div>
                                             <div className="space-y-1.5">
                                                 <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Preferred Profession</label>
-                                                <input {...register('prefProfession')} className="form-input-premium" placeholder="e.g. IT Professional" />
+                                                <select {...register('prefProfession')} className="form-input-premium appearance-none">
+                                                    <option value="">Any Profession</option>
+                                                    <option>Software Professional</option>
+                                                    <option>Engineer</option>
+                                                    <option>Doctor</option>
+                                                    <option>Teacher</option>
+                                                    <option>Business</option>
+                                                    <option>Other</option>
+                                                </select>
                                             </div>
                                         </div>
                                     </motion.div>

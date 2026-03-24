@@ -10,7 +10,7 @@ export const calculateCompleteness = (profile) => {
     const fields = [
         'name', 'age', 'gender', 'location', 'education', 'profession', 'income',
         'profilePicture', 'mobile', 'dob', 'motherTongue', 'maritalStatus', 'height',
-        'aboutMe', 'familyType', 'fatherOccupation', 'motherOccupation',
+        'aboutMe', 'familyType', 'fatherName', 'motherName', 'fatherOccupation', 'motherOccupation',
         'star', 'raasi', 'horoscope'
     ];
 

@@ -126,13 +126,13 @@ const Gallery = () => {
                     )}
                 </AnimatePresence>
 
-                <div className="bg-white rounded-3xl shadow-xl shadow-black/5 p-6 md:p-8 border border-gray-100">
-                    <div className="flex overflow-x-auto sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 no-scrollbar pb-4 sm:pb-0">
+                <div className="bg-white rounded-3xl shadow-xl shadow-black/5 p-4 md:p-8 border border-gray-100">
+                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8 pb-4 sm:pb-0">
                         {photos.map((photo, index) => (
                             <div
                                 key={index}
                                 onClick={() => setSelectedPhoto(photo)}
-                                className="relative group shrink-0 w-[260px] sm:w-full aspect-[3/4] rounded-2xl overflow-hidden bg-gray-50 border border-gray-100 cursor-pointer"
+                                className="relative group w-full aspect-[3/4] rounded-2xl overflow-hidden bg-gray-50 border border-gray-100 cursor-pointer"
                             >
                                 <img
                                     src={photo}
@@ -159,7 +159,7 @@ const Gallery = () => {
                         ))}
 
                         {photos.length < 6 && (
-                            <label className="relative shrink-0 w-[260px] sm:w-full aspect-[3/4] rounded-2xl border-2 border-dashed border-gray-200 hover:border-[#800020] hover:bg-gray-50 transition-all cursor-pointer flex flex-col items-center justify-center p-8 text-center group">
+                            <label className="relative w-full aspect-[3/4] rounded-2xl border-2 border-dashed border-gray-200 hover:border-[#800020] hover:bg-gray-50 transition-all cursor-pointer flex flex-col items-center justify-center p-2 sm:p-8 text-center group">
                                 {uploading ? (
                                     <div className="flex flex-col items-center gap-4">
                                         <Loader2 className="animate-spin text-[#800020]" size={32} />

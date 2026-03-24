@@ -43,7 +43,7 @@ const EditProfile = ({ defaultTab }) => {
         timeOfBirth: '', star: '', raasi: '', kujaDosha: '', kulaDaiva: '', horoscope: '',
         familyType: '', familyStatus: '', brothers: '', sisters: '', ancestralOrigin: '',
         collegeInstitution: '', educationDetail: '', employedIn: '', occupationDetail: '',
-        parentsContact: '', familyValue: '', nativePlace: '', fatherOccupation: '', motherOccupation: '', aboutFamily: '',
+        parentsContact: '', familyValue: '', nativePlace: '', fatherName: '', motherName: '', fatherOccupation: '', motherOccupation: '', aboutFamily: '',
         prefMaritalStatus: [], prefHeightMin: '', prefHeightMax: '', prefPhysicalStatus: '', prefMotherTongue: '',
         prefEducationType: '', prefEducationDetails: '', prefEmployedIn: '', prefOccupation: '', prefCitizenship: '',
         prefCountryLiving: '', prefFoodHabits: [], prefSmokingHabits: [], prefDrinkingHabits: [], prefIncome: 'Any', aboutPartner: ''
@@ -182,6 +182,8 @@ const EditProfile = ({ defaultTab }) => {
                     parentsContact: data.parentsContact || '',
                     familyValue: data.familyValue || '',
                     nativePlace: data.nativePlace || '',
+                    fatherName: data.fatherName || '',
+                    motherName: data.motherName || '',
                     fatherOccupation: data.fatherOccupation || '',
                     motherOccupation: data.motherOccupation || '',
                     aboutFamily: data.aboutFamily || '',
@@ -681,7 +683,12 @@ const EditProfile = ({ defaultTab }) => {
                                             </FormRow>
 
                                             <FormRow label="Weight">
-                                                <input type="text" name="weight" value={formData.weight} onChange={handleChange} className="form-input-premium max-w-xs" placeholder="--Kgs--" />
+                                                <select name="weight" value={formData.weight} onChange={handleChange} className="form-input-premium max-w-xs appearance-none cursor-pointer">
+                                                    <option value="">--Select Weight--</option>
+                                                    {Array.from({ length: 111 }, (_, i) => i + 40).map(w => (
+                                                        <option key={w} value={`${w} kg`}>{w} kg</option>
+                                                    ))}
+                                                </select>
                                             </FormRow>
 
                                             <FormRow label="Physical Status" required>
@@ -702,7 +709,7 @@ const EditProfile = ({ defaultTab }) => {
 
                                             <FormRow label="Caste" required>
                                                 <div className="w-full">
-                                                    <select name="caste" value={formData.caste} onChange={handleChange} className="form-input-premium max-w-md appearance-none">
+                                                    <select name="caste" value={formData.caste} onChange={handleChange} disabled={!!formData.caste} className={`form-input-premium max-w-md appearance-none ${!!formData.caste ? 'bg-gray-50 cursor-not-allowed opacity-70' : ''}`}>
                                                         <option value="">Select Option</option>
                                                         <option value="Kshatriya Komarpanth">Kshatriya Komarpanth</option>
                                                         <option value="Other">Other</option>
@@ -710,7 +717,7 @@ const EditProfile = ({ defaultTab }) => {
                                                     {formData.caste === 'Other' && (
                                                         <div className="mt-4 p-4 bg-orange-50 border border-orange-100 rounded-2xl max-w-md">
                                                             <label className="text-xs font-black text-gray-700 uppercase tracking-widest block mb-1.5">Please Specify Caste *</label>
-                                                            <input type="text" name="customCaste" value={formData.customCaste} onChange={handleChange} placeholder="Enter your caste" className="form-input-premium bg-white w-full" />
+                                                            <input type="text" name="customCaste" value={formData.customCaste} onChange={handleChange} disabled={!!formData.customCaste} placeholder="Enter your caste" className={`form-input-premium bg-white w-full ${!!formData.customCaste ? 'bg-gray-50 cursor-not-allowed opacity-70' : ''}`} />
                                                             <p className="text-[10px] text-orange-600 font-bold mt-2">Please note since you are creating a profile for other caste, your profile won't be visible in our portal. But still you can search for the profile and get matches.</p>
                                                         </div>
                                                     )}
@@ -768,8 +775,8 @@ const EditProfile = ({ defaultTab }) => {
                                             <FormRow label="College / Institution">
                                                 <input type="text" name="collegeInstitution" value={formData.collegeInstitution} onChange={handleChange} className="form-input-premium max-w-md" placeholder="Search for College / Institution" />
                                             </FormRow>
-                                            <FormRow label="Education in Detail">
-                                                <input type="text" name="educationDetail" value={formData.educationDetail} onChange={handleChange} className="form-input-premium max-w-md" placeholder="Education Details" />
+                                            <FormRow label="Field of Study">
+                                                <input type="text" name="educationDetail" value={formData.educationDetail} onChange={handleChange} className="form-input-premium max-w-md" placeholder="e.g. Computer Science, Mechanical Eng." />
                                             </FormRow>
                                             <FormRow label="Employed In" required>
                                                 <div className="flex gap-4 items-center flex-wrap h-full pt-3">
@@ -800,8 +807,8 @@ const EditProfile = ({ defaultTab }) => {
                                                     <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
                                                 </div>
                                             </FormRow>
-                                            <FormRow label="Occupation in Detail">
-                                                <input type="text" name="occupationDetail" value={formData.occupationDetail} onChange={handleChange} className="form-input-premium max-w-md" placeholder="Occupation Details" />
+                                            <FormRow label="Company">
+                                                <input type="text" name="occupationDetail" value={formData.occupationDetail} onChange={handleChange} className="form-input-premium max-w-md" placeholder="e.g. Google, Microsoft, Self Employed" />
                                             </FormRow>
                                             <FormRow label="Annual Income" required>
                                                 <div className="flex gap-4 w-full max-w-md flex-col sm:flex-row">
@@ -844,8 +851,14 @@ const EditProfile = ({ defaultTab }) => {
                                             <FormRow label="Native Place">
                                                 <input type="text" name="nativePlace" value={formData.nativePlace} onChange={handleChange} className="form-input-premium max-w-md" placeholder="Native Place" />
                                             </FormRow>
+                                            <FormRow label="Father's Name">
+                                                <input type="text" name="fatherName" value={formData.fatherName} onChange={handleChange} className="form-input-premium max-w-md" placeholder="Father's Full Name" />
+                                            </FormRow>
                                             <FormRow label="Father's Occupation">
                                                 <input type="text" name="fatherOccupation" value={formData.fatherOccupation} onChange={handleChange} className="form-input-premium max-w-md" placeholder="Father's Occupation" />
+                                            </FormRow>
+                                            <FormRow label="Mother's Name">
+                                                <input type="text" name="motherName" value={formData.motherName} onChange={handleChange} className="form-input-premium max-w-md" placeholder="Mother's Full Name" />
                                             </FormRow>
                                             <FormRow label="Mother's Occupation">
                                                 <input type="text" name="motherOccupation" value={formData.motherOccupation} onChange={handleChange} className="form-input-premium max-w-md" placeholder="Mother's Occupation" />
@@ -988,60 +1001,32 @@ const EditProfile = ({ defaultTab }) => {
                                             </FormRow>
                                             <FormRow label="Citizenship">
                                                 <div className="relative w-full max-w-md">
-                                                    <input
-                                                        type="text"
+                                                    <select
                                                         name="prefCitizenship"
                                                         value={formData.prefCitizenship}
                                                         onChange={handleChange}
-                                                        onFocus={() => setShowCountrySuggestions({ ...showCountrySuggestions, citizenship: true })}
-                                                        onBlur={() => setTimeout(() => setShowCountrySuggestions({ ...showCountrySuggestions, citizenship: false }), 200)}
-                                                        className="form-input-premium w-full"
-                                                        placeholder="e.g. India"
-                                                    />
-                                                    {showCountrySuggestions.citizenship && formData.prefCitizenship && (
-                                                        <div className="absolute z-50 w-full bg-white border border-gray-100 rounded-xl shadow-xl mt-1 max-h-40 overflow-y-auto">
-                                                            {countries
-                                                                .filter(c => c.name.toLowerCase().includes(formData.prefCitizenship.toLowerCase()))
-                                                                .map(c => (
-                                                                    <div
-                                                                        key={c.code}
-                                                                        className="p-3 hover:bg-gray-50 cursor-pointer text-sm font-bold text-gray-700"
-                                                                        onClick={() => setFormData({ ...formData, prefCitizenship: c.name })}
-                                                                    >
-                                                                        {c.name}
-                                                                    </div>
-                                                                ))}
-                                                        </div>
-                                                    )}
+                                                        className="form-input-premium w-full appearance-none cursor-pointer"
+                                                    >
+                                                        <option value="">Any</option>
+                                                        {countries.map(c => (
+                                                            <option key={c.code} value={c.name}>{c.name}</option>
+                                                        ))}
+                                                    </select>
                                                 </div>
                                             </FormRow>
                                             <FormRow label={<span className="flex items-center">Country Living In <CheckCircle className="w-4 h-4 text-green-500 ml-1" /></span>}>
                                                 <div className="relative w-full max-w-md">
-                                                    <input
-                                                        type="text"
+                                                    <select
                                                         name="prefCountryLiving"
                                                         value={formData.prefCountryLiving}
                                                         onChange={handleChange}
-                                                        onFocus={() => setShowCountrySuggestions({ ...showCountrySuggestions, living: true })}
-                                                        onBlur={() => setTimeout(() => setShowCountrySuggestions({ ...showCountrySuggestions, living: false }), 200)}
-                                                        className="form-input-premium w-full"
-                                                        placeholder="e.g. India"
-                                                    />
-                                                    {showCountrySuggestions.living && formData.prefCountryLiving && (
-                                                        <div className="absolute z-50 w-full bg-white border border-gray-100 rounded-xl shadow-xl mt-1 max-h-40 overflow-y-auto">
-                                                            {countries
-                                                                .filter(c => c.name.toLowerCase().includes(formData.prefCountryLiving.toLowerCase()))
-                                                                .map(c => (
-                                                                    <div
-                                                                        key={c.code}
-                                                                        className="p-3 hover:bg-gray-50 cursor-pointer text-sm font-bold text-gray-700"
-                                                                        onClick={() => setFormData({ ...formData, prefCountryLiving: c.name })}
-                                                                    >
-                                                                        {c.name}
-                                                                    </div>
-                                                                ))}
-                                                        </div>
-                                                    )}
+                                                        className="form-input-premium w-full appearance-none cursor-pointer"
+                                                    >
+                                                        <option value="">Any</option>
+                                                        {countries.map(c => (
+                                                            <option key={c.code} value={c.name}>{c.name}</option>
+                                                        ))}
+                                                    </select>
                                                 </div>
                                             </FormRow>
                                             <FormRow label={<span className="flex items-center">Food Habits <CheckCircle className="w-4 h-4 text-green-500 ml-1" /></span>}>

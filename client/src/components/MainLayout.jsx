@@ -13,9 +13,9 @@ const MainLayout = () => {
         window.scrollTo(0, 0);
     }, [pathname]);
 
-    const hideNavbar = pathname.startsWith('/profile/');
+    const hideNavbar = ['/login', '/register'].some(path => pathname.startsWith(path));
     const showBottomNav = !!user && !pathname.startsWith('/admin');
-    const hideFooter = showBottomNav; // Hide footer on mobile when bottom nav is shown
+    const hideFooter = pathname.startsWith('/admin') || pathname.startsWith('/chat');
 
     return (
         <div className="flex flex-col min-h-screen">

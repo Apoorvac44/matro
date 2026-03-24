@@ -65,22 +65,44 @@ const Navbar = () => {
                         </Link>
                     ))}
 
+                    {user?.isAdmin && (
+                        <Link
+                            to="/admin"
+                            className={`flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] transition-all hover:text-[#D4AF37] ${location.pathname.startsWith('/admin') ? 'text-[#800020]' : 'text-[#800020]/60'}`}
+                        >
+                            <span className={`transition-colors ${location.pathname.startsWith('/admin') ? 'text-[#D4AF37]' : 'text-[#D4AF37]/60'}`}>
+                                <Shield size={18} />
+                            </span>
+                            Admin
+                        </Link>
+                    )}
+                </div>
+
+                <div className="flex items-center gap-4">
                     {user && (
                         <div className="relative" ref={dropdownRef}>
                             <button
                                 onClick={() => setShowProfileDropdown(!showProfileDropdown)}
                                 className="flex items-center gap-2 group transition-all"
                             >
-                                <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-[#800020]/10 group-hover:border-[#D4AF37]/40 transition-all shadow-sm">
+                                {/* Mobile Settings Symbol */}
+                                <div className="md:hidden flex items-center justify-center p-2 rounded-xl bg-[#800020]/10 text-[#800020] hover:bg-[#800020]/20 transition-all font-bold gap-1 shadow-sm">
+                                    <Settings size={20} className="animate-[spin_4s_linear_infinite] group-hover:animate-none" />
+                                    <span className="text-[10px] uppercase font-black tracking-widest leading-none">Settings</span>
+                                </div>
+
+                                {/* Desktop Profile Avatar */}
+                                <div className="hidden md:block w-10 h-10 rounded-full overflow-hidden border-2 border-[#800020]/20 group-hover:border-[#D4AF37] transition-all bg-white shadow-sm shrink-0">
                                     {user.profilePicture ? (
                                         <img src={user.profilePicture} alt={user.name} className="w-full h-full object-cover" />
                                     ) : (
-                                        <div className="w-full h-full bg-gray-50 flex items-center justify-center text-gray-400">
-                                            <User size={20} />
+                                        <div className="w-full h-full bg-[#800020]/10 flex items-center justify-center text-[#800020]">
+                                            <User size={20} className="fill-current opacity-20 absolute" />
+                                            <User size={20} className="relative z-10" />
                                         </div>
                                     )}
                                 </div>
-                                <ChevronDown size={16} className={`text-[#800020]/60 group-hover:text-[#800020] transition-transform ${showProfileDropdown ? 'rotate-180' : ''}`} />
+                                <ChevronDown size={16} className={`text-[#800020] hidden md:block shrink-0 group-hover:text-[#D4AF37] transition-transform ${showProfileDropdown ? 'rotate-180' : ''}`} />
                             </button>
 
                             <AnimatePresence>
@@ -89,7 +111,7 @@ const Navbar = () => {
                                         initial={{ opacity: 0, scale: 0.95, y: 10 }}
                                         animate={{ opacity: 1, scale: 1, y: 0 }}
                                         exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                                        className="absolute top-full right-0 mt-3 w-80 bg-white rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.15)] border border-gray-100 overflow-hidden z-[110]"
+                                        className="absolute top-full -right-2 md:right-0 mt-4 w-[calc(100vw-32px)] sm:w-80 max-w-[360px] bg-white rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.15)] border border-[#800020]/10 overflow-hidden z-[110]"
                                     >
                                         {/* User Info Header */}
                                         <div className="p-5 pb-2 text-center">
@@ -118,7 +140,6 @@ const Navbar = () => {
                                         {/* Menu Items */}
                                         <div className="px-2 pb-1 space-y-0.5 max-h-[280px] overflow-y-auto custom-scrollbar">
                                             <DropdownLink to="/dashboard" icon={<Home size={16} />} label="Profile" />
-                                            <DropdownLink to="/edit-profile" icon={<User size={16} />} label="Edit Profile" />
                                             <DropdownLink to="/edit-preferences" icon={<Settings size={16} />} label="Edit Preferences" />
                                             <DropdownLink to="/horoscope" icon={<Sparkles size={16} />} label="View/Edit Horoscope" />
 
@@ -169,26 +190,15 @@ const Navbar = () => {
                             </AnimatePresence>
                         </div>
                     )}
-                    {user?.isAdmin && (
-                        <Link
-                            to="/admin"
-                            className={`flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] transition-all hover:text-[#D4AF37] ${location.pathname.startsWith('/admin') ? 'text-[#800020]' : 'text-[#800020]/60'}`}
-                        >
-                            <span className={`transition-colors ${location.pathname.startsWith('/admin') ? 'text-[#D4AF37]' : 'text-[#D4AF37]/60'}`}>
-                                <Shield size={18} />
-                            </span>
-                            Admin
-                        </Link>
-                    )}
-                </div>
 
-                {/* Mobile Menu Button */}
-                <button
-                    className="md:hidden p-2 text-[#800020] hover:text-[#D4AF37] transition-colors"
-                    onClick={() => setIsOpen(!isOpen)}
-                >
-                    {isOpen ? <X size={28} /> : <Menu size={28} />}
-                </button>
+                    {/* Mobile Menu Button */}
+                    <button
+                        className="md:hidden p-2 text-[#800020] hover:text-[#800020]/80 transition-colors"
+                        onClick={() => setIsOpen(!isOpen)}
+                    >
+                        {isOpen ? <X size={28} /> : <Menu size={28} />}
+                    </button>
+                </div>
             </div>
 
             {/* Mobile Menu Overlay */}
@@ -223,14 +233,36 @@ const Navbar = () => {
                                         {isProfile && user && (
                                             <div className="flex flex-col gap-6 pl-10 -mt-2">
                                                 <Link
-                                                    to="/edit-profile"
+                                                    to="/edit-preferences"
                                                     onClick={() => setIsOpen(false)}
                                                     className="flex items-center gap-4 text-lg font-serif italic text-gray-500 hover:text-[#800020] transition-all group"
                                                 >
-                                                    <span className="p-3 rounded-xl bg-gray-50 text-gray-400 group-hover:bg-[#800020]/5 group-hover:text-[#800020] shadow-sm">
-                                                        <User size={20} />
-                                                    </span>
-                                                    <span>Edit Profile</span>
+                                                    <span className="p-3 rounded-xl bg-gray-50 text-gray-400 group-hover:bg-[#800020]/5 group-hover:text-[#800020] shadow-sm"><Settings size={20} /></span>
+                                                    <span>Edit Preferences</span>
+                                                </Link>
+                                                <Link
+                                                    to="/horoscope"
+                                                    onClick={() => setIsOpen(false)}
+                                                    className="flex items-center gap-4 text-lg font-serif italic text-gray-500 hover:text-[#800020] transition-all group"
+                                                >
+                                                    <span className="p-3 rounded-xl bg-gray-50 text-gray-400 group-hover:bg-[#800020]/5 group-hover:text-[#800020] shadow-sm"><Sparkles size={20} /></span>
+                                                    <span>View/Edit Horoscope</span>
+                                                </Link>
+                                                <Link
+                                                    to="/edit-profile?tab=Settings"
+                                                    onClick={() => setIsOpen(false)}
+                                                    className="flex items-center gap-4 text-lg font-serif italic text-gray-500 hover:text-[#800020] transition-all group"
+                                                >
+                                                    <span className="p-3 rounded-xl bg-gray-50 text-gray-400 group-hover:bg-[#800020]/5 group-hover:text-[#800020] shadow-sm"><Settings size={20} /></span>
+                                                    <span>Settings</span>
+                                                </Link>
+                                                <Link
+                                                    to="/help"
+                                                    onClick={() => setIsOpen(false)}
+                                                    className="flex items-center gap-4 text-lg font-serif italic text-gray-500 hover:text-[#800020] transition-all group"
+                                                >
+                                                    <span className="p-3 rounded-xl bg-gray-50 text-gray-400 group-hover:bg-[#800020]/5 group-hover:text-[#800020] shadow-sm"><HelpCircle size={20} /></span>
+                                                    <span>Help</span>
                                                 </Link>
                                                 <button
                                                     onClick={() => { logout(); setIsOpen(false); navigate('/login'); }}

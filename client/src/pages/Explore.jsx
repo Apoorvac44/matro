@@ -271,8 +271,7 @@ const Explore = () => {
 
     return (
         <div className="min-h-screen bg-white flex flex-col font-sans">
-            {/* Quick Filter Pills Row (Side-scrolling) */}
-            <div className="px-4 md:px-6 py-3 bg-white border-b border-gray-100 flex gap-2 overflow-x-auto no-scrollbar whitespace-nowrap z-10">
+            <div className="px-4 md:px-6 py-3 bg-white border-b border-gray-100 flex gap-2 flex-wrap z-10">
                 <button
                     onClick={() => setShowFilterModal(true)}
                     className="flex items-center gap-1.5 px-4 py-1.5 rounded-full border border-gray-200 bg-white text-[12px] font-medium text-gray-700 hover:bg-gray-50 shrink-0 shadow-sm"
@@ -293,13 +292,6 @@ const Explore = () => {
                 </div>
 
                 <button
-                    onClick={() => setShowNewlyJoined(!showNewlyJoined)}
-                    className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full border text-[12px] font-medium shrink-0 transition-colors shadow-sm ${showNewlyJoined ? 'border-[#800020] bg-red-50 text-[#800020]' : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'}`}
-                >
-                    Newly joined
-                </button>
-
-                <button
                     onClick={() => setShowNotSeen(!showNotSeen)}
                     className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full border text-[12px] font-medium shrink-0 transition-colors shadow-sm ${showNotSeen ? 'border-[#800020] bg-red-50 text-[#800020]' : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'}`}
                 >
@@ -318,13 +310,6 @@ const Explore = () => {
                     className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full border text-[12px] font-medium shrink-0 transition-colors shadow-sm ${showWithHoroscope ? 'border-[#800020] bg-red-50 text-[#800020]' : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'}`}
                 >
                     Profiles with horoscope
-                </button>
-
-                <button
-                    onClick={() => setShowMutualMatches(!showMutualMatches)}
-                    className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full border text-[12px] font-medium shrink-0 transition-colors shadow-sm ${showMutualMatches ? 'border-[#800020] bg-red-50 text-[#800020]' : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'}`}
-                >
-                    Mutual Matches
                 </button>
             </div>
 
