@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import * as api from '../services/api';
 import { AuthContext } from '../context/AuthContext';
 import { calculateCompleteness } from '../utils/completeness';
+import Autocomplete from '../components/Autocomplete';
+import { cities, colleges } from '../utils/autocompleteData';
 
 
 const raasiOptions = ['Mesha', 'Vrishabha', 'Mithuna', 'Karka', 'Simha', 'Kanya', 'Tula', 'Vrischika', 'Dhanu', 'Makara', 'Kumbha', 'Meena'];
@@ -763,7 +765,13 @@ const EditProfile = ({ defaultTab }) => {
                                                 </div>
                                             </FormRow>
                                             <FormRow label="College / Institution">
-                                                <input type="text" name="collegeInstitution" value={formData.collegeInstitution} onChange={handleChange} className="form-input-premium max-w-md" placeholder="Search for College / Institution" />
+                                                <Autocomplete
+                                                    label="College / Institution"
+                                                    value={formData.collegeInstitution}
+                                                    onChange={(val) => setFormData({ ...formData, collegeInstitution: val })}
+                                                    options={colleges}
+                                                    placeholder="Search for College / Institution"
+                                                />
                                             </FormRow>
                                             <FormRow label="Field of Study">
                                                 <input type="text" name="educationDetail" value={formData.educationDetail} onChange={handleChange} className="form-input-premium max-w-md" placeholder="e.g. Computer Science, Mechanical Eng." />
@@ -815,7 +823,13 @@ const EditProfile = ({ defaultTab }) => {
                                                 </div>
                                             </FormRow>
                                             <FormRow label="Work Location">
-                                                <input type="text" name="workLocation" value={formData.workLocation} onChange={handleChange} className="form-input-premium max-w-md" placeholder="City, State" />
+                                                <Autocomplete
+                                                    label="Work Location"
+                                                    value={formData.workLocation}
+                                                    onChange={(val) => setFormData({ ...formData, workLocation: val })}
+                                                    options={cities}
+                                                    placeholder="City, State"
+                                                />
                                             </FormRow>
                                         </div>
                                     )}
@@ -1068,7 +1082,14 @@ const EditProfile = ({ defaultTab }) => {
                                     {activeTab === 'Location' && (
                                         <div className="space-y-2">
                                             <FormRow label="Location (City, State)" required>
-                                                <input type="text" name="location" value={formData.location} onChange={handleChange} className="form-input-premium max-w-md" placeholder="Current location" />
+                                                <Autocomplete
+                                                    label="City you live in?"
+                                                    value={formData.location}
+                                                    onChange={(val) => setFormData({ ...formData, location: val })}
+                                                    options={cities}
+                                                    placeholder="Enter the city you live in"
+                                                    required
+                                                />
                                             </FormRow>
                                         </div>
                                     )}

@@ -7,6 +7,8 @@ import { Calendar, Mail, Lock, Phone, User, MapPin, Briefcase, GraduationCap, He
 import { AuthContext } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as api from '../services/api';
+import Autocomplete from '../components/Autocomplete';
+import { cities, colleges } from '../utils/autocompleteData';
 
 const calculateDetailedAge = (dobString) => {
     if (!dobString) return null;
@@ -54,6 +56,7 @@ const registrationSchema = z.object({
     location: z.string().min(1, 'Location is required'),
     // Step 3
     education: z.string().min(1, 'Education is required'),
+    collegeInstitution: z.string().optional(),
     educationDetail: z.string().optional(),
     profession: z.string().min(1, 'Profession is required'),
     occupationDetail: z.string().optional(),
@@ -527,11 +530,14 @@ const Register = () => {
                                                 {errors.weight && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.weight.message}</p>}
                                             </div>
                                             <div className="space-y-1.5">
-                                                <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Location *</label>
-                                                <div className="relative group">
-                                                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#800020] transition-colors" size={18} />
-                                                    <input {...register('location')} className="form-input-premium" placeholder="City, State" />
-                                                </div>
+                                                <Autocomplete
+                                                    label="Location *"
+                                                    value={watch('location')}
+                                                    onChange={(val) => setValue('location', val, { shouldValidate: true })}
+                                                    options={cities}
+                                                    placeholder="City, State"
+                                                    required
+                                                />
                                                 {errors.location && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.location.message}</p>}
                                             </div>
                                         </div>
@@ -567,6 +573,16 @@ const Register = () => {
                                                 <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
                                             </div>
                                             {errors.education && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.education.message}</p>}
+                                        </div>
+
+                                        <div className="space-y-1.5">
+                                            <Autocomplete
+                                                label="College / Institution"
+                                                value={watch('collegeInstitution')}
+                                                onChange={(val) => setValue('collegeInstitution', val)}
+                                                options={colleges}
+                                                placeholder="Search for College / Institution"
+                                            />
                                         </div>
 
                                         <div className="space-y-1.5">
@@ -620,11 +636,14 @@ const Register = () => {
                                         </div>
 
                                         <div className="space-y-1.5">
-                                            <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Work Location *</label>
-                                            <div className="relative group">
-                                                <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#800020] transition-colors" size={18} />
-                                                <input {...register('workLocation')} className="form-input-premium" placeholder="Company City, State" />
-                                            </div>
+                                            <Autocomplete
+                                                label="Work Location *"
+                                                value={watch('workLocation')}
+                                                onChange={(val) => setValue('workLocation', val, { shouldValidate: true })}
+                                                options={cities}
+                                                placeholder="Company City, State"
+                                                required
+                                            />
                                             {errors.workLocation && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.workLocation.message}</p>}
                                         </div>
 
@@ -688,8 +707,13 @@ const Register = () => {
                                         </div>
 
                                         <div className="space-y-1.5">
-                                            <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Preferred Location</label>
-                                            <input {...register('prefLocation')} className="form-input-premium" placeholder="e.g. Any City in India" />
+                                            <Autocomplete
+                                                label="Preferred Location"
+                                                value={watch('prefLocation')}
+                                                onChange={(val) => setValue('prefLocation', val)}
+                                                options={cities}
+                                                placeholder="e.g. Any City in India"
+                                            />
                                         </div>
 
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
