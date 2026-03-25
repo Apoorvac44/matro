@@ -8,7 +8,8 @@ import { AuthContext } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as api from '../services/api';
 import Autocomplete from '../components/Autocomplete';
-import { cities, colleges } from '../utils/autocompleteData';
+import MultiSelect from '../components/MultiSelect';
+import { cities, colleges, languages } from '../utils/autocompleteData';
 
 const calculateDetailedAge = (dobString) => {
     if (!dobString) return null;
@@ -47,6 +48,7 @@ const registrationSchema = z.object({
     confirmPassword: z.string(),
     // Step 2
     motherTongue: z.string().min(1, 'Mother tongue is required'),
+    languagesKnown: z.string().optional(),
     religion: z.string().default('Hindu'),
     caste: z.string().min(1, 'Caste is required'),
     customCaste: z.string().optional(),
@@ -62,8 +64,6 @@ const registrationSchema = z.object({
     occupationDetail: z.string().optional(),
     income: z.string().optional(),
     workLocation: z.string().min(1, 'Work location is required'),
-    fatherName: z.string().optional(),
-    motherName: z.string().optional(),
     // Step 4
     prefAgeMin: z.string().optional().refine(val => !val || /^[0-9]+$/.test(val), "Must be a number").refine(val => !val || parseInt(val) >= 18, "Min age is 18"),
     prefAgeMax: z.string().optional().refine(val => !val || /^[0-9]+$/.test(val), "Must be a number").refine(val => !val || parseInt(val) >= 18, "Min age is 18"),
@@ -154,8 +154,8 @@ const Register = () => {
     const nextStep = async () => {
         let fieldsToValidate = [];
         if (step === 1) fieldsToValidate = ['name', 'gender', 'dob', 'mobile', 'email', 'password', 'confirmPassword'];
-        if (step === 2) fieldsToValidate = ['motherTongue', 'religion', 'caste', 'customCaste', 'maritalStatus', 'height', 'weight', 'location'];
-        if (step === 3) fieldsToValidate = ['education', 'educationDetail', 'profession', 'occupationDetail', 'workLocation', 'fatherName', 'motherName'];
+        if (step === 2) fieldsToValidate = ['motherTongue', 'languagesKnown', 'religion', 'caste', 'customCaste', 'maritalStatus', 'height', 'weight', 'location'];
+        if (step === 3) fieldsToValidate = ['education', 'educationDetail', 'profession', 'occupationDetail', 'workLocation'];
         if (step === 4) fieldsToValidate = ['prefAgeMin', 'prefAgeMax', 'prefLocation', 'prefEducation', 'prefProfession'];
         if (step === 5) fieldsToValidate = ['aadharCard'];
 
@@ -491,6 +491,16 @@ const Register = () => {
                                             </select>
                                             {errors.motherTongue && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.motherTongue.message}</p>}
                                         </div>
+
+                                        <div className="space-y-1.5">
+                                            <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Languages Known</label>
+                                            <MultiSelect
+                                                options={languages}
+                                                selectedOptions={watch('languagesKnown')}
+                                                onChange={(val) => setValue('languagesKnown', val)}
+                                                placeholder="Select languages you know"
+                                            />
+                                        </div>
                                         <div className="space-y-1.5">
                                             <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Marital Status *</label>
                                             <select {...register('maritalStatus')} className="form-input-premium appearance-none">
@@ -645,17 +655,6 @@ const Register = () => {
                                                 required
                                             />
                                             {errors.workLocation && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.workLocation.message}</p>}
-                                        </div>
-
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <div className="space-y-1.5">
-                                                <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Father's Name</label>
-                                                <input {...register('fatherName')} className="form-input-premium" placeholder="Father's Full Name" />
-                                            </div>
-                                            <div className="space-y-1.5">
-                                                <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Mother's Name</label>
-                                                <input {...register('motherName')} className="form-input-premium" placeholder="Mother's Full Name" />
-                                            </div>
                                         </div>
                                     </motion.div>
                                 )}
@@ -1087,7 +1086,7 @@ const Register = () => {
                     box-shadow: 0 0 0 4px rgba(128, 0, 32, 0.1);
                 }
             `}</style>
-        </div>
+        </div >
     );
 };
 

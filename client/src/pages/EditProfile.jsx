@@ -6,7 +6,8 @@ import * as api from '../services/api';
 import { AuthContext } from '../context/AuthContext';
 import { calculateCompleteness } from '../utils/completeness';
 import Autocomplete from '../components/Autocomplete';
-import { cities, colleges } from '../utils/autocompleteData';
+import MultiSelect from '../components/MultiSelect';
+import { cities, colleges, languages } from '../utils/autocompleteData';
 
 
 const raasiOptions = ['Mesha', 'Vrishabha', 'Mithuna', 'Karka', 'Simha', 'Kanya', 'Tula', 'Vrischika', 'Dhanu', 'Makara', 'Kumbha', 'Meena'];
@@ -731,7 +732,12 @@ const EditProfile = ({ defaultTab }) => {
                                             </FormRow>
 
                                             <FormRow label="Languages Known">
-                                                <input type="text" name="languagesKnown" value={formData.languagesKnown} onChange={handleChange} className="form-input-premium w-full" placeholder="e.g. English, Hindi, Kannada" />
+                                                <MultiSelect
+                                                    options={languages}
+                                                    selectedOptions={formData.languagesKnown}
+                                                    onChange={(val) => setFormData({ ...formData, languagesKnown: val })}
+                                                    placeholder="Select languages you know"
+                                                />
                                             </FormRow>
 
                                             <FormRow label="About Me" required>

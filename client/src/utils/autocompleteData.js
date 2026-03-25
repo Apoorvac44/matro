@@ -88,3 +88,9 @@ export const colleges = [
     "Fergusson College, Pune",
     "Mount Carmel College, Bangalore",
 ];
+
+export const languages = [
+    "Hindi", "English", "Bengali", "Marathi", "Telugu", "Tamil", "Kannada", "Gujarati",
+    "Malayalam", "Odia", "Punjabi", "Assamese", "Maithili", "Santali", "Kashmiri", "Nepali",
+    "Konkani", "Sindhi", "Dogri", "Manipuri", "Sanskrit", "Bodo", "Urdu", "Tulu", "Kodava", "Haryanvi"
+];
