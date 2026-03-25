@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { User, ArrowLeft, CheckCircle, Loader2, Heart, ShieldCheck, ChevronRight, Save, ChevronDown, Image, Menu, X as XIcon } from 'lucide-react';
+import { User, ArrowLeft, CheckCircle, Loader2, Heart, ShieldCheck, ChevronRight, Save, ChevronDown, Image, Menu, X as XIcon, Sparkles } from 'lucide-react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as api from '../services/api';
@@ -74,6 +74,7 @@ const EditProfile = ({ defaultTab }) => {
             title: 'Enhance Profile',
             items: [
                 { id: 'Photos', label: `Photos (${formData.photos?.length || 0}/6)`, action: 'add' },
+                { id: 'MembershipPlans', label: 'Membership Plans', action: 'edit' },
                 { id: 'Horoscope', label: 'Horoscope', action: 'edit' },
                 { id: 'Trust Badge', label: 'Trust Badge', action: 'edit' }
             ]
@@ -1196,49 +1197,63 @@ const EditProfile = ({ defaultTab }) => {
                                                     )}
                                                 </div>
                                             </div>
+                                        </div>
+                                    )}
 
-                                            {/* Membership Plans Section (Now clearly separated below) */}
-                                            <div className="pt-12 border-t border-gray-100">
-                                                <h4 className="text-xs font-black text-[#800020] uppercase tracking-widest mb-8 flex items-center gap-2">
-                                                    <div className="w-2 h-2 rounded-full bg-[#D4AF37]"></div>
-                                                    Recommended Membership Plans
+                                    {/* ENHANCE PROFILE: MEMBERSHIP PLANS */}
+                                    {activeTab === 'MembershipPlans' && (
+                                        <div className="space-y-8">
+                                            <div className="bg-[#800020]/5 p-8 rounded-[2.5rem] border border-[#800020]/10">
+                                                <h4 className="text-xl font-serif font-black italic text-[#800020] mb-4 flex items-center gap-3">
+                                                    <Sparkles size={24} className="text-[#D4AF37]" />
+                                                    Upgrade Your Journey
                                                 </h4>
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                                    {plans.map((plan) => {
-                                                        const isSelected = formData.membership === plan._id;
-                                                        return (
-                                                            <div
-                                                                key={plan._id}
-                                                                onClick={() => setFormData({ ...formData, membership: plan._id })}
-                                                                className={`flex flex-col p-6 rounded-3xl border-2 cursor-pointer transition-all select-none relative group ${isSelected ? 'border-[#800020] shadow-xl bg-white scale-[1.02]' : 'border-gray-100 hover:border-[#800020]/20 bg-gray-50/50'}`}
-                                                            >
-                                                                <div className="flex justify-between items-start mb-4">
-                                                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${isSelected ? 'border-[#800020] bg-[#800020]' : 'border-gray-200 bg-white'}`}>
-                                                                        {isSelected && <div className="w-2 h-2 rounded-full bg-white"></div>}
-                                                                    </div>
-                                                                    <div className="text-right">
-                                                                        <div className={`text-2xl font-serif font-black italic transition-colors ${isSelected ? 'text-[#800020]' : 'text-gray-900'}`}>
-                                                                            ₹{plan.price.toLocaleString()}
-                                                                        </div>
-                                                                    </div>
+                                                <p className="text-sm text-[#800020]/70 font-medium leading-relaxed max-w-2xl">
+                                                    Choose the plan that's right for you and unlock premium features like unlimited interests, direct chat, and priority profile listing.
+                                                </p>
+                                            </div>
+
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pb-8">
+                                                {plans.map((plan) => {
+                                                    const isSelected = formData.membership === plan._id;
+                                                    return (
+                                                        <div
+                                                            key={plan._id}
+                                                            onClick={() => setFormData({ ...formData, membership: plan._id })}
+                                                            className={`flex flex-col p-8 rounded-[2.5rem] border-2 cursor-pointer transition-all select-none relative group ${isSelected ? 'border-[#800020] shadow-2xl bg-white scale-[1.02]' : 'border-gray-100 hover:border-[#800020]/20 bg-gray-50/50'}`}
+                                                        >
+                                                            <div className="flex justify-between items-start mb-6">
+                                                                <div className={`w-8 h-8 rounded-2xl border-2 flex items-center justify-center transition-colors ${isSelected ? 'border-[#800020] bg-[#800020]' : 'border-gray-200 bg-white'}`}>
+                                                                    {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-white"></div>}
                                                                 </div>
-                                                                <div>
-                                                                    <h4 className="text-sm font-black text-gray-900 mb-2 uppercase tracking-tight flex items-center gap-2">
-                                                                        {plan.name}
-                                                                        <span className="text-[9px] font-bold text-[#D4AF37] bg-[#D4AF37]/10 px-2 py-0.5 rounded-full">{plan.duration}</span>
-                                                                    </h4>
-                                                                    <ul className="space-y-2 mt-4">
-                                                                        {plan.features.slice(0, 3).map((feat, i) => (
-                                                                            <li key={i} className="text-[10px] font-bold text-gray-500 uppercase tracking-wide flex items-center gap-2">
-                                                                                <CheckCircle size={10} className="text-green-500" />{feat}
-                                                                            </li>
-                                                                        ))}
-                                                                    </ul>
+                                                                <div className="text-right">
+                                                                    <div className={`text-3xl font-serif font-black italic transition-colors ${isSelected ? 'text-[#800020]' : 'text-gray-900'}`}>
+                                                                        ₹{plan.price.toLocaleString()}
+                                                                    </div>
+                                                                    <div className="text-[10px] font-black uppercase tracking-widest text-gray-400 mt-1">{plan.duration}</div>
                                                                 </div>
                                                             </div>
-                                                        );
-                                                    })}
-                                                </div>
+                                                            <div>
+                                                                <h4 className="text-lg font-serif font-black text-gray-900 mb-4 italic flex items-center gap-2">
+                                                                    {plan.name}
+                                                                </h4>
+                                                                <ul className="space-y-3 mt-4">
+                                                                    {plan.features.map((feat, i) => (
+                                                                        <li key={i} className="text-[11px] font-bold text-gray-500 uppercase tracking-wide flex items-start gap-3">
+                                                                            <CheckCircle size={14} className="text-green-500 shrink-0 mt-0.5" />
+                                                                            <span className="leading-tight">{feat}</span>
+                                                                        </li>
+                                                                    ))}
+                                                                </ul>
+                                                            </div>
+                                                            {isSelected && (
+                                                                <div className="absolute top-4 right-4 animate-pulse">
+                                                                    <div className="bg-[#D4AF37] text-[#800020] text-[8px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-sm">Current Selection</div>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    );
+                                                })}
                                             </div>
                                         </div>
                                     )}

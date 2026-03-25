@@ -177,12 +177,12 @@ const Dashboard = () => {
                                     <span className="text-[10px] font-black uppercase tracking-tighter opacity-60">Expires</span>
                                     <span className="text-2xl font-serif font-bold italic text-[#D4AF37]">30 Days</span>
                                 </div>
-                                <Link
-                                    to="/edit-profile?tab=Photos"
-                                    className="px-10 py-5 bg-[#D4AF37] text-[#800020] rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] hover:bg-white hover:shadow-2xl transition-all shadow-xl active:scale-95 whitespace-nowrap"
+                                <button
+                                    onClick={() => navigate('/membership')}
+                                    className="px-10 py-5 bg-[#D4AF37] text-[#800020] rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] hover:bg-white hover:shadow-2xl transition-all shadow-xl active:scale-95 whitespace-nowrap relative z-10"
                                 >
                                     Elevate Experience
-                                </Link>
+                                </button>
                             </div>
                         </div>
                     </motion.div>

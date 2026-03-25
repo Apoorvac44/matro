@@ -77,6 +77,7 @@ function App() {
             <Route path="/edit-preferences" element={<ProtectedRoute><EditProfile defaultTab="Partner Preference" /></ProtectedRoute>} />
             <Route path="/horoscope" element={<ProtectedRoute><EditProfile defaultTab="Horoscope" /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute><EditProfile defaultTab="Settings" /></ProtectedRoute>} />
+            <Route path="/membership" element={<ProtectedRoute><EditProfile defaultTab="MembershipPlans" /></ProtectedRoute>} />
           </Route>
 
           {/* Admin Routes */}
