@@ -1,15 +1,15 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Heart, MessageSquare, User, Search, Bell, LayoutDashboard } from 'lucide-react';
+import { Home, Heart, MessageSquare, User, Search, Bell, LayoutDashboard, Users } from 'lucide-react';
 
 const BottomNav = () => {
     const location = useLocation();
 
     const navLinks = [
         { name: 'Home', path: '/', icon: <Home size={22} /> },
-        { name: 'Explore', path: '/explore', icon: <Heart size={22} /> },
+        { name: 'Matches', path: '/explore', icon: <Heart size={22} /> },
+        { name: 'Interests', path: '/interests', icon: <Users size={22} /> },
         { name: 'Chat', path: '/chat/inbox', icon: <MessageSquare size={22} /> },
-        { name: 'Alerts', path: '/notifications', icon: <Bell size={22} /> },
         { name: 'Profile', path: '/dashboard', icon: <User size={22} /> },
     ];
 

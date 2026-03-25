@@ -431,12 +431,6 @@ const EditProfile = ({ defaultTab }) => {
                 {/* Header Area */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6 bg-white p-6 rounded-3xl shadow-sm border border-gray-100 relative">
                     <div className="flex items-center gap-4">
-                        <button
-                            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                            className="lg:hidden w-10 h-10 rounded-xl bg-[#800020]/5 flex items-center justify-center text-[#800020] hover:bg-[#800020]/10 transition-all border border-[#800020]/10"
-                        >
-                            <Menu size={20} />
-                        </button>
                         <div>
                             <motion.span
                                 initial={{ opacity: 0 }}
@@ -475,131 +469,127 @@ const EditProfile = ({ defaultTab }) => {
                 )}
 
                 <div className="flex flex-col md:flex-row gap-8 items-start relative">
-                    {/* Sidebar Navigation */}
-                    <AnimatePresence>
-                        {(isSidebarOpen || window.innerWidth >= 1024) && (
-                            <motion.div
-                                initial={{ x: -300, opacity: 0 }}
-                                animate={{ x: 0, opacity: 1 }}
-                                exit={{ x: -300, opacity: 0 }}
-                                className={`fixed inset-y-0 left-0 z-50 w-72 bg-white shadow-2xl lg:shadow-[0_0_5px_rgba(0,0,0,0.1)] border-r border-gray-200 overflow-hidden lg:sticky lg:top-28 lg:z-0 lg:block ${!isSidebarOpen && 'hidden lg:block'}`}
+                    {/* Mobile Horizontal Tabs */}
+                    <div className="lg:hidden w-full overflow-x-auto whitespace-nowrap flex gap-2 pb-4 mb-4 no-scrollbar custom-scrollbar-hide">
+                        {sidebarSections.flatMap(section => section.items).map((item, idx) => (
+                            <button
+                                key={idx}
+                                onClick={() => {
+                                    if (item.id === 'Logout') {
+                                        logout();
+                                        navigate('/login');
+                                        return;
+                                    }
+                                    setActiveTab(item.id);
+                                }}
+                                className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all shadow-sm ${activeTab === item.id
+                                    ? 'bg-[#800020] text-[#D4AF37]'
+                                    : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'
+                                    }`}
                             >
-                                <div className="lg:hidden p-4 flex justify-between items-center bg-[#800020] text-[#D4AF37]">
-                                    <span className="font-serif font-bold italic">Menu</span>
-                                    <button onClick={() => setIsSidebarOpen(false)}><XIcon size={20} /></button>
-                                </div>
-                                {/* Profile Photo Preview */}
-                                <div className="p-6 bg-white border-b border-gray-100 flex flex-col items-center">
-                                    <div className="relative group">
-                                        <div
-                                            className="w-32 h-32 rounded-full overflow-hidden border-4 border-[#800020]/10 shadow-lg bg-gray-50 flex items-center justify-center cursor-pointer group hover:border-[#800020]/30 transition-all relative"
-                                            onClick={() => document.getElementById('sidebar-photo-upload').click()}
-                                        >
-                                            {formData.profilePicture ? (
-                                                <img src={formData.profilePicture} alt="Profile" className="w-full h-full object-cover group-hover:opacity-80 transition-opacity" />
-                                            ) : (
-                                                <User size={48} className="text-gray-300" />
-                                            )}
-                                            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                                                <Image size={24} className="text-white" />
-                                            </div>
-                                            <input
-                                                type="file"
-                                                id="sidebar-photo-upload"
-                                                className="hidden"
-                                                accept="image/*"
-                                                onChange={handleFileChange}
-                                            />
-                                        </div>
-                                        <button
-                                            type="button"
-                                            onClick={() => setActiveTab('Photos')}
-                                            className="absolute bottom-1 right-1 w-8 h-8 bg-[#800020] text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform z-10"
-                                        >
-                                            <Heart size={14} fill="currentColor" />
-                                        </button>
-                                    </div>
-                                    <h3 className="mt-4 font-serif font-black text-gray-900 italic text-lg">{formData.name || 'Your Name'}</h3>
-                                    <p className="text-[10px] font-bold text-[#D4AF37] uppercase tracking-[0.2em] mt-1">Profile Completeness: {completeness}%</p>
-                                </div>
-                                <div className="flex flex-col">
-                                    {sidebarSections.map((section, idx) => {
-                                        const isExpanded = expandedSections.includes(section.title);
-                                        return (
-                                            <div key={idx} className="mb-px last:mb-0">
-                                                <div
-                                                    onClick={() => {
-                                                        setExpandedSections(prev =>
-                                                            prev.includes(section.title)
-                                                                ? prev.filter(t => t !== section.title)
-                                                                : [...prev, section.title]
-                                                        );
-                                                    }}
-                                                    className="w-full flex items-center justify-between px-6 py-4 bg-[#800020]/5 text-[#800020] border-b border-[#800020]/10 font-serif font-bold italic text-[16px] cursor-pointer hover:bg-[#800020]/10 transition-colors select-none"
-                                                >
-                                                    {section.title}
-                                                    {isExpanded ? <ChevronDown size={16} className="text-[#800020]/60" /> : <ChevronRight size={16} className="text-[#800020]/40" />}
-                                                </div>
-                                                <AnimatePresence>
-                                                    {isExpanded && (
-                                                        <motion.div
-                                                            initial={{ height: 0, opacity: 0 }}
-                                                            animate={{ height: 'auto', opacity: 1 }}
-                                                            exit={{ height: 0, opacity: 0 }}
-                                                            className="overflow-hidden flex flex-col"
-                                                        >
-                                                            {section.items.map((item, itemIdx) => (
-                                                                <button
-                                                                    key={itemIdx}
-                                                                    type="button"
-                                                                    onClick={() => {
-                                                                        if (item.id === 'Logout') {
-                                                                            logout();
-                                                                            navigate('/login');
-                                                                            return;
-                                                                        }
-                                                                        setActiveTab(item.id);
-                                                                        setIsSidebarOpen(false); // Close on mobile after selection
-                                                                        if (window.innerWidth < 1024) {
-                                                                            const el = document.getElementById('main-form-content');
-                                                                            if (el) el.scrollIntoView({ behavior: 'smooth' });
-                                                                        }
-                                                                    }}
-                                                                    className={`w-full flex items-center justify-between px-6 py-3.5 text-left border-b border-gray-50 last:border-0 hover:bg-[#FFFDD0]/30 transition-all ${activeTab === item.id ? 'bg-[#FFFDD0]/50 border-l-4 border-l-[#800020] pl-5' : 'bg-white'}`}
-                                                                >
-                                                                    <span className={`text-[13px] font-bold ${activeTab === item.id ? 'text-[#800020]' : 'text-gray-600'}`}>
-                                                                        {item.label}
-                                                                    </span>
-                                                                    {item.action && (
-                                                                        <span className="text-[11px] font-black uppercase tracking-widest text-[#D4AF37] group-hover:text-[#800020] transition-colors">
-                                                                            {item.action}
-                                                                        </span>
-                                                                    )}
-                                                                </button>
-                                                            ))}
-                                                        </motion.div>
-                                                    )}
-                                                </AnimatePresence>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
+                                {item.label}
+                            </button>
+                        ))}
+                    </div>
 
-                    {/* Backdrop for mobile sidebar */}
-                    <AnimatePresence>
-                        {isSidebarOpen && (
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                onClick={() => setIsSidebarOpen(false)}
-                                className="fixed inset-0 bg-black/40 z-40 lg:hidden backdrop-blur-sm"
-                            />
-                        )}
-                    </AnimatePresence>
+
+                    {/* Desktop Sidebar Navigation */}
+                    <div
+                        className="hidden lg:block sticky top-28 w-72 bg-white shadow-[0_0_5px_rgba(0,0,0,0.1)] border-r border-gray-200 overflow-hidden rounded-3xl"
+                    >
+
+                        {/* Profile Photo Preview */}
+                        <div className="p-6 bg-white border-b border-gray-100 flex flex-col items-center">
+                            <div className="relative group">
+                                <div
+                                    className="w-32 h-32 rounded-full overflow-hidden border-4 border-[#800020]/10 shadow-lg bg-gray-50 flex items-center justify-center cursor-pointer group hover:border-[#800020]/30 transition-all relative"
+                                    onClick={() => document.getElementById('sidebar-photo-upload').click()}
+                                >
+                                    {formData.profilePicture ? (
+                                        <img src={formData.profilePicture} alt="Profile" className="w-full h-full object-cover group-hover:opacity-80 transition-opacity" />
+                                    ) : (
+                                        <User size={48} className="text-gray-300" />
+                                    )}
+                                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                                        <Image size={24} className="text-white" />
+                                    </div>
+                                    <input
+                                        type="file"
+                                        id="sidebar-photo-upload"
+                                        className="hidden"
+                                        accept="image/*"
+                                        onChange={handleFileChange}
+                                    />
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => setActiveTab('Photos')}
+                                    className="absolute bottom-1 right-1 w-8 h-8 bg-[#800020] text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform z-10"
+                                >
+                                    <Heart size={14} fill="currentColor" />
+                                </button>
+                            </div>
+                            <h3 className="mt-4 font-serif font-black text-gray-900 italic text-lg">{formData.name || 'Your Name'}</h3>
+                            <p className="text-[10px] font-bold text-[#D4AF37] uppercase tracking-[0.2em] mt-1">Profile Completeness: {completeness}%</p>
+                        </div>
+                        <div className="flex flex-col">
+                            {sidebarSections.map((section, idx) => {
+                                const isExpanded = expandedSections.includes(section.title);
+                                return (
+                                    <div key={idx} className="mb-px last:mb-0">
+                                        <div
+                                            onClick={() => {
+                                                setExpandedSections(prev =>
+                                                    prev.includes(section.title)
+                                                        ? prev.filter(t => t !== section.title)
+                                                        : [...prev, section.title]
+                                                );
+                                            }}
+                                            className="w-full flex items-center justify-between px-6 py-4 bg-[#800020]/5 text-[#800020] border-b border-[#800020]/10 font-serif font-bold italic text-[16px] cursor-pointer hover:bg-[#800020]/10 transition-colors select-none"
+                                        >
+                                            {section.title}
+                                            {isExpanded ? <ChevronDown size={16} className="text-[#800020]/60" /> : <ChevronRight size={16} className="text-[#800020]/40" />}
+                                        </div>
+                                        <AnimatePresence>
+                                            {isExpanded && (
+                                                <motion.div
+                                                    initial={{ height: 0, opacity: 0 }}
+                                                    animate={{ height: 'auto', opacity: 1 }}
+                                                    exit={{ height: 0, opacity: 0 }}
+                                                    className="overflow-hidden flex flex-col"
+                                                >
+                                                    {section.items.map((item, itemIdx) => (
+                                                        <button
+                                                            key={itemIdx}
+                                                            type="button"
+                                                            onClick={() => {
+                                                                if (item.id === 'Logout') {
+                                                                    logout();
+                                                                    navigate('/login');
+                                                                    return;
+                                                                }
+                                                                setActiveTab(item.id);
+                                                            }}
+                                                            className={`w-full flex items-center justify-between px-6 py-3.5 text-left border-b border-gray-50 last:border-0 hover:bg-[#FFFDD0]/30 transition-all ${activeTab === item.id ? 'bg-[#FFFDD0]/50 border-l-4 border-l-[#800020] pl-5' : 'bg-white'}`}
+                                                        >
+                                                            <span className={`text-[13px] font-bold ${activeTab === item.id ? 'text-[#800020]' : 'text-gray-600'}`}>
+                                                                {item.label}
+                                                            </span>
+                                                            {item.action && (
+                                                                <span className="text-[11px] font-black uppercase tracking-widest text-[#D4AF37] group-hover:text-[#800020] transition-colors">
+                                                                    {item.action}
+                                                                </span>
+                                                            )}
+                                                        </button>
+                                                    ))}
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
 
                     {/* Main Content Form */}
                     <div id="main-form-content" className="flex-1 w-full bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-10 relative">

@@ -8,7 +8,6 @@ const Navbar = () => {
     const { user, logout } = useContext(AuthContext);
     const location = useLocation();
     const navigate = useNavigate();
-    const [isOpen, setIsOpen] = React.useState(false);
     const [showProfileDropdown, setShowProfileDropdown] = React.useState(false);
     const dropdownRef = React.useRef(null);
 
@@ -43,7 +42,7 @@ const Navbar = () => {
     return (
         <nav className="fixed w-full z-[100] bg-white/80 backdrop-blur-xl shadow-[0_2px_20px_-5px_rgba(128,0,32,0.1)] border-b border-[#800020]/5">
             <div className="container mx-auto px-6 py-3 flex justify-between items-center">
-                <Link to="/" onClick={() => setIsOpen(false)} className="flex items-center gap-2 group">
+                <Link to="/" className="flex items-center gap-2 group">
                     <div className="bg-[#800020] p-2.5 rounded-xl group-hover:rotate-12 transition-all shadow-lg shadow-[#800020]/20">
                         <Heart className="text-[#D4AF37] fill-[#D4AF37]" size={20} />
                     </div>
@@ -78,202 +77,129 @@ const Navbar = () => {
                     )}
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3 sm:gap-4">
                     {user && (
-                        <div className="relative" ref={dropdownRef}>
-                            <button
-                                onClick={() => setShowProfileDropdown(!showProfileDropdown)}
-                                className="flex items-center gap-2 group transition-all"
-                            >
-                                {/* Mobile Settings Symbol */}
-                                <div className="md:hidden flex items-center justify-center p-2 rounded-xl bg-[#800020]/10 text-[#800020] hover:bg-[#800020]/20 transition-all font-bold gap-1 shadow-sm">
-                                    <Settings size={20} className="animate-[spin_4s_linear_infinite] group-hover:animate-none" />
-                                    <span className="text-[10px] uppercase font-black tracking-widest leading-none">Settings</span>
-                                </div>
+                        <>
+                            {/* Mobile Notification Bell */}
+                            <Link to="/notifications" className="md:hidden p-2 text-[#800020] hover:bg-[#800020]/10 rounded-xl transition-colors relative">
+                                <Bell size={24} />
+                                <div className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border border-white"></div>
+                            </Link>
 
-                                {/* Desktop Profile Avatar */}
-                                <div className="hidden md:block w-10 h-10 rounded-full overflow-hidden border-2 border-[#800020]/20 group-hover:border-[#D4AF37] transition-all bg-white shadow-sm shrink-0">
-                                    {user.profilePicture ? (
-                                        <img src={user.profilePicture} alt={user.name} className="w-full h-full object-cover" />
-                                    ) : (
-                                        <div className="w-full h-full bg-[#800020]/10 flex items-center justify-center text-[#800020]">
-                                            <User size={20} className="fill-current opacity-20 absolute" />
-                                            <User size={20} className="relative z-10" />
-                                        </div>
-                                    )}
-                                </div>
-                                <ChevronDown size={16} className={`text-[#800020] hidden md:block shrink-0 group-hover:text-[#D4AF37] transition-transform ${showProfileDropdown ? 'rotate-180' : ''}`} />
-                            </button>
+                            <div className="relative" ref={dropdownRef}>
+                                <button
+                                    onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+                                    className="flex items-center gap-2 group transition-all"
+                                >
+                                    {/* Mobile Settings Symbol */}
+                                    <div className="md:hidden flex items-center justify-center p-2 text-[#800020] hover:bg-[#800020]/10 rounded-xl transition-colors">
+                                        <Settings size={24} />
+                                    </div>
 
-                            <AnimatePresence>
-                                {showProfileDropdown && (
-                                    <motion.div
-                                        initial={{ opacity: 0, scale: 0.95, y: 10 }}
-                                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                                        exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                                        className="absolute top-full -right-2 md:right-0 mt-4 w-[calc(100vw-32px)] sm:w-80 max-w-[360px] bg-white rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.15)] border border-[#800020]/10 overflow-hidden z-[110]"
-                                    >
-                                        {/* User Info Header */}
-                                        <div className="p-5 pb-2 text-center">
-                                            <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest">{user.name}</h3>
-                                            <div className="flex items-center justify-center gap-1.5 mt-1 text-[#D4AF37]">
-                                                <div className="bg-[#800020] p-1 rounded-full"><Heart size={8} className="fill-[#D4AF37]" /></div>
-                                                <span className="text-[10px] font-bold text-gray-500 tracking-wide">Community Matrimony</span>
-                                            </div>
-                                            <p className="text-[10px] font-black text-gray-900 mt-2 tracking-widest uppercase">ID: {user._id?.slice(-8).toUpperCase() || 'MTR521753'}</p>
-                                            <p className="text-[10px] font-bold text-gray-400 mt-1 uppercase tracking-widest">Free member</p>
-                                        </div>
-
-                                        {/* Upgrade Banner */}
-                                        <div className="mx-6 mb-4 p-3 bg-gradient-to-br from-[#FFFDD0] to-[#FFF8E7] rounded-3xl border border-[#D4AF37]/10 relative overflow-hidden text-center">
-                                            <div className="absolute -right-2 -bottom-2 opacity-5 scale-150 rotate-12"><Star size={60} /></div>
-                                            <h4 className="text-[11px] font-black text-[#800020] leading-tight mb-3 px-4">Upgrade membership to call/chat with matches</h4>
-                                            <Link
-                                                to="/edit-profile?tab=Photos"
-                                                onClick={() => setShowProfileDropdown(false)}
-                                                className="inline-block px-6 py-2 bg-[#F06262] text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-[#e05252] transition-colors shadow-lg shadow-[#F06262]/20"
-                                            >
-                                                Upgrade now
-                                            </Link>
-                                        </div>
-
-                                        {/* Menu Items */}
-                                        <div className="px-2 pb-1 space-y-0.5 max-h-[280px] overflow-y-auto custom-scrollbar">
-                                            <DropdownLink to="/dashboard" icon={<Home size={16} />} label="Profile" />
-                                            <DropdownLink to="/edit-preferences" icon={<Settings size={16} />} label="Edit Preferences" />
-                                            <DropdownLink to="/horoscope" icon={<Sparkles size={16} />} label="View/Edit Horoscope" />
-
-                                            <div className="px-5 py-2">
-                                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Support & feedback</p>
-                                                <div className="space-y-1">
-                                                    <DropdownItem
-                                                        icon={<Settings size={16} />}
-                                                        label="Settings"
-                                                        hasChevron
-                                                        onClick={() => { navigate('/edit-profile?tab=Settings'); setShowProfileDropdown(false); }}
-                                                    />
-                                                    <DropdownItem
-                                                        icon={<HelpCircle size={16} />}
-                                                        label="Help"
-                                                        hasChevron
-                                                        onClick={() => { navigate('/help'); setShowProfileDropdown(false); }}
-                                                    />
-                                                    <DropdownItem
-                                                        icon={<Trophy size={16} />}
-                                                        label="Success Stories"
-                                                        onClick={() => { navigate('/success-stories'); setShowProfileDropdown(false); }}
-                                                    />
-                                                    <DropdownItem
-                                                        icon={<Compass size={16} />}
-                                                        label="More"
-                                                        onClick={() => { navigate('/more'); setShowProfileDropdown(false); }}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="pt-2 border-t border-gray-50 bg-gray-50/50">
-                                            <button
-                                                onClick={() => { logout(); setShowProfileDropdown(false); navigate('/login'); }}
-                                                className="w-full h-12 px-6 flex items-center justify-between text-gray-500 hover:text-[#800020] transition-colors group"
-                                            >
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm group-hover:shadow group-hover:text-red-500 transition-all">
-                                                        <LogOut size={14} />
-                                                    </div>
-                                                    <span className="text-[11px] font-black uppercase tracking-widest">Logout</span>
-                                                </div>
-                                            </button>
-                                        </div>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-                        </div>
-                    )}
-
-                    {/* Mobile Menu Button */}
-                    <button
-                        className="md:hidden p-2 text-[#800020] hover:text-[#800020]/80 transition-colors"
-                        onClick={() => setIsOpen(!isOpen)}
-                    >
-                        {isOpen ? <X size={28} /> : <Menu size={28} />}
-                    </button>
-                </div>
-            </div>
-
-            {/* Mobile Menu Overlay */}
-            <AnimatePresence>
-                {isOpen && (
-                    <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        className="md:hidden bg-white/95 backdrop-blur-2xl border-t border-[#800020]/5 overflow-hidden"
-                    >
-                        <div className="px-8 py-10 flex flex-col gap-8">
-                            {navLinks.map((link) => {
-                                const isActive = location.pathname === link.path;
-                                const isProfile = link.name === 'Profile';
-
-                                return (
-                                    <React.Fragment key={link.name}>
-                                        <Link
-                                            to={link.path}
-                                            onClick={() => setIsOpen(false)}
-                                            className={`flex items-center gap-5 text-xl font-serif italic transition-all group ${isActive ? 'text-[#800020]' : 'text-gray-500 hover:text-[#800020]'}`}
-                                        >
-                                            <span className={`p-4 rounded-2xl shadow-sm transition-all duration-300 ${isActive ? 'bg-[#800020] text-[#D4AF37] shadow-[#800020]/20 scale-110' : 'bg-gray-50 text-gray-400 group-hover:bg-[#800020]/5 group-hover:text-[#800020] group-hover:scale-105'}`}>
-                                                {React.cloneElement(link.icon, { size: 28 })}
-                                            </span>
-                                            <span className="group-hover:translate-x-2 transition-transform duration-300">
-                                                {link.name}
-                                            </span>
-                                        </Link>
-
-                                        {isProfile && user && (
-                                            <div className="flex flex-col gap-6 pl-10 -mt-2">
-                                                <button
-                                                    onClick={() => { logout(); setIsOpen(false); navigate('/login'); }}
-                                                    className="flex items-center gap-4 text-lg font-serif italic text-gray-500 hover:text-[#800020] transition-all group text-left"
-                                                >
-                                                    <span className="p-3 rounded-xl bg-gray-50 text-gray-400 group-hover:bg-[#800020]/5 group-hover:text-[#800020] shadow-sm">
-                                                        <LogOut size={20} />
-                                                    </span>
-                                                    <span>Logout</span>
-                                                </button>
+                                    {/* Desktop Profile Avatar */}
+                                    <div className="hidden md:block w-10 h-10 rounded-full overflow-hidden border-2 border-[#800020]/20 group-hover:border-[#D4AF37] transition-all bg-white shadow-sm shrink-0">
+                                        {user.profilePicture ? (
+                                            <img src={user.profilePicture} alt={user.name} className="w-full h-full object-cover" />
+                                        ) : (
+                                            <div className="w-full h-full bg-[#800020]/10 flex items-center justify-center text-[#800020]">
+                                                <User size={20} className="fill-current opacity-20 absolute" />
+                                                <User size={20} className="relative z-10" />
                                             </div>
                                         )}
-                                    </React.Fragment>
-                                );
-                            })}
+                                    </div>
+                                    <ChevronDown size={16} className={`text-[#800020] hidden md:block shrink-0 group-hover:text-[#D4AF37] transition-transform ${showProfileDropdown ? 'rotate-180' : ''}`} />
+                                </button>
 
+                                <AnimatePresence>
+                                    {showProfileDropdown && (
+                                        <motion.div
+                                            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                                            exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                                            className="absolute top-full -right-2 md:right-0 mt-4 w-[calc(100vw-32px)] sm:w-80 max-w-[360px] bg-white rounded-[2rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.15)] border border-[#800020]/10 overflow-hidden z-[110]"
+                                        >
+                                            {/* User Info Header */}
+                                            <div className="p-5 pb-2 text-center">
+                                                <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest">{user.name}</h3>
+                                                <div className="flex items-center justify-center gap-1.5 mt-1 text-[#D4AF37]">
+                                                    <div className="bg-[#800020] p-1 rounded-full"><Heart size={8} className="fill-[#D4AF37]" /></div>
+                                                    <span className="text-[10px] font-bold text-gray-500 tracking-wide">Community Matrimony</span>
+                                                </div>
+                                                <p className="text-[10px] font-black text-gray-900 mt-2 tracking-widest uppercase">ID: {user._id?.slice(-8).toUpperCase() || 'MTR521753'}</p>
+                                                <p className="text-[10px] font-bold text-gray-400 mt-1 uppercase tracking-widest">Free member</p>
+                                            </div>
 
-                            {user?.isAdmin && (
-                                <Link
-                                    to="/admin"
-                                    onClick={() => setIsOpen(false)}
-                                    className={`flex items-center gap-5 text-xl font-serif italic transition-all group ${location.pathname.startsWith('/admin')
-                                        ? 'text-[#800020]'
-                                        : 'text-gray-500 hover:text-[#800020]'
-                                        }`}
-                                >
-                                    <span className={`p-4 rounded-2xl shadow-sm transition-all duration-300 ${location.pathname.startsWith('/admin')
-                                        ? 'bg-[#800020] text-[#D4AF37] shadow-[#800020]/20 scale-110'
-                                        : 'bg-gray-50 text-gray-400 group-hover:bg-[#800020]/5 group-hover:text-[#800020] group-hover:scale-105'
-                                        }`}>
-                                        <Shield size={28} />
-                                    </span>
-                                    <span className="group-hover:translate-x-2 transition-transform duration-300">
-                                        Admin
-                                    </span>
-                                </Link>
-                            )}
+                                            {/* Upgrade Banner */}
+                                            <div className="mx-6 mb-4 p-3 bg-gradient-to-br from-[#FFFDD0] to-[#FFF8E7] rounded-3xl border border-[#D4AF37]/10 relative overflow-hidden text-center">
+                                                <div className="absolute -right-2 -bottom-2 opacity-5 scale-150 rotate-12"><Star size={60} /></div>
+                                                <h4 className="text-[11px] font-black text-[#800020] leading-tight mb-3 px-4">Upgrade membership to call/chat with matches</h4>
+                                                <Link
+                                                    to="/edit-profile?tab=Photos"
+                                                    onClick={() => setShowProfileDropdown(false)}
+                                                    className="inline-block px-6 py-2 bg-[#F06262] text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-[#e05252] transition-colors shadow-lg shadow-[#F06262]/20"
+                                                >
+                                                    Upgrade now
+                                                </Link>
+                                            </div>
 
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </nav >
+                                            {/* Menu Items */}
+                                            <div className="px-2 pb-1 space-y-0.5 max-h-[280px] overflow-y-auto custom-scrollbar">
+                                                <DropdownLink to="/dashboard" icon={<Home size={16} />} label="Profile" />
+                                                <DropdownLink to="/edit-preferences" icon={<Settings size={16} />} label="Edit Preferences" />
+                                                <DropdownLink to="/horoscope" icon={<Sparkles size={16} />} label="View/Edit Horoscope" />
+
+                                                <div className="px-5 py-2">
+                                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Support & feedback</p>
+                                                    <div className="space-y-1">
+                                                        <DropdownItem
+                                                            icon={<Settings size={16} />}
+                                                            label="Settings"
+                                                            hasChevron
+                                                            onClick={() => { navigate('/edit-profile?tab=Settings'); setShowProfileDropdown(false); }}
+                                                        />
+                                                        <DropdownItem
+                                                            icon={<HelpCircle size={16} />}
+                                                            label="Help"
+                                                            hasChevron
+                                                            onClick={() => { navigate('/help'); setShowProfileDropdown(false); }}
+                                                        />
+                                                        <DropdownItem
+                                                            icon={<Trophy size={16} />}
+                                                            label="Success Stories"
+                                                            onClick={() => { navigate('/success-stories'); setShowProfileDropdown(false); }}
+                                                        />
+                                                        <DropdownItem
+                                                            icon={<Compass size={16} />}
+                                                            label="More"
+                                                            onClick={() => { navigate('/more'); setShowProfileDropdown(false); }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="pt-2 border-t border-gray-50 bg-gray-50/50">
+                                                <button
+                                                    onClick={() => { logout(); setShowProfileDropdown(false); navigate('/login'); }}
+                                                    className="w-full h-12 px-6 flex items-center justify-between text-gray-500 hover:text-[#800020] transition-colors group"
+                                                >
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm group-hover:shadow group-hover:text-red-500 transition-all">
+                                                            <LogOut size={14} />
+                                                        </div>
+                                                        <span className="text-[11px] font-black uppercase tracking-widest">Logout</span>
+                                                    </div>
+                                                </button>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+                        </>
+                    )}
+
+                </div>
+            </div>
+        </nav>
     );
 };
 
