@@ -155,7 +155,7 @@ const Navbar = () => {
                                                             icon={<Settings size={16} />}
                                                             label="Settings"
                                                             hasChevron
-                                                            onClick={() => { navigate('/edit-profile?tab=Settings'); setShowProfileDropdown(false); }}
+                                                            onClick={() => { navigate('/settings'); setShowProfileDropdown(false); }}
                                                         />
                                                         <DropdownItem
                                                             icon={<HelpCircle size={16} />}
@@ -167,11 +167,6 @@ const Navbar = () => {
                                                             icon={<Trophy size={16} />}
                                                             label="Success Stories"
                                                             onClick={() => { navigate('/success-stories'); setShowProfileDropdown(false); }}
-                                                        />
-                                                        <DropdownItem
-                                                            icon={<Compass size={16} />}
-                                                            label="More"
-                                                            onClick={() => { navigate('/more'); setShowProfileDropdown(false); }}
                                                         />
                                                     </div>
                                                 </div>

@@ -5,15 +5,15 @@ const generateToken = require('../config/generateToken');
 // @route   POST /api/users/login
 const authUser = async (req, res) => {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ where: { email } });
 
     if (user && (await user.matchPassword(password))) {
         res.json({
-            _id: user._id,
+            id: user.id,
             name: user.name,
             email: user.email,
             isAdmin: user.isAdmin,
-            token: generateToken(user._id),
+            token: generateToken(user.id),
         });
     } else {
         res.status(401).json({ message: 'Invalid email or password' });
@@ -35,7 +35,7 @@ const registerUser = async (req, res) => {
             familyType, familyStatus, brothers, sisters, ancestralOrigin
         } = req.body;
 
-        const userExists = await User.findOne({ email });
+        const userExists = await User.findOne({ where: { email } });
 
         if (userExists) {
             res.status(400).json({ message: 'User already exists' });
@@ -54,16 +54,17 @@ const registerUser = async (req, res) => {
             age: dob ? (new Date().getFullYear() - new Date(dob).getFullYear()) : undefined,
             religion, location, education, profession,
             membership: membership || 'Basic',
-            paymentStatus: (membership && membership !== 'Basic') ? 'Completed' : 'Pending'
+            paymentStatus: (membership && membership !== 'Basic') ? 'Completed' : 'Pending',
+            interests: [], photos: [], favorites: [], interestsReceived: [], interestsSent: []
         });
 
         if (user) {
             res.status(201).json({
-                _id: user._id,
+                id: user.id,
                 name: user.name,
                 email: user.email,
                 isAdmin: user.isAdmin,
-                token: generateToken(user._id),
+                token: generateToken(user.id),
             });
         } else {
             res.status(400).json({ message: 'Invalid user data' });
@@ -77,7 +78,7 @@ const registerUser = async (req, res) => {
 // @desc    Get user profile
 // @route   GET /api/users/profile
 const getUserProfile = async (req, res) => {
-    const user = await User.findById(req.user._id);
+    const user = await User.findByPk(req.user.id);
 
     if (user) {
         res.json(user);
@@ -88,10 +89,12 @@ const getUserProfile = async (req, res) => {
 
 // @desc    Update user profile
 // @route   PUT /api/users/profile
+// @desc    Update user profile
+// @route   PUT /api/users/profile
 const updateUserProfile = async (req, res) => {
     try {
-        console.log("Update profile requested by:", req.user._id);
-        const user = await User.findById(req.user._id);
+        console.log("Update profile requested by:", req.user.id);
+        const user = await User.findByPk(req.user.id);
 
         if (user) {
             user.name = req.body.name || user.name;
@@ -160,16 +163,32 @@ const updateUserProfile = async (req, res) => {
                 user.photos = req.body.photos.slice(0, 6);
             }
 
-            const updatedUser = await user.save();
-            console.log("Saved successfully. Photos count:", updatedUser.photos.length);
+            // Privacy & Settings fields
+            user.photoPrivacy = req.body.photoPrivacy || user.photoPrivacy;
+            user.horoscopePrivacy = req.body.horoscopePrivacy || user.horoscopePrivacy;
+            user.phonePrivacy = req.body.phonePrivacy || user.phonePrivacy;
+            user.showShortlist = req.body.showShortlist !== undefined ? req.body.showShortlist : user.showShortlist;
+            user.showViewed = req.body.showViewed !== undefined ? req.body.showViewed : user.showViewed;
+            user.isDeactivated = req.body.isDeactivated !== undefined ? req.body.isDeactivated : user.isDeactivated;
+            user.deactivationReason = req.body.deactivationReason || user.deactivationReason;
+
+            await user.save();
+            console.log("Saved successfully. Photos count:", user.photos ? user.photos.length : 0);
 
             res.json({
-                _id: updatedUser._id,
-                name: updatedUser.name,
-                email: updatedUser.email,
-                isAdmin: updatedUser.isAdmin,
-                photos: updatedUser.photos,
-                token: generateToken(updatedUser._id),
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                isAdmin: user.isAdmin,
+                photos: user.photos,
+                // Include settings in response
+                photoPrivacy: user.photoPrivacy,
+                horoscopePrivacy: user.horoscopePrivacy,
+                phonePrivacy: user.phonePrivacy,
+                showShortlist: user.showShortlist,
+                showViewed: user.showViewed,
+                isDeactivated: user.isDeactivated,
+                token: generateToken(user.id),
             });
         } else {
             res.status(404).json({ message: 'User not found' });
@@ -180,12 +199,68 @@ const updateUserProfile = async (req, res) => {
     }
 };
 
+// @desc    Block a user
+// @route   POST /api/users/block/:id
+const blockUser = async (req, res) => {
+    try {
+        const currentUser = await User.findByPk(req.user.id);
+        if (!currentUser.blockedProfiles) currentUser.blockedProfiles = [];
+
+        const targetId = parseInt(req.params.id);
+        if (!currentUser.blockedProfiles.includes(targetId)) {
+            currentUser.blockedProfiles.push(targetId);
+            currentUser.changed('blockedProfiles', true);
+            await currentUser.save();
+        }
+        res.json({ message: 'User blocked successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Ignore a user
+// @route   POST /api/users/ignore/:id
+const ignoreUser = async (req, res) => {
+    try {
+        const currentUser = await User.findByPk(req.user.id);
+        if (!currentUser.ignoredProfiles) currentUser.ignoredProfiles = [];
+
+        const targetId = parseInt(req.params.id);
+        if (!currentUser.ignoredProfiles.includes(targetId)) {
+            currentUser.ignoredProfiles.push(targetId);
+            currentUser.changed('ignoredProfiles', true);
+            await currentUser.save();
+        }
+        res.json({ message: 'User ignored successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// @desc    Delete user account
+// @route   DELETE /api/users/account
+const deleteUserAccount = async (req, res) => {
+    try {
+        const { reason } = req.body;
+        const user = await User.findByPk(req.user.id);
+        if (user) {
+            console.log(`User ${user.email} (ID: ${user.id}) is deleting account. Reason: ${reason || 'Not specified'}`);
+            await user.destroy();
+            res.json({ message: 'Account deleted successfully' });
+        } else {
+            res.status(404).json({ message: 'User not found' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 // @desc    Send interest to a user
 // @route   POST /api/users/interest/:id
 const sendInterest = async (req, res) => {
     try {
-        const targetUser = await User.findById(req.params.id);
-        const currentUser = await User.findById(req.user._id);
+        const targetUser = await User.findByPk(req.params.id);
+        const currentUser = await User.findByPk(req.user.id);
 
         if (!targetUser) {
             return res.status(404).json({ message: 'User not found' });
@@ -195,9 +270,9 @@ const sendInterest = async (req, res) => {
         if (!targetUser.interestsReceived) targetUser.interestsReceived = [];
         if (!currentUser.interestsSent) currentUser.interestsSent = [];
 
-        // Check if interest already sent using string comparison for ObjectIds
+        // Check if interest already sent
         const alreadySent = targetUser.interestsReceived.some(
-            id => id.toString() === currentUser._id.toString()
+            id => id.toString() === currentUser.id.toString()
         );
 
         if (alreadySent) {
@@ -206,12 +281,17 @@ const sendInterest = async (req, res) => {
 
         // Auto-Save: Add to favorites if not already there
         if (!currentUser.favorites) currentUser.favorites = [];
-        if (!currentUser.favorites.some(id => id.toString() === targetUser._id.toString())) {
-            currentUser.favorites.push(targetUser._id);
+        if (!currentUser.favorites.some(id => id.toString() === targetUser.id.toString())) {
+            currentUser.favorites.push(targetUser.id);
         }
 
-        targetUser.interestsReceived.push(currentUser._id);
-        currentUser.interestsSent.push(targetUser._id);
+        targetUser.interestsReceived.push(currentUser.id);
+        currentUser.interestsSent.push(targetUser.id);
+
+        // Ensure we mark them as changed for Sequelize if using JSON
+        targetUser.changed('interestsReceived', true);
+        currentUser.changed('interestsSent', true);
+        currentUser.changed('favorites', true);
 
         await targetUser.save();
         await currentUser.save();
@@ -227,19 +307,21 @@ const sendInterest = async (req, res) => {
 // @route   POST /api/users/favorite/:id
 const toggleFavorite = async (req, res) => {
     try {
-        const currentUser = await User.findById(req.user._id);
+        const currentUser = await User.findByPk(req.user.id);
 
         // Initialize if undefined
         if (!currentUser.favorites) currentUser.favorites = [];
 
-        const index = currentUser.favorites.indexOf(req.params.id);
+        const index = currentUser.favorites.indexOf(parseInt(req.params.id));
 
         if (index > -1) {
             currentUser.favorites.splice(index, 1);
+            currentUser.changed('favorites', true);
             await currentUser.save();
             res.json({ message: 'Removed from favorites', isFavorite: false });
         } else {
-            currentUser.favorites.push(req.params.id);
+            currentUser.favorites.push(parseInt(req.params.id));
+            currentUser.changed('favorites', true);
             await currentUser.save();
             res.json({ message: 'Added to favorites', isFavorite: true });
         }
@@ -250,7 +332,14 @@ const toggleFavorite = async (req, res) => {
 };
 
 const getUsers = async (req, res) => {
-    const users = await User.find({ _id: { $ne: req.user._id }, isAdmin: false }).select('-password');
+    const { Op } = require('sequelize');
+    const users = await User.findAll({
+        where: {
+            id: { [Op.ne]: req.user.id },
+            isAdmin: false
+        },
+        attributes: { exclude: ['password'] }
+    });
     res.json(users);
 };
 
@@ -258,7 +347,7 @@ const getUsers = async (req, res) => {
 // @route   GET /api/users/dashboard
 const getDashboardStats = async (req, res) => {
     try {
-        const user = await User.findById(req.user._id);
+        const user = await User.findByPk(req.user.id);
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
@@ -278,8 +367,13 @@ const getDashboardStats = async (req, res) => {
 // @route   GET /api/users/favorites
 const getFavorites = async (req, res) => {
     try {
-        const user = await User.findById(req.user._id).populate('favorites', '-password');
-        res.json(user.favorites || []);
+        const { Op } = require('sequelize');
+        const user = await User.findByPk(req.user.id);
+        const favorites = await User.findAll({
+            where: { id: { [Op.in]: user.favorites || [] } },
+            attributes: { exclude: ['password'] }
+        });
+        res.json(favorites);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -289,8 +383,13 @@ const getFavorites = async (req, res) => {
 // @route   GET /api/users/interests-sent
 const getInterestsSent = async (req, res) => {
     try {
-        const user = await User.findById(req.user._id).populate('interestsSent', '-password');
-        res.json(user.interestsSent || []);
+        const { Op } = require('sequelize');
+        const user = await User.findByPk(req.user.id);
+        const sent = await User.findAll({
+            where: { id: { [Op.in]: user.interestsSent || [] } },
+            attributes: { exclude: ['password'] }
+        });
+        res.json(sent);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -300,8 +399,13 @@ const getInterestsSent = async (req, res) => {
 // @route   GET /api/users/interests-received
 const getInterestsReceived = async (req, res) => {
     try {
-        const user = await User.findById(req.user._id).populate('interestsReceived', '-password');
-        res.json(user.interestsReceived || []);
+        const { Op } = require('sequelize');
+        const user = await User.findByPk(req.user.id);
+        const received = await User.findAll({
+            where: { id: { [Op.in]: user.interestsReceived || [] } },
+            attributes: { exclude: ['password'] }
+        });
+        res.json(received);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -310,14 +414,14 @@ const getInterestsReceived = async (req, res) => {
 // @desc    Get all users for admin
 // @route   GET /api/users/admin
 const getAllUsersAdmin = async (req, res) => {
-    const users = await User.find({}).sort({ createdAt: -1 });
+    const users = await User.findAll({ order: [['createdAt', 'DESC']] });
     res.json(users);
 };
 
 // @desc    Approve or Block user
 // @route   PUT /api/users/approve/:id
 const toggleApproval = async (req, res) => {
-    const user = await User.findById(req.params.id);
+    const user = await User.findByPk(req.params.id);
     if (!user) {
         res.status(404).json({ message: 'User not found' });
         return;
@@ -330,5 +434,6 @@ const toggleApproval = async (req, res) => {
 module.exports = {
     authUser, registerUser, getUserProfile, updateUserProfile,
     getUsers, sendInterest, toggleFavorite, getAllUsersAdmin, toggleApproval,
-    getDashboardStats, getFavorites, getInterestsReceived, getInterestsSent
+    getDashboardStats, getFavorites, getInterestsReceived, getInterestsSent,
+    blockUser, ignoreUser, deleteUserAccount
 };

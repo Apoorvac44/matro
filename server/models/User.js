@@ -1,81 +1,89 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const { sequelize } = require('../config/db');
 const bcrypt = require('bcryptjs');
 
-const userSchema = mongoose.Schema({
-    name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    age: { type: Number },
-    gender: { type: String, enum: ['Male', 'Female', 'Other'] },
-    religion: { type: String },
-    caste: { type: String },
-    location: { type: String },
-    education: { type: String },
-    profession: { type: String },
-    mobile: { type: String },
-    dob: { type: String },
-    motherTongue: { type: String },
-    maritalStatus: { type: String },
-    height: { type: String },
-    income: { type: String },
-    workLocation: { type: String },
-    prefAgeMin: { type: Number },
-    prefAgeMax: { type: Number },
-    prefLocation: { type: String },
-    prefEducation: { type: String },
-    prefProfession: { type: String },
-    aadharCard: { type: String },
-    casteCertificate: { type: String },
-    weight: { type: String },
-    bodyType: { type: String },
-    profileCreatedBy: { type: String },
-    eatingHabits: { type: String },
-    smokingHabits: { type: String },
-    drinkingHabits: { type: String },
-    timeOfBirth: { type: String },
-    star: { type: String },
-    raasi: { type: String },
-    kujaDosha: { type: String },
-    kulaDaiva: { type: String },
-    horoscope: { type: String },
-    familyType: { type: String },
-    familyStatus: { type: String },
-    brothers: { type: String },
-    sisters: { type: String },
-    ancestralOrigin: { type: String },
-    interests: [{ type: String }],
-    aboutMe: { type: String },
-    profilePicture: { type: String },
-    photos: [{ type: String }], // Array for up to 6 additional photos
-    isApproved: { type: Boolean, default: false },
-    isAdmin: { type: Boolean, default: false },
-    favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    interestsReceived: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    interestsSent: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+const User = sequelize.define('User', {
+    name: { type: DataTypes.STRING, allowNull: false },
+    email: { type: DataTypes.STRING, allowNull: false, unique: true },
+    password: { type: DataTypes.STRING, allowNull: false },
+    age: { type: DataTypes.INTEGER },
+    gender: { type: DataTypes.ENUM('Male', 'Female', 'Other') },
+    religion: { type: DataTypes.STRING },
+    caste: { type: DataTypes.STRING },
+    location: { type: DataTypes.STRING },
+    education: { type: DataTypes.STRING },
+    profession: { type: DataTypes.STRING },
+    mobile: { type: DataTypes.STRING },
+    dob: { type: DataTypes.STRING },
+    motherTongue: { type: DataTypes.STRING },
+    maritalStatus: { type: DataTypes.STRING },
+    height: { type: DataTypes.STRING },
+    income: { type: DataTypes.STRING },
+    workLocation: { type: DataTypes.STRING },
+    prefAgeMin: { type: DataTypes.INTEGER },
+    prefAgeMax: { type: DataTypes.INTEGER },
+    prefLocation: { type: DataTypes.STRING },
+    prefEducation: { type: DataTypes.STRING },
+    prefProfession: { type: DataTypes.STRING },
+    aadharCard: { type: DataTypes.STRING },
+    casteCertificate: { type: DataTypes.STRING },
+    weight: { type: DataTypes.STRING },
+    bodyType: { type: DataTypes.STRING },
+    profileCreatedBy: { type: DataTypes.STRING },
+    eatingHabits: { type: DataTypes.STRING },
+    smokingHabits: { type: DataTypes.STRING },
+    drinkingHabits: { type: DataTypes.STRING },
+    timeOfBirth: { type: DataTypes.STRING },
+    star: { type: DataTypes.STRING },
+    raasi: { type: DataTypes.STRING },
+    kujaDosha: { type: DataTypes.STRING },
+    kulaDaiva: { type: DataTypes.STRING },
+    horoscope: { type: DataTypes.STRING },
+    familyType: { type: DataTypes.STRING },
+    familyStatus: { type: DataTypes.STRING },
+    brothers: { type: DataTypes.STRING },
+    sisters: { type: DataTypes.STRING },
+    ancestralOrigin: { type: DataTypes.STRING },
+    interests: { type: DataTypes.JSON }, // Store as JSON array
+    aboutMe: { type: DataTypes.TEXT },
+    profilePicture: { type: DataTypes.STRING },
+    photos: { type: DataTypes.JSON }, // Store as JSON array
+    isApproved: { type: DataTypes.BOOLEAN, defaultValue: false },
+    isAdmin: { type: DataTypes.BOOLEAN, defaultValue: false },
+    favorites: { type: DataTypes.JSON }, // Store as JSON array of IDs
+    interestsReceived: { type: DataTypes.JSON }, // Store as JSON array of IDs
+    interestsSent: { type: DataTypes.JSON }, // Store as JSON array of IDs
     membership: {
-        type: String,
-        default: 'Basic'
+        type: DataTypes.STRING,
+        defaultValue: 'Basic'
     },
     paymentStatus: {
-        type: String,
-        enum: ['Pending', 'Completed', 'Failed'],
-        default: 'Pending'
+        type: DataTypes.STRING,
+        defaultValue: 'Pending'
     },
+    // Settings & Privacy
+    photoPrivacy: { type: DataTypes.STRING, defaultValue: 'Visible to all' },
+    horoscopePrivacy: { type: DataTypes.STRING, defaultValue: 'Visible to all' },
+    phonePrivacy: { type: DataTypes.STRING, defaultValue: 'Show to paid members' },
+    showShortlist: { type: DataTypes.BOOLEAN, defaultValue: true },
+    showViewed: { type: DataTypes.BOOLEAN, defaultValue: true },
+    blockedProfiles: { type: DataTypes.JSON, defaultValue: [] },
+    ignoredProfiles: { type: DataTypes.JSON, defaultValue: [] },
+    isDeactivated: { type: DataTypes.BOOLEAN, defaultValue: false },
+    deactivationReason: { type: DataTypes.STRING },
 }, {
-    timestamps: true
-});
-
-userSchema.pre('save', async function (next) {
-    if (!this.isModified('password')) {
-        return next();
+    hooks: {
+        beforeSave: async (user) => {
+            if (user.changed('password')) {
+                const salt = await bcrypt.genSalt(10);
+                user.password = await bcrypt.hash(user.password, salt);
+            }
+        }
     }
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
 });
 
-userSchema.methods.matchPassword = async function (enteredPassword) {
+User.prototype.matchPassword = async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
 };
 
-const User = mongoose.model('User', userSchema);
 module.exports = User;

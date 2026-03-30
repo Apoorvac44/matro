@@ -1,3 +1,6 @@
+import axios from 'axios';
+const BASE_URL = 'http://localhost:5000/api';
+
 const INITIAL_PROFILES = [
     {
         _id: '1', name: 'Priya Hegde', email: 'priya.hegde@example.com', age: 26, gender: 'Female', location: 'Mysuru',
@@ -519,4 +522,18 @@ export const getCountries = () => {
         ]);
 };
 
-export default { login, register, getProfile, updateProfile, getProfiles, sendInterest, toggleFavorite, sendMessage, getConversations, getMessages, getAdminUsers, toggleApproval, getDashboardStats, getFavorites, getInterestsReceived, getInterestsSent, getGallery, addGalleryPhoto, deleteGalleryPhoto, createMembershipPlan, updateMembershipPlan, deleteMembershipPlan, getMembershipPlans, updateSettings, getSettings, getCountries };
+export const updatePrivacySettings = (data) => axios.put(`${BASE_URL}/users/privacy-settings`, data, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+export const updateAccountSettings = (data) => axios.put(`${BASE_URL}/users/account-settings`, data, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+export const blockUser = (id) => axios.post(`${BASE_URL}/users/block/${id}`, {}, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+export const ignoreUser = (id) => axios.post(`${BASE_URL}/users/ignore/${id}`, {}, { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+export const deleteAccount = (data) => axios.delete(`${BASE_URL}/users/account`, { data, headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } });
+
+export default {
+    login, register, getProfile, updateProfile, getProfiles, sendInterest,
+    toggleFavorite, sendMessage, getConversations, getMessages, getAdminUsers,
+    toggleApproval, getDashboardStats, getFavorites, getInterestsReceived,
+    getInterestsSent, getGallery, addGalleryPhoto, deleteGalleryPhoto,
+    createMembershipPlan, updateMembershipPlan, deleteMembershipPlan,
+    getMembershipPlans, updateSettings, getSettings, getCountries,
+    updatePrivacySettings, updateAccountSettings, blockUser, ignoreUser, deleteAccount
+};

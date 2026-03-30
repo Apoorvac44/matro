@@ -4,35 +4,39 @@ const Message = require('../models/Message');
 // @route   GET /api/messages/conversations
 const getConversations = async (req, res) => {
     try {
-        const userId = req.user._id;
+        const { Op } = require('sequelize');
+        const User = require('../models/User'); // Import User for manual populate
+        const userId = req.user.id;
 
-        const messages = await Message.find({
-            $or: [{ sender: userId }, { receiver: userId }]
-        })
-            .sort({ createdAt: -1 })
-            .populate('sender', 'name profilePicture')
-            .populate('receiver', 'name profilePicture');
+        const messages = await Message.findAll({
+            where: {
+                [Op.or]: [{ sender: userId }, { receiver: userId }]
+            },
+            order: [['createdAt', 'DESC']]
+        });
 
         const map = new Map();
 
-        messages.forEach(msg => {
-            const isSender = msg.sender._id.toString() === userId.toString();
-            const otherUser = isSender ? msg.receiver : msg.sender;
+        for (const msg of messages) {
+            const otherUserId = msg.sender === userId ? msg.receiver : msg.sender;
 
-            // If the other user no longer exists, skip
-            if (!otherUser) return;
-
-            if (!map.has(otherUser._id.toString())) {
-                map.set(otherUser._id.toString(), {
-                    id: otherUser._id,
-                    name: otherUser.name,
-                    avatar: otherUser.profilePicture,
-                    lastMessage: msg.content,
-                    time: msg.createdAt,
-                    read: true
+            if (!map.has(otherUserId.toString())) {
+                const otherUser = await User.findByPk(otherUserId, {
+                    attributes: ['id', 'name', 'profilePicture']
                 });
+
+                if (otherUser) {
+                    map.set(otherUserId.toString(), {
+                        id: otherUser.id,
+                        name: otherUser.name,
+                        avatar: otherUser.profilePicture,
+                        lastMessage: msg.content,
+                        time: msg.createdAt,
+                        read: true
+                    });
+                }
             }
-        });
+        }
 
         res.json(Array.from(map.values()));
     } catch (error) {
@@ -46,7 +50,7 @@ const getConversations = async (req, res) => {
 const sendMessage = async (req, res) => {
     const { receiverId, content } = req.body;
     const message = await Message.create({
-        sender: req.user._id,
+        sender: req.user.id,
         receiver: receiverId,
         content
     });
@@ -62,18 +66,22 @@ const sendMessage = async (req, res) => {
 // @route   GET /api/messages/:userId
 const getMessages = async (req, res) => {
     try {
+        const { Op } = require('sequelize');
         const { userId } = req.params;
 
         if (!userId || userId === 'undefined') {
             return res.status(400).json({ message: 'Invalid User ID' });
         }
 
-        const messages = await Message.find({
-            $or: [
-                { sender: req.user._id, receiver: userId },
-                { sender: userId, receiver: req.user._id }
-            ]
-        }).sort({ createdAt: 1 });
+        const messages = await Message.findAll({
+            where: {
+                [Op.or]: [
+                    { sender: req.user.id, receiver: userId },
+                    { sender: userId, receiver: req.user.id }
+                ]
+            },
+            order: [['createdAt', 'ASC']]
+        });
 
         res.json(messages);
     } catch (error) {

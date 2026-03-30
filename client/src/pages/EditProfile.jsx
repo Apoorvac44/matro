@@ -1,5 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { User, ArrowLeft, CheckCircle, Loader2, Heart, ShieldCheck, ChevronRight, Save, ChevronDown, Image, Menu, X as XIcon, Sparkles } from 'lucide-react';
+import {
+    User, ArrowLeft, CheckCircle, Loader2, Heart, ShieldCheck, ChevronRight,
+    Save, ChevronDown, Image, Menu, X as XIcon, Sparkles, Lock, Bell,
+    Phone, Eye, UserX, Trash2, Shield, Settings, LogOut, Info
+} from 'lucide-react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as api from '../services/api';
@@ -49,45 +53,55 @@ const EditProfile = ({ defaultTab }) => {
         parentsContact: '', familyValue: '', nativePlace: '', fatherName: '', motherName: '', fatherOccupation: '', motherOccupation: '', aboutFamily: '',
         prefMaritalStatus: [], prefHeightMin: '', prefHeightMax: '', prefPhysicalStatus: '', prefMotherTongue: '',
         prefEducationType: '', prefEducationDetails: '', prefEmployedIn: '', prefOccupation: '', prefCitizenship: '',
-        prefCountryLiving: '', prefFoodHabits: [], prefSmokingHabits: [], prefDrinkingHabits: [], prefIncome: 'Any', aboutPartner: ''
+        prefCountryLiving: '', prefFoodHabits: [], prefSmokingHabits: [], prefDrinkingHabits: [], prefIncome: 'Any', aboutPartner: '',
+        // Settings & Privacy
+        photoPrivacy: 'Visible to all', horoscopePrivacy: 'Visible to all', phonePrivacy: 'Show to paid members',
+        showShortlist: true, showViewed: true, blockedProfiles: [], ignoredProfiles: [], isDeactivated: false
     });
 
     const sidebarSections = [
         {
             title: 'Profile Info',
             items: [
-                { id: 'Basic Information', label: 'Basic Information', action: 'edit' },
-                { id: 'Education & Occupation', label: 'Education & Occupation', action: 'edit' },
-                { id: 'Family Details', label: 'Family Details', action: 'edit' },
-                { id: 'Hobbies & Interest', label: 'Hobbies & Interest', action: 'edit' },
-                { id: 'Partner Preference', label: 'Partner Preference', action: 'edit' }
+                { id: 'basic_info', label: 'Basic Information', action: 'edit' },
+                { id: 'education', label: 'Education & Occupation', action: 'edit' },
+                { id: 'family', label: 'Family Details', action: 'edit' },
+                { id: 'hobbies', label: 'Hobbies & Interest', action: 'edit' },
+                { id: 'partner_pref', label: 'Partner Preference', action: 'edit' }
             ]
         },
         {
             title: 'Contact Details',
             items: [
-                { id: 'Location', label: 'Location', action: 'edit' },
-                { id: 'E-mail', label: 'E-mail', action: 'edit' },
-                { id: 'Contact Number', label: 'Contact Number', action: 'edit' }
+                { id: 'location', label: 'Location', action: 'edit' },
+                { id: 'email', label: 'E-mail', action: 'edit' },
+                { id: 'mobile', label: 'Contact Number', action: 'edit' }
             ]
         },
         {
             title: 'Enhance Profile',
             items: [
-                { id: 'Photos', label: `Photos (${formData.photos?.length || 0}/6)`, action: 'add' },
-                { id: 'MembershipPlans', label: 'Membership Plans', action: 'edit' },
-                { id: 'Horoscope', label: 'Horoscope', action: 'edit' },
-                { id: 'Trust Badge', label: 'Trust Badge', action: 'edit' }
+                { id: 'photos', label: 'Photos & Gallery', action: 'edit' },
+                { id: 'membership', label: 'Membership Plans', action: 'edit' },
+                { id: 'horoscope', label: 'Horoscope', action: 'edit' },
+                { id: 'trust_badge', label: 'Trust Badge', action: 'edit' }
             ]
         },
         {
-            title: 'Settings',
+            title: 'Privacy & Security',
             items: [
-                { id: 'Change Password', label: 'Change Password', action: '' },
-                { id: 'Deactivate Profile', label: 'Deactivate Profile', action: '' },
-                { id: 'Delete Profile', label: 'Delete Profile', action: '' },
-                { id: 'Manage Alert', label: 'Manage Alert', action: '' },
-                { id: 'Logout', label: 'Logout', action: '' }
+                { id: 'privacy', label: 'Privacy Settings', action: 'manage' },
+                { id: 'communication', label: 'Communication Settings', action: 'manage' }
+            ]
+        },
+        {
+            title: 'Account Settings',
+            items: [
+                { id: 'account_settings', label: 'Account Settings', action: 'manage' },
+                { id: 'blocked_profiles', label: 'Blocked Profiles', action: 'view' },
+                { id: 'ignored_profiles', label: 'Ignored Profiles', action: 'view' },
+                { id: 'change_password', label: 'Change Password', action: '' },
+                { id: 'logout', label: 'Logout', action: '' }
             ]
         }
     ];
@@ -96,9 +110,11 @@ const EditProfile = ({ defaultTab }) => {
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
     const [message, setMessage] = useState('');
-    const [activeTab, setActiveTab] = useState('Basic Information');
+    const [activeTab, setActiveTab] = useState('basic_info');
     const [expandedSections, setExpandedSections] = useState(['Profile Info']); // Default open the first section
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [deleteReason, setDeleteReason] = useState('');
     const navigate = useNavigate();
     const { user, refreshUser, logout } = useContext(AuthContext); // Added user to context destructuring
     const [completeness, setCompleteness] = useState(0);
@@ -121,12 +137,35 @@ const EditProfile = ({ defaultTab }) => {
     }, []);
 
     useEffect(() => {
-        const tab = searchParams.get('tab');
+        const tabParam = searchParams.get('tab');
+        const tab = tabParam || defaultTab;
 
         if (tab) {
-            setActiveTab(tab);
-        } else if (defaultTab) {
-            setActiveTab(defaultTab);
+            // Alias handling for legacy or external links
+            const tabMap = {
+                'Basic Information': 'basic_info',
+                'Education & Occupation': 'education',
+                'Family Details': 'family',
+                'Hobbies & Interest': 'hobbies',
+                'Partner Preference': 'partner_pref',
+                'Location': 'location',
+                'E-mail': 'email',
+                'Contact Number': 'mobile',
+                'Photos': 'photos',
+                'MembershipPlans': 'membership',
+                'Membership Plans': 'membership',
+                'Horoscope': 'horoscope',
+                'Trust Badge': 'trust_badge',
+                'Privacy Settings': 'privacy',
+                'Communication Settings': 'communication',
+                'Blocked Profiles': 'blocked_profiles',
+                'Ignored Profiles': 'ignored_profiles',
+                'Change Password': 'change_password',
+                'Settings': 'privacy'
+            };
+
+            const normalizedTab = tabMap[tab] || tab;
+            setActiveTab(normalizedTab);
         }
     }, [defaultTab, searchParams]);
 
@@ -212,7 +251,16 @@ const EditProfile = ({ defaultTab }) => {
                     prefIncome: data.prefIncome || 'Any',
                     aboutPartner: data.aboutPartner || '',
                     photos: data.photos || [],
-                    casteCertificate: data.casteCertificate || ''
+                    casteCertificate: data.casteCertificate || '',
+                    // Settings mapping
+                    photoPrivacy: data.photoPrivacy || 'Visible to all',
+                    horoscopePrivacy: data.horoscopePrivacy || 'Visible to all',
+                    phonePrivacy: data.phonePrivacy || 'Show to paid members',
+                    showShortlist: data.showShortlist !== undefined ? data.showShortlist : true,
+                    showViewed: data.showViewed !== undefined ? data.showViewed : true,
+                    blockedProfiles: data.blockedProfiles || [],
+                    ignoredProfiles: data.ignoredProfiles || [],
+                    isDeactivated: data.isDeactivated || false
                 };
                 setFormData(dataMap);
                 setCompleteness(calculateCompleteness(dataMap));
@@ -253,6 +301,47 @@ const EditProfile = ({ defaultTab }) => {
             }
             return { ...prev, [fieldName]: arr };
         });
+    };
+
+    const handleAccountAction = async (action) => {
+        if (action === 'delete') {
+            setIsDeleting(true);
+            return;
+        }
+
+        const confirmMsg = 'Are you sure you want to deactivate your account? Your profile will be hidden from other members.';
+
+        if (window.confirm(confirmMsg)) {
+            try {
+                await api.updateAccountSettings({ isDeactivated: true });
+                setFormData(prev => ({ ...prev, isDeactivated: true }));
+                setMessage('Your account has been deactivated.');
+                setTimeout(() => setMessage(''), 3000);
+            } catch (err) {
+                console.error(`Error deactivating account:`, err);
+                setMessage(`Failed to deactivate account. Please try again.`);
+                setTimeout(() => setMessage(''), 3000);
+            }
+        }
+    };
+
+    const confirmDelete = async () => {
+        if (!deleteReason) {
+            alert('Please select a reason for deletion');
+            return;
+        }
+
+        if (window.confirm('Are you sure you want to PERMANENTLY delete your account? This action cannot be undone.')) {
+            try {
+                await api.deleteAccount({ reason: deleteReason });
+                logout();
+                navigate('/login');
+            } catch (err) {
+                console.error('Error deleting account:', err);
+                setMessage('Failed to delete account. Please try again.');
+                setTimeout(() => setMessage(''), 3000);
+            }
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -479,7 +568,7 @@ const EditProfile = ({ defaultTab }) => {
                             <button
                                 key={idx}
                                 onClick={() => {
-                                    if (item.id === 'Logout') {
+                                    if (item.id === 'logout') {
                                         logout();
                                         navigate('/login');
                                         return;
@@ -567,7 +656,7 @@ const EditProfile = ({ defaultTab }) => {
                                                             key={itemIdx}
                                                             type="button"
                                                             onClick={() => {
-                                                                if (item.id === 'Logout') {
+                                                                if (item.id === 'logout') {
                                                                     logout();
                                                                     navigate('/login');
                                                                     return;
@@ -599,9 +688,9 @@ const EditProfile = ({ defaultTab }) => {
                     <div id="main-form-content" className="flex-1 w-full bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-10 relative">
                         <div className="flex justify-between items-center mb-8 border-b border-gray-100 pb-6">
                             <h2 className="text-2xl font-serif font-black text-gray-900 italic">
-                                {activeTab === 'Photos' ? 'Profile Photos' : activeTab}
+                                {activeTab === 'photos' ? 'Profile Photos' : sidebarSections.flatMap(s => s.items).find(i => i.id === activeTab)?.label || activeTab}
                             </h2>
-                            {activeTab === 'Basic Information' && (
+                            {activeTab === 'basic_info' && (
                                 <span className="text-xs font-bold text-gray-400">Fields marked as <span className="text-red-500">*</span> are Mandatory</span>
                             )}
                         </div>
@@ -617,7 +706,7 @@ const EditProfile = ({ defaultTab }) => {
                                     className="space-y-2"
                                 >
                                     {/* BASIC INFORMATION TAB */}
-                                    {activeTab === 'Basic Information' && (
+                                    {activeTab === 'basic_info' && (
                                         <div className="space-y-2">
                                             <FormRow label="Profile Created By" required>
                                                 <select name="profileCreatedBy" value={formData.profileCreatedBy} onChange={handleChange} className="form-input-premium max-w-md appearance-none">
@@ -750,7 +839,7 @@ const EditProfile = ({ defaultTab }) => {
                                     )}
 
                                     {/* EDUCATION & OCCUPATION */}
-                                    {activeTab === 'Education & Occupation' && (
+                                    {activeTab === 'education' && (
                                         <div className="space-y-2">
                                             <FormRow label="Highest Education" required>
                                                 <div className="relative group w-full max-w-md">
@@ -842,7 +931,7 @@ const EditProfile = ({ defaultTab }) => {
                                     )}
 
                                     {/* FAMILY DETAILS */}
-                                    {activeTab === 'Family Details' && (
+                                    {activeTab === 'family' && (
                                         <div className="space-y-2">
                                             <FormRow label="Parent's Contact No.">
                                                 <div className="w-full flex items-center gap-4">
@@ -895,7 +984,7 @@ const EditProfile = ({ defaultTab }) => {
                                     )}
 
                                     {/* HOBBIES & INTEREST */}
-                                    {activeTab === 'Hobbies & Interest' && (
+                                    {activeTab === 'hobbies' && (
                                         <div className="space-y-2">
                                             <FormRow label="Eating Habits">
                                                 <div className="flex gap-6 items-center flex-wrap h-full pt-3">
@@ -931,7 +1020,7 @@ const EditProfile = ({ defaultTab }) => {
                                     )}
 
                                     {/* PARTNER PREFERENCE */}
-                                    {activeTab === 'Partner Preference' && (
+                                    {activeTab === 'partner_pref' && (
                                         <div className="space-y-2">
                                             <div className="text-sm text-gray-500 mb-6 pb-4 border-b border-gray-100">
                                                 Here you can customize your partner preference. You will receive matches by e-mail based on the highlighted fields (<CheckCircle className="w-4 h-4 text-green-500 inline" />) below which form your MatchWatch criteria.
@@ -1086,7 +1175,7 @@ const EditProfile = ({ defaultTab }) => {
                                     )}
 
                                     {/* CONTACT DETAILS (Separated) */}
-                                    {activeTab === 'Location' && (
+                                    {activeTab === 'location' && (
                                         <div className="space-y-2">
                                             <FormRow label="Location (City, State)" required>
                                                 <Autocomplete
@@ -1100,14 +1189,14 @@ const EditProfile = ({ defaultTab }) => {
                                             </FormRow>
                                         </div>
                                     )}
-                                    {activeTab === 'E-mail' && (
+                                    {activeTab === 'email' && (
                                         <div className="space-y-2">
                                             <FormRow label="E-mail" required>
                                                 <input type="email" name="email" value={formData.email} onChange={handleChange} className="form-input-premium max-w-md" placeholder="Email address" />
                                             </FormRow>
                                         </div>
                                     )}
-                                    {activeTab === 'Contact Number' && (
+                                    {activeTab === 'mobile' && (
                                         <div className="space-y-2">
                                             <FormRow label="Contact Number" required>
                                                 <input type="text" name="mobile" value={formData.mobile} onChange={handleChange} className="form-input-premium max-w-md" placeholder="10-digit mobile number" />
@@ -1116,7 +1205,7 @@ const EditProfile = ({ defaultTab }) => {
                                     )}
 
                                     {/* ENHANCE PROFILE: PHOTOS & GALLERY */}
-                                    {activeTab === 'Photos' && (
+                                    {activeTab === 'photos' && (
                                         <div className="space-y-12">
                                             {/* Profile Photo Section */}
                                             <div className="bg-[#F8F9FA]/50 p-8 rounded-3xl border border-gray-100 relative">
@@ -1206,66 +1295,9 @@ const EditProfile = ({ defaultTab }) => {
                                         </div>
                                     )}
 
-                                    {/* ENHANCE PROFILE: MEMBERSHIP PLANS */}
-                                    {activeTab === 'MembershipPlans' && (
-                                        <div className="space-y-8">
-                                            <div className="bg-[#800020]/5 p-8 rounded-[2.5rem] border border-[#800020]/10">
-                                                <h4 className="text-xl font-serif font-black italic text-[#800020] mb-4 flex items-center gap-3">
-                                                    <Sparkles size={24} className="text-[#D4AF37]" />
-                                                    Upgrade Your Journey
-                                                </h4>
-                                                <p className="text-sm text-[#800020]/70 font-medium leading-relaxed max-w-2xl">
-                                                    Choose the plan that's right for you and unlock premium features like unlimited interests, direct chat, and priority profile listing.
-                                                </p>
-                                            </div>
-
-                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pb-8">
-                                                {plans.map((plan) => {
-                                                    const isSelected = formData.membership === plan._id;
-                                                    return (
-                                                        <div
-                                                            key={plan._id}
-                                                            onClick={() => setFormData({ ...formData, membership: plan._id })}
-                                                            className={`flex flex-col p-8 rounded-[2.5rem] border-2 cursor-pointer transition-all select-none relative group ${isSelected ? 'border-[#800020] shadow-2xl bg-white scale-[1.02]' : 'border-gray-100 hover:border-[#800020]/20 bg-gray-50/50'}`}
-                                                        >
-                                                            <div className="flex justify-between items-start mb-6">
-                                                                <div className={`w-8 h-8 rounded-2xl border-2 flex items-center justify-center transition-colors ${isSelected ? 'border-[#800020] bg-[#800020]' : 'border-gray-200 bg-white'}`}>
-                                                                    {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-white"></div>}
-                                                                </div>
-                                                                <div className="text-right">
-                                                                    <div className={`text-3xl font-serif font-black italic transition-colors ${isSelected ? 'text-[#800020]' : 'text-gray-900'}`}>
-                                                                        ₹{plan.price.toLocaleString()}
-                                                                    </div>
-                                                                    <div className="text-[10px] font-black uppercase tracking-widest text-gray-400 mt-1">{plan.duration}</div>
-                                                                </div>
-                                                            </div>
-                                                            <div>
-                                                                <h4 className="text-lg font-serif font-black text-gray-900 mb-4 italic flex items-center gap-2">
-                                                                    {plan.name}
-                                                                </h4>
-                                                                <ul className="space-y-3 mt-4">
-                                                                    {plan.features.map((feat, i) => (
-                                                                        <li key={i} className="text-[11px] font-bold text-gray-500 uppercase tracking-wide flex items-start gap-3">
-                                                                            <CheckCircle size={14} className="text-green-500 shrink-0 mt-0.5" />
-                                                                            <span className="leading-tight">{feat}</span>
-                                                                        </li>
-                                                                    ))}
-                                                                </ul>
-                                                            </div>
-                                                            {isSelected && (
-                                                                <div className="absolute top-4 right-4 animate-pulse">
-                                                                    <div className="bg-[#D4AF37] text-[#800020] text-[8px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-sm">Current Selection</div>
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    );
-                                                })}
-                                            </div>
-                                        </div>
-                                    )}
 
                                     {/* ENHANCE PROFILE: HOROSCOPE */}
-                                    {activeTab === 'Horoscope' && (
+                                    {activeTab === 'horoscope' && (
                                         <div className="space-y-4">
                                             <h4 className="text-xs font-black text-[#800020] uppercase tracking-widest mb-4 flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-[#D4AF37]"></div> Horoscope & Astrological Details</h4>
                                             <FormRow label="Time of Birth">
@@ -1303,7 +1335,7 @@ const EditProfile = ({ defaultTab }) => {
                                     )}
 
                                     {/* TRUST BADGE */}
-                                    {activeTab === 'Trust Badge' && (
+                                    {activeTab === 'trust_badge' && (
                                         <div className="space-y-6">
                                             <FormRow label="AADHAAR CARD">
                                                 <div className="w-full max-w-md form-input-premium !p-3">
@@ -1337,43 +1369,437 @@ const EditProfile = ({ defaultTab }) => {
                                         </div>
                                     )}
 
-                                    {/* SETTINGS PLACEHOLDERS */}
-                                    {activeTab === 'Change Password' && (
-                                        <div className="space-y-4">
-                                            <p className="text-sm font-medium text-gray-500 mb-6 pb-4 border-b border-gray-100">Update your account password securely.</p>
-                                            <FormRow label="Current Password">
-                                                <input type="password" name="currentPassword" placeholder="Enter current password" title="Coming soon" disabled className="form-input-premium max-w-md opacity-70 cursor-not-allowed" />
-                                            </FormRow>
-                                            <FormRow label="New Password">
-                                                <input type="password" name="newPassword" placeholder="Enter new password" title="Coming soon" disabled className="form-input-premium max-w-md opacity-70 cursor-not-allowed" />
-                                            </FormRow>
-                                        </div>
-                                    )}
-                                    {activeTab === 'Deactivate Profile' && (
-                                        <div className="space-y-4">
-                                            <p className="text-sm font-medium text-gray-500 mb-6 pb-4 border-b border-gray-100">Temporarily hide your profile from other users if you are taking a break.</p>
-                                            <div className="p-4 bg-amber-50 rounded-xl border border-amber-200">
-                                                <h4 className="font-bold text-amber-800 text-sm">Deactivation Feature Coming Soon</h4>
-                                                <p className="text-xs text-amber-700 mt-1">This feature is currently under active development.</p>
+                                    {/* PRIVACY SETTINGS TAB */}
+                                    {activeTab === 'privacy' && (
+                                        <div className="space-y-6">
+                                            <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm">
+                                                <div className="flex items-center gap-3 mb-6">
+                                                    <div className="w-10 h-10 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
+                                                        <Image size={20} />
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-sm font-bold text-gray-900 tracking-tight">Photo Privacy</h3>
+                                                        <p className="text-[10px] text-gray-500 font-medium">Control who can see your profile photos</p>
+                                                    </div>
+                                                </div>
+                                                <div className="space-y-3">
+                                                    {[
+                                                        { id: 'Visible to all', label: 'Visible to all (Recommended)' },
+                                                        { id: 'Visible to members I give access', label: 'Visible only to the members I give access to view' }
+                                                    ].map(option => (
+                                                        <label key={option.id} className={`flex items-center justify-between p-4 rounded-2xl border transition-all cursor-pointer ${formData.photoPrivacy === option.id ? 'bg-[#FFFDD0]/50 border-[#D4AF37]/30 ring-1 ring-[#D4AF37]/20' : 'bg-gray-50/50 border-gray-100 hover:bg-gray-50'}`}>
+                                                            <div className="flex items-center gap-3">
+                                                                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${formData.photoPrivacy === option.id ? 'border-[#800020]' : 'border-gray-300'}`}>
+                                                                    {formData.photoPrivacy === option.id && <div className="w-2.5 h-2.5 bg-[#800020] rounded-full" />}
+                                                                </div>
+                                                                <span className={`text-[13px] font-bold ${formData.photoPrivacy === option.id ? 'text-[#800020]' : 'text-gray-600'}`}>{option.label}</span>
+                                                            </div>
+                                                            <input type="radio" name="photoPrivacy" value={option.id} checked={formData.photoPrivacy === option.id} onChange={handleChange} className="hidden" />
+                                                        </label>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm">
+                                                <div className="flex items-center gap-3 mb-6">
+                                                    <div className="w-10 h-10 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600">
+                                                        <Sparkles size={20} />
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-sm font-bold text-gray-900 tracking-tight">Horoscope Privacy</h3>
+                                                        <p className="text-[10px] text-gray-500 font-medium">Manage visibility of your astrological details</p>
+                                                    </div>
+                                                </div>
+                                                <div className="space-y-3">
+                                                    {[
+                                                        { id: 'Visible to all', label: 'Visible to all (Recommended)' },
+                                                        { id: 'Visible to premium members', label: 'Visible only to premium members' },
+                                                        { id: 'Visible to members I give access', label: 'Visible only to the members I give access to view' }
+                                                    ].map(option => (
+                                                        <label key={option.id} className={`flex items-center justify-between p-4 rounded-2xl border transition-all cursor-pointer ${formData.horoscopePrivacy === option.id ? 'bg-[#FFFDD0]/50 border-[#D4AF37]/30 ring-1 ring-[#D4AF37]/20' : 'bg-gray-50/50 border-gray-100 hover:bg-gray-50'}`}>
+                                                            <div className="flex items-center gap-3">
+                                                                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${formData.horoscopePrivacy === option.id ? 'border-[#800020]' : 'border-gray-300'}`}>
+                                                                    {formData.horoscopePrivacy === option.id && <div className="w-2.5 h-2.5 bg-[#800020] rounded-full" />}
+                                                                </div>
+                                                                <span className={`text-[13px] font-bold ${formData.horoscopePrivacy === option.id ? 'text-[#800020]' : 'text-gray-600'}`}>{option.label}</span>
+                                                            </div>
+                                                            <input type="radio" name="horoscopePrivacy" value={option.id} checked={formData.horoscopePrivacy === option.id} onChange={handleChange} className="hidden" />
+                                                        </label>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm">
+                                                <div className="flex items-center gap-3 mb-6">
+                                                    <div className="w-10 h-10 bg-green-50 rounded-2xl flex items-center justify-center text-green-600">
+                                                        <Phone size={20} />
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-sm font-bold text-gray-900 tracking-tight">Phone Number Privacy</h3>
+                                                        <p className="text-[10px] text-gray-500 font-medium">Decide who can see your contact number</p>
+                                                    </div>
+                                                </div>
+                                                <div className="space-y-3">
+                                                    {[
+                                                        { id: 'Show to paid members', label: 'Show mobile number only to paid members' },
+                                                        { id: 'Show to whom I grant access', label: 'Show mobile number only to whom I grant access to view' }
+                                                    ].map(option => (
+                                                        <label key={option.id} className={`flex items-center justify-between p-4 rounded-2xl border transition-all cursor-pointer ${formData.phonePrivacy === option.id ? 'bg-[#FFFDD0]/50 border-[#D4AF37]/30 ring-1 ring-[#D4AF37]/20' : 'bg-gray-50/50 border-gray-100 hover:bg-gray-50'}`}>
+                                                            <div className="flex items-center gap-3">
+                                                                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${formData.phonePrivacy === option.id ? 'border-[#800020]' : 'border-gray-300'}`}>
+                                                                    {formData.phonePrivacy === option.id && <div className="w-2.5 h-2.5 bg-[#800020] rounded-full" />}
+                                                                </div>
+                                                                <span className={`text-[13px] font-bold ${formData.phonePrivacy === option.id ? 'text-[#800020]' : 'text-gray-600'}`}>{option.label}</span>
+                                                            </div>
+                                                            <input type="radio" name="phonePrivacy" value={option.id} checked={formData.phonePrivacy === option.id} onChange={handleChange} className="hidden" />
+                                                        </label>
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm">
+                                                <div className="flex items-center gap-3 mb-6">
+                                                    <div className="w-10 h-10 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-600">
+                                                        <Eye size={20} />
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-sm font-bold text-gray-900 tracking-tight">Profile View Settings</h3>
+                                                        <p className="text-[10px] text-gray-500 font-medium">Control notifications for your profile activity</p>
+                                                    </div>
+                                                </div>
+                                                <div className="space-y-4">
+                                                    <div className="flex items-center justify-between p-2">
+                                                        <div>
+                                                            <h4 className="text-[13px] font-bold text-gray-700">Shortlist Notifications</h4>
+                                                            <p className="text-[10px] text-gray-400">Let other members know that you have shortlisted their profile</p>
+                                                        </div>
+                                                        <button type="button" onClick={() => setFormData({ ...formData, showShortlist: !formData.showShortlist })} className={`w-12 h-6 rounded-full transition-all relative ${formData.showShortlist ? 'bg-[#800020]' : 'bg-gray-200'}`}>
+                                                            <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${formData.showShortlist ? 'right-1' : 'left-1'}`} />
+                                                        </button>
+                                                    </div>
+                                                    <div className="flex items-center justify-between p-2 border-t border-gray-50 pt-4">
+                                                        <div>
+                                                            <h4 className="text-[13px] font-bold text-gray-700">Profile View Notifications</h4>
+                                                            <p className="text-[10px] text-gray-400">Let other members know that you have viewed their profile</p>
+                                                        </div>
+                                                        <button type="button" onClick={() => setFormData({ ...formData, showViewed: !formData.showViewed })} className={`w-12 h-6 rounded-full transition-all relative ${formData.showViewed ? 'bg-[#800020]' : 'bg-gray-200'}`}>
+                                                            <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${formData.showViewed ? 'right-1' : 'left-1'}`} />
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     )}
-                                    {activeTab === 'Delete Profile' && (
-                                        <div className="space-y-4">
-                                            <p className="text-sm font-medium text-gray-500 mb-6 pb-4 border-b border-gray-100">Permanently delete your Matro account and all associated data.</p>
-                                            <div className="p-4 bg-red-50 rounded-xl border border-red-200">
-                                                <h4 className="font-bold text-red-800 text-sm">Delete Account Coming Soon</h4>
-                                                <p className="text-xs text-red-700 mt-1">This feature is currently under active development.</p>
+
+                                    {/* COMMUNICATION SETTINGS TAB */}
+                                    {activeTab === 'communication' && (
+                                        <div className="space-y-6">
+                                            <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm">
+                                                <div className="flex items-center gap-3 mb-6">
+                                                    <div className="w-10 h-10 bg-yellow-50 rounded-2xl flex items-center justify-center text-yellow-600">
+                                                        <Bell size={20} />
+                                                    </div>
+                                                    <div>
+                                                        <h3 className="text-sm font-bold text-gray-900 tracking-tight">Alert Preferences</h3>
+                                                        <p className="text-[10px] text-gray-500 font-medium">How and when you want to be notified</p>
+                                                    </div>
+                                                </div>
+                                                <div className="space-y-6">
+                                                    <div>
+                                                        <h4 className="text-xs font-black text-gray-700 uppercase tracking-widest mb-4">Email Alerts</h4>
+                                                        <div className="space-y-3">
+                                                            {['Daily Matches', 'New Interests', 'Messages', 'News & Offers'].map(alert => (
+                                                                <label key={alert} className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer group">
+                                                                    <div className="w-5 h-5 rounded border-2 border-gray-200 flex items-center justify-center group-hover:border-[#800020]/30 transition-colors">
+                                                                        <input type="checkbox" className="hidden" defaultChecked />
+                                                                        <div className="w-3 h-3 bg-[#800020] rounded-sm opacity-100" />
+                                                                    </div>
+                                                                    <span className="text-sm font-bold text-gray-600">{alert}</span>
+                                                                </label>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     )}
-                                    {activeTab === 'Manage Alert' && (
-                                        <div className="space-y-4">
-                                            <p className="text-sm font-medium text-gray-500 mb-6 pb-4 border-b border-gray-100">Manage your email and SMS notification preferences.</p>
-                                            <div className="p-4 bg-blue-50 rounded-xl border border-blue-200">
-                                                <h4 className="font-bold text-blue-800 text-sm">Alert Management Coming Soon</h4>
-                                                <p className="text-xs text-blue-700 mt-1">This feature is currently under active development.</p>
+
+                                    {/* MEMBERSHIP PLANS TAB */}
+                                    {activeTab === 'membership' && (
+                                        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
+                                            <div className="bg-gradient-to-r from-[#800020] to-[#600318] rounded-[2.5rem] p-8 text-white relative overflow-hidden shadow-2xl">
+                                                <div className="relative z-10">
+                                                    <h3 className="text-2xl font-serif font-black italic mb-2">Upgrade Your Journey</h3>
+                                                    <p className="text-white/70 text-sm font-medium max-w-md">Choose a plan that fits your needs and find your perfect life partner faster with premium features.</p>
+                                                </div>
+                                                <Sparkles className="absolute right-8 top-1/2 -translate-y-1/2 w-32 h-32 text-white/10" />
                                             </div>
+
+                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                                {plans.map((plan) => (
+                                                    <div
+                                                        key={plan._id}
+                                                        className={`relative bg-white border rounded-[2rem] p-6 hover:shadow-2xl transition-all group flex flex-col ${formData.membership === plan._id ? 'border-[#D4AF37] ring-1 ring-[#D4AF37]/30 shadow-lg' : 'border-gray-100 hover:border-[#D4AF37]/20'}`}
+                                                    >
+                                                        {formData.membership === plan._id && (
+                                                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-[#D4AF37] text-[#800020] text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg">Current Plan</div>
+                                                        )}
+
+                                                        <div className="mb-6">
+                                                            <div className="flex items-center justify-between mb-4">
+                                                                <div className="w-12 h-12 rounded-2xl flex items-center justify-center text-white shadow-inner" style={{ backgroundColor: plan.color }}>
+                                                                    <Heart size={24} />
+                                                                </div>
+                                                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{plan.duration}</span>
+                                                            </div>
+                                                            <h4 className="text-xl font-serif font-black italic text-gray-900 mb-1">{plan.name}</h4>
+                                                            <div className="flex items-baseline gap-1">
+                                                                <span className="text-2xl font-black text-[#800020]">₹{plan.price}</span>
+                                                                {plan.price > 0 && <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">/ one time</span>}
+                                                            </div>
+                                                        </div>
+
+                                                        <ul className="space-y-3 mb-8 flex-grow">
+                                                            {plan.features.map((feature, idx) => (
+                                                                <li key={idx} className="flex items-start gap-2 text-[11px] text-gray-600 font-medium">
+                                                                    <span className="text-[#800020] mt-0.5 mt-0.5 flex-shrink-0">✓</span>
+                                                                    {feature}
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+
+                                                        <button
+                                                            disabled={formData.membership === plan._id}
+                                                            className={`w-full py-4 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] transition-all ${formData.membership === plan._id ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-gray-900 text-white hover:bg-[#800020] hover:shadow-lg hover:shadow-[#800020]/20'}`}
+                                                        >
+                                                            {formData.membership === plan._id ? 'Current Plan' : 'Select Plan'}
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                            </div>
+
+                                            {/* Comparison Table */}
+                                            <div className="bg-white border border-gray-100 rounded-[2.5rem] p-8 shadow-sm">
+                                                <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-8 px-2">Detailed Comparison</h3>
+                                                <div className="overflow-x-auto">
+                                                    <table className="w-full">
+                                                        <thead>
+                                                            <tr className="border-b border-gray-50">
+                                                                <th className="text-left py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Features</th>
+                                                                {plans.map(p => (
+                                                                    <th key={p._id} className="text-center py-4 text-[11px] font-black text-gray-900 uppercase tracking-widest">{p.name}</th>
+                                                                ))}
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody className="divide-y divide-gray-50">
+                                                            {[
+                                                                'View Profiles',
+                                                                'View Contact Details',
+                                                                'Send Personalized Messages',
+                                                                'Priority Customer Support',
+                                                                'Profile Highlight',
+                                                                'Privacy Controls'
+                                                            ].map((feature, i) => (
+                                                                <tr key={i} className="hover:bg-gray-50/50 transition-colors">
+                                                                    <td className="py-4 text-[11px] font-bold text-gray-600">{feature}</td>
+                                                                    {plans.map(p => (
+                                                                        <td key={p._id} className="py-4 text-center">
+                                                                            <CheckCircle size={14} className="mx-auto text-green-500 opacity-60" />
+                                                                        </td>
+                                                                    ))}
+                                                                </tr>
+                                                            ))}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* BLOCKED/IGNORED PROFILES TAB */}
+                                    {(activeTab === 'blocked_profiles' || activeTab === 'ignored_profiles') && (
+                                        <div className="space-y-4">
+                                            <div className="grid grid-cols-1 gap-4">
+                                                {activeTab === 'blocked_profiles' ? (
+                                                    (formData.blockedProfiles && formData.blockedProfiles.length > 0) ? (
+                                                        formData.blockedProfiles.map((profileId, i) => (
+                                                            <div key={i} className="bg-white border border-gray-100 rounded-3xl p-4 flex items-center justify-between hover:shadow-md transition-all group">
+                                                                <div className="flex items-center gap-4">
+                                                                    <div className="w-16 h-16 rounded-2xl bg-gray-100 overflow-hidden border border-gray-100 flex items-center justify-center">
+                                                                        <User size={24} className="text-gray-300" />
+                                                                    </div>
+                                                                    <div>
+                                                                        <h4 className="text-sm font-black text-gray-900 leading-tight">Profile ID: {profileId}</h4>
+                                                                        <p className="text-[10px] text-gray-500 font-medium mt-1">Status: Blocked</p>
+                                                                    </div>
+                                                                </div>
+                                                                <button type="button" className="p-3 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-2xl transition-all">
+                                                                    <UserX size={20} />
+                                                                </button>
+                                                            </div>
+                                                        ))
+                                                    ) : (
+                                                        <div className="bg-gray-50/50 rounded-[2.5rem] p-12 text-center border-2 border-dashed border-gray-100">
+                                                            <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center text-gray-200 mx-auto mb-4 border border-gray-50"><UserX size={32} /></div>
+                                                            <h3 className="text-lg font-serif font-black italic text-gray-900 mb-2">No Blocked Profiles</h3>
+                                                            <p className="text-sm text-gray-500 font-medium max-w-xs mx-auto">Profiles you block will appear here. They won't be able to see your profile or interact with you.</p>
+                                                        </div>
+                                                    )
+                                                ) : (
+                                                    (formData.ignoredProfiles && formData.ignoredProfiles.length > 0) ? (
+                                                        formData.ignoredProfiles.map((profileId, i) => (
+                                                            <div key={i} className="bg-white border border-gray-100 rounded-3xl p-4 flex items-center justify-between hover:shadow-md transition-all group">
+                                                                <div className="flex items-center gap-4">
+                                                                    <div className="w-16 h-16 rounded-2xl bg-gray-100 overflow-hidden border border-gray-100 flex items-center justify-center">
+                                                                        <User size={24} className="text-gray-300" />
+                                                                    </div>
+                                                                    <div>
+                                                                        <h4 className="text-sm font-black text-gray-900 leading-tight">Profile ID: {profileId}</h4>
+                                                                        <p className="text-[10px] text-gray-500 font-medium mt-1">Status: Ignored</p>
+                                                                    </div>
+                                                                </div>
+                                                                <button type="button" className="p-3 text-gray-400 hover:text-orange-600 hover:bg-orange-50 rounded-2xl transition-all">
+                                                                    <Trash2 size={20} />
+                                                                </button>
+                                                            </div>
+                                                        ))
+                                                    ) : (
+                                                        <div className="bg-gray-50/50 rounded-[2.5rem] p-12 text-center border-2 border-dashed border-gray-100">
+                                                            <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center text-gray-200 mx-auto mb-4 border border-gray-100"><Trash2 size={32} /></div>
+                                                            <h3 className="text-lg font-serif font-black italic text-gray-900 mb-2">No Ignored Profiles</h3>
+                                                            <p className="text-sm text-gray-500 font-medium max-w-xs mx-auto">Profiles you ignore will appear here. They will be removed from your search results and match suggestions.</p>
+                                                        </div>
+                                                    )
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* ACCOUNT SETTINGS TAB */}
+                                    {activeTab === 'account_settings' && (
+                                        <div className="space-y-6">
+                                            {isDeleting ? (
+                                                <div className="bg-white rounded-3xl p-6 md:p-8 border border-red-100 animate-in fade-in slide-in-from-bottom-4">
+                                                    <div className="flex items-center gap-4 mb-8">
+                                                        <button onClick={() => setIsDeleting(false)} className="p-2 hover:bg-gray-100 rounded-xl transition-colors"><ChevronLeft size={20} /></button>
+                                                        <h2 className="text-xl font-black text-red-600 uppercase tracking-widest">Delete Profile</h2>
+                                                    </div>
+
+                                                    <div className="bg-red-50/50 border border-red-100 rounded-2xl p-4 mb-8">
+                                                        <p className="text-[11px] text-red-600 font-bold text-center">Note: Once you delete your profile, it cannot be recovered.</p>
+                                                    </div>
+
+                                                    <p className="text-sm font-bold text-gray-700 mb-6 px-2">Please choose a reason for profile deletion.</p>
+
+                                                    <div className="space-y-3 mb-12">
+                                                        {[
+                                                            { id: 'married', label: 'MARRIED', group: true },
+                                                            { id: 'marriage_fixed', label: 'MARRIAGE FIXED', group: true },
+                                                            {
+                                                                id: 'other', label: 'OTHER REASONS', group: true, options: [
+                                                                    { id: 'search_later', label: 'Prefer to search later' },
+                                                                    { id: 'no_matches', label: 'Not getting enough matches' },
+                                                                    { id: 'not_specify', label: "I'll not specify" },
+                                                                    { id: 'costly', label: 'Very costly from milanamatrimony.com' }
+                                                                ]
+                                                            }
+                                                        ].map((item) => (
+                                                            <div key={item.id} className="space-y-2">
+                                                                {item.options ? (
+                                                                    <>
+                                                                        <div className="px-4 py-3 bg-gray-50 rounded-xl text-xs font-black text-gray-400 uppercase tracking-widest">{item.label}</div>
+                                                                        <div className="grid grid-cols-1 gap-2 pl-2">
+                                                                            {item.options.map((opt) => (
+                                                                                <label key={opt.id} className="flex items-center gap-4 p-4 hover:bg-gray-50 rounded-2xl border border-transparent hover:border-gray-100 transition-all cursor-pointer group">
+                                                                                    <input
+                                                                                        type="radio"
+                                                                                        name="delete_reason"
+                                                                                        checked={deleteReason === opt.label}
+                                                                                        onChange={() => setDeleteReason(opt.label)}
+                                                                                        className="w-5 h-5 accent-red-600"
+                                                                                    />
+                                                                                    <span className="text-sm font-medium text-gray-600 group-hover:text-gray-900">{opt.label}</span>
+                                                                                </label>
+                                                                            ))}
+                                                                        </div>
+                                                                    </>
+                                                                ) : (
+                                                                    <label className="flex items-center gap-4 p-5 bg-white border border-gray-100 rounded-2xl hover:border-red-200 transition-all cursor-pointer group shadow-sm">
+                                                                        <input
+                                                                            type="radio"
+                                                                            name="delete_reason"
+                                                                            checked={deleteReason === item.label}
+                                                                            onChange={() => setDeleteReason(item.label)}
+                                                                            className="w-5 h-5 accent-red-600"
+                                                                        />
+                                                                        <span className="text-base font-black text-gray-900 group-hover:text-red-600 italic font-serif uppercase tracking-widest">{item.label}</span>
+                                                                        <ChevronDown size={16} className="ml-auto text-gray-300" />
+                                                                    </label>
+                                                                )}
+                                                            </div>
+                                                        ))}
+                                                    </div>
+
+                                                    <div className="grid grid-cols-2 gap-4 mb-12">
+                                                        <button
+                                                            onClick={confirmDelete}
+                                                            className="py-4 bg-red-600 text-white rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] shadow-lg shadow-red-200 hover:bg-red-700 transition-all active:scale-95"
+                                                        >
+                                                            Delete Account
+                                                        </button>
+                                                        <button
+                                                            onClick={() => setIsDeleting(false)}
+                                                            className="py-4 bg-gray-100 text-gray-600 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] hover:bg-gray-200 transition-all"
+                                                        >
+                                                            Cancel
+                                                        </button>
+                                                    </div>
+
+                                                    {/* Promo Section */}
+                                                    <div className="border-t border-gray-100 pt-8">
+                                                        <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-6 px-2">Our Wedding Services</h3>
+                                                        <div className="bg-gradient-to-br from-white to-orange-50/30 border border-orange-100 rounded-[2.5rem] p-6 shadow-xl relative overflow-hidden">
+                                                            <div className="relative z-10">
+                                                                <h4 className="text-lg font-serif font-black italic text-[#800020] mb-1">WeddingBazaar.com</h4>
+                                                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-4">India's No.1 wedding services platform</p>
+                                                                <ul className="space-y-2 mb-6">
+                                                                    <li className="flex items-start gap-2 text-[11px] text-gray-600 font-medium">
+                                                                        <span className="text-orange-500 mt-0.5">✓</span>
+                                                                        1000s of Photographers, Makeup artists & more
+                                                                    </li>
+                                                                </ul>
+                                                                <button className="px-6 py-2.5 bg-orange-500 text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-orange-200">Find Vendors</button>
+                                                            </div>
+                                                            <div className="absolute right-0 bottom-0 w-32 h-32 opacity-20 bg-[url('https://cdn-icons-png.flaticon.com/512/3667/3667231.png')] bg-contain bg-no-repeat bg-right-bottom"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    {[
+                                                        { icon: UserX, label: 'Blocked Profiles', tab: 'blocked_profiles', color: 'text-red-600', bg: 'bg-red-50' },
+                                                        { icon: Trash2, label: 'Ignored Profiles', tab: 'ignored_profiles', color: 'text-orange-600', bg: 'bg-orange-50' },
+                                                        { icon: Phone, label: 'Call Preferences', tab: 'communication', color: 'text-blue-600', bg: 'bg-blue-50' },
+                                                        { icon: Lock, label: 'Change Password', tab: 'change_password', color: 'text-purple-600', bg: 'bg-purple-50' },
+                                                        { icon: Shield, label: 'Deactivate/Hide Account', action: 'deactivate', color: 'text-gray-600', bg: 'bg-gray-50' },
+                                                        { icon: Trash2, label: 'Delete Account', action: 'delete', color: 'text-red-500', bg: 'bg-red-50/50' }
+                                                    ].map((item, idx) => (
+                                                        <button key={idx} type="button" onClick={() => item.tab ? setActiveTab(item.tab) : (item.action ? handleAccountAction(item.action) : null)} className="flex items-center gap-4 p-5 bg-white border border-gray-100 rounded-3xl hover:shadow-lg hover:border-[#D4AF37]/30 transition-all group text-left">
+                                                            <div className={`w-12 h-12 ${item.bg} ${item.color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform`}><item.icon size={24} /></div>
+                                                            <div><h4 className="text-sm font-bold text-gray-900">{item.label}</h4><p className="text-[10px] text-gray-400 font-medium">Manage your {item.label.toLowerCase()}</p></div>
+                                                            <ChevronRight size={16} className="ml-auto text-gray-300 group-hover:text-[#800020] transition-colors" />
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* LEGACY PLACEHOLDERS (Restore if needed, but replaced by above) */}
+                                    {activeTab === 'change_password' && (
+                                        <div className="space-y-4">
+                                            <FormRow label="Current Password"><input type="password" placeholder="Enter current password" disabled className="form-input-premium max-w-md opacity-70 cursor-not-allowed" /></FormRow>
+                                            <FormRow label="New Password"><input type="password" placeholder="Enter new password" disabled className="form-input-premium max-w-md opacity-70 cursor-not-allowed" /></FormRow>
                                         </div>
                                     )}
                                 </motion.div>

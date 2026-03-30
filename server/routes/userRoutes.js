@@ -3,7 +3,8 @@ const router = express.Router();
 const {
     authUser, registerUser, getUserProfile, updateUserProfile,
     getUsers, sendInterest, toggleFavorite, getAllUsersAdmin, toggleApproval,
-    getDashboardStats, getFavorites, getInterestsReceived, getInterestsSent
+    getDashboardStats, getFavorites, getInterestsReceived, getInterestsSent,
+    blockUser, ignoreUser, deleteUserAccount
 } = require('../controllers/userController');
 const { protect, admin } = require('../middleware/authMiddleware');
 
@@ -21,5 +22,10 @@ router.get('/interests-sent', protect, getInterestsSent);
 // Admin Routes
 router.get('/admin', protect, admin, getAllUsersAdmin);
 router.put('/approve/:id', protect, admin, toggleApproval);
+router.put('/privacy-settings', protect, updateUserProfile);
+router.put('/account-settings', protect, updateUserProfile);
+router.post('/block/:id', protect, blockUser);
+router.post('/ignore/:id', protect, ignoreUser);
+router.delete('/account', protect, deleteUserAccount);
 
 module.exports = router;

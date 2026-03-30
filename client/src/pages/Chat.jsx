@@ -63,9 +63,9 @@ const Chat = () => {
     };
 
     return (
-        <div className="h-screen bg-white flex flex-col">
+        <div className="h-[calc(100dvh-64px-64px)] md:h-[calc(100vh-80px)] bg-white flex flex-col relative">
             {/* Minimal Chat Header */}
-            <div className="bg-white border-b border-gray-100 sticky top-[64px] z-50">
+            <div className="bg-white border-b border-gray-100 sticky top-0 z-50">
                 <div className="max-w-4xl mx-auto p-4 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <button onClick={() => navigate('/chat/inbox')} className="p-3 hover:bg-gray-50 rounded-2xl transition-colors">
@@ -138,8 +138,8 @@ const Chat = () => {
                 </div>
             </div>
 
-            {/* Input Area */}
-            <div className="bg-white border-t border-gray-50 p-3 md:p-4">
+            {/* Input Area - Fixed at bottom of this container */}
+            <div className="bg-white border-t border-gray-100 p-3 md:p-4 sticky bottom-0 z-30 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
                 <div className="max-w-4xl mx-auto">
                     <form onSubmit={handleSend} className="flex gap-4 relative">
                         <input
@@ -159,9 +159,6 @@ const Chat = () => {
                     </form>
                 </div>
             </div>
-
-            {/* Mobile Nav Spacer */}
-            <div className="h-16 md:hidden"></div>
         </div>
     );
 };

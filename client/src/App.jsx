@@ -74,10 +74,10 @@ function App() {
             <Route path="/help" element={<Help />} />
 
             {/* Redirects to Edit Profile Tabs */}
-            <Route path="/edit-preferences" element={<ProtectedRoute><EditProfile defaultTab="Partner Preference" /></ProtectedRoute>} />
-            <Route path="/horoscope" element={<ProtectedRoute><EditProfile defaultTab="Horoscope" /></ProtectedRoute>} />
-            <Route path="/settings" element={<ProtectedRoute><EditProfile defaultTab="Settings" /></ProtectedRoute>} />
-            <Route path="/membership" element={<ProtectedRoute><EditProfile defaultTab="MembershipPlans" /></ProtectedRoute>} />
+            <Route path="/edit-preferences" element={<ProtectedRoute><EditProfile defaultTab="partner_pref" /></ProtectedRoute>} />
+            <Route path="/horoscope" element={<ProtectedRoute><EditProfile defaultTab="horoscope" /></ProtectedRoute>} />
+            <Route path="/settings" element={<ProtectedRoute><EditProfile defaultTab="privacy" /></ProtectedRoute>} />
+            <Route path="/membership" element={<ProtectedRoute><EditProfile defaultTab="membership" /></ProtectedRoute>} />
           </Route>
 
           {/* Admin Routes */}

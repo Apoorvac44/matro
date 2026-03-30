@@ -1,13 +1,27 @@
-const mongoose = require('mongoose');
+const { Sequelize } = require('sequelize');
+const dotenv = require('dotenv');
+
+dotenv.config();
+
+const sequelize = new Sequelize(
+    process.env.MYSQL_DATABASE || 'matrimony_db',
+    process.env.MYSQL_USER || 'root',
+    process.env.MYSQL_PASSWORD || '',
+    {
+        host: process.env.MYSQL_HOST || 'localhost',
+        dialect: 'mysql',
+        logging: false, // Set to console.log to see SQL queries
+    }
+);
 
 const connectDB = async () => {
     try {
-        const conn = await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/milana_matrimony');
-        console.log(`MongoDB Connected: ${conn.connection.host}`);
+        await sequelize.authenticate();
+        console.log('MySQL Connected via Sequelize');
     } catch (error) {
-        console.error(`Error: ${error.message}`);
+        console.error(`Unable to connect to the database: ${error.message}`);
         process.exit(1);
     }
 };
 
-module.exports = connectDB;
+module.exports = { sequelize, connectDB };
