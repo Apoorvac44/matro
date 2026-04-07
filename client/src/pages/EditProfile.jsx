@@ -26,7 +26,7 @@ const gothraOptions = ['Vishnu', 'Shiva', 'Kashyapa', 'Bharadwaj', 'Vishvamitra'
 const FormRow = ({ label, required, children }) => (
     <div className="flex flex-row items-start py-5 border-b border-gray-100 last:border-0 hover:bg-gray-50/50 transition-colors px-2 sm:px-4 rounded-xl">
         <label className="w-1/3 text-[10px] sm:text-xs font-bold text-gray-700 uppercase tracking-widest pt-3 flex items-center pr-2 sm:pr-4 shrink-0">
-            {label} {required && <span className="text-red-500 ml-1 text-base">*</span>}
+            {label} {required && <span className="text-[#800020] ml-1 text-base">*</span>}
         </label>
         <div className="w-2/3 flex flex-col sm:flex-row gap-4 w-full relative">
             {children}
@@ -90,6 +90,7 @@ const EditProfile = ({ defaultTab }) => {
         {
             title: 'Privacy & Security',
             items: [
+                { id: 'settings', label: 'Settings', action: 'manage' },
                 { id: 'privacy', label: 'Privacy Settings', action: 'manage' },
                 { id: 'communication', label: 'Communication Settings', action: 'manage' }
             ]
@@ -192,11 +193,7 @@ const EditProfile = ({ defaultTab }) => {
                     maritalStatus: data.maritalStatus || '',
                     height: data.height || '',
                     languagesKnown: data.languagesKnown || '',
-                    prefAgeMin: data.prefAgeMin || '',
-                    prefAgeMax: data.prefAgeMax || '',
                     prefLocation: data.prefLocation || '',
-                    prefEducation: data.prefEducation || '',
-                    prefProfession: data.prefProfession || '',
                     email: data.email || '',
                     religion: data.religion || 'Hindu',
                     caste: (data.caste === 'Kshatriya Komarpanth' || !data.caste) ? (data.caste || '') : 'Other',
@@ -685,15 +682,17 @@ const EditProfile = ({ defaultTab }) => {
                     </div>
 
                     {/* Main Content Form */}
-                    <div id="main-form-content" className="flex-1 w-full bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-10 relative">
-                        <div className="flex justify-between items-center mb-8 border-b border-gray-100 pb-6">
-                            <h2 className="text-2xl font-serif font-black text-gray-900 italic">
-                                {activeTab === 'photos' ? 'Profile Photos' : sidebarSections.flatMap(s => s.items).find(i => i.id === activeTab)?.label || activeTab}
-                            </h2>
-                            {activeTab === 'basic_info' && (
-                                <span className="text-xs font-bold text-gray-400">Fields marked as <span className="text-red-500">*</span> are Mandatory</span>
-                            )}
-                        </div>
+                    <div id="main-form-content" className={`flex-1 w-full bg-white rounded-3xl shadow-sm border border-gray-100 relative ${['privacy', 'communication', 'account_settings', 'blocked_profiles', 'ignored_profiles', 'change_password'].includes(activeTab) ? 'p-0 overflow-hidden' : 'p-6 md:p-10'}`}>
+                        {!['privacy', 'communication', 'account_settings', 'blocked_profiles', 'ignored_profiles', 'change_password'].includes(activeTab) && (
+                            <div className="flex justify-between items-center mb-8 border-b border-gray-100 pb-6">
+                                <h2 className="text-2xl font-serif font-black text-gray-900 italic">
+                                    {activeTab === 'photos' ? 'Profile Photos' : sidebarSections.flatMap(s => s.items).find(i => i.id === activeTab)?.label || activeTab}
+                                </h2>
+                                {activeTab === 'basic_info' && (
+                                    <span className="text-xs font-bold text-gray-400">Fields marked as <span className="text-[#800020]">*</span> are Mandatory</span>
+                                )}
+                            </div>
+                        )}
 
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <AnimatePresence mode="wait">
@@ -1114,7 +1113,7 @@ const EditProfile = ({ defaultTab }) => {
                                                     </select>
                                                 </div>
                                             </FormRow>
-                                            <FormRow label={<span className="flex items-center">Country Living In <CheckCircle className="w-4 h-4 text-green-500 ml-1" /></span>}>
+                                            <FormRow label={<span className="flex items-center">Country Living In <CheckCircle className="w-4 h-4 text-[#800020] ml-1" /></span>}>
                                                 <div className="relative w-full max-w-md">
                                                     <select
                                                         name="prefCountryLiving"
@@ -1129,7 +1128,7 @@ const EditProfile = ({ defaultTab }) => {
                                                     </select>
                                                 </div>
                                             </FormRow>
-                                            <FormRow label={<span className="flex items-center">Food Habits <CheckCircle className="w-4 h-4 text-green-500 ml-1" /></span>}>
+                                            <FormRow label={<span className="flex items-center">Food Habits <CheckCircle className="w-4 h-4 text-[#800020] ml-1" /></span>}>
                                                 <div className="grid grid-cols-2 gap-y-3 pt-3 max-w-sm">
                                                     {['Vegetarian', 'Non-vegetarian', 'Eggetarian', 'Vegan', 'Doesn\'t matter'].map(status => (
                                                         <label key={status} className="flex items-center gap-2 cursor-pointer text-sm font-bold text-gray-700">
@@ -1138,7 +1137,7 @@ const EditProfile = ({ defaultTab }) => {
                                                     ))}
                                                 </div>
                                             </FormRow>
-                                            <FormRow label={<span className="flex items-center">Smoking Habits <CheckCircle className="w-4 h-4 text-green-500 ml-1" /></span>}>
+                                            <FormRow label={<span className="flex items-center">Smoking Habits <CheckCircle className="w-4 h-4 text-[#800020] ml-1" /></span>}>
                                                 <div className="grid grid-cols-2 gap-y-3 pt-3 max-w-sm">
                                                     {['Non-smoker', 'Light / Social smoker', 'Regular smoker', 'Doesn\'t matter'].map(status => (
                                                         <label key={status} className="flex items-center gap-2 cursor-pointer text-sm font-bold text-gray-700">
@@ -1147,7 +1146,7 @@ const EditProfile = ({ defaultTab }) => {
                                                     ))}
                                                 </div>
                                             </FormRow>
-                                            <FormRow label={<span className="flex items-center">Drinking Habits <CheckCircle className="w-4 h-4 text-green-500 ml-1" /></span>}>
+                                            <FormRow label={<span className="flex items-center">Drinking Habits <CheckCircle className="w-4 h-4 text-[#800020] ml-1" /></span>}>
                                                 <div className="grid grid-cols-2 gap-y-3 pt-3 max-w-sm">
                                                     {['Non-drinker', 'Light / Social drinker', 'Regular drinker', 'Doesn\'t matter'].map(status => (
                                                         <label key={status} className="flex items-center gap-2 cursor-pointer text-sm font-bold text-gray-700">
@@ -1341,8 +1340,8 @@ const EditProfile = ({ defaultTab }) => {
                                                 <div className="w-full max-w-md form-input-premium !p-3">
                                                     {formData.aadharCard ? (
                                                         <div className="flex justify-between items-center bg-white rounded-lg p-3 border border-gray-100 shadow-sm">
-                                                            <span className="text-green-600 font-bold text-xs flex items-center gap-2 uppercase tracking-widest"><ShieldCheck size={16} /> Uploaded</span>
-                                                            <button type="button" onClick={() => setFormData({ ...formData, aadharCard: '' })} className="text-red-500 hover:text-red-700 font-bold text-[10px] uppercase tracking-widest">Remove</button>
+                                                            <span className="text-[#800020] font-bold text-xs flex items-center gap-2 uppercase tracking-widest"><ShieldCheck size={16} /> Uploaded</span>
+                                                            <button type="button" onClick={() => setFormData({ ...formData, aadharCard: '' })} className="text-[#800020]/70 hover:text-[#800020] font-bold text-[10px] uppercase tracking-widest">Remove</button>
                                                         </div>
                                                     ) : (
                                                         <div className="flex items-center gap-3">
@@ -1356,8 +1355,8 @@ const EditProfile = ({ defaultTab }) => {
                                                 <div className="w-full max-w-md form-input-premium !p-3">
                                                     {formData.casteCertificate ? (
                                                         <div className="flex justify-between items-center bg-white rounded-lg p-3 border border-gray-100 shadow-sm">
-                                                            <span className="text-green-600 font-bold text-xs flex items-center gap-2 uppercase tracking-widest"><ShieldCheck size={16} /> Uploaded</span>
-                                                            <button type="button" onClick={() => setFormData({ ...formData, casteCertificate: '' })} className="text-red-500 hover:text-red-700 font-bold text-[10px] uppercase tracking-widest">Remove</button>
+                                                            <span className="text-[#800020] font-bold text-xs flex items-center gap-2 uppercase tracking-widest"><ShieldCheck size={16} /> Uploaded</span>
+                                                            <button type="button" onClick={() => setFormData({ ...formData, casteCertificate: '' })} className="text-[#800020]/70 hover:text-[#800020] font-bold text-[10px] uppercase tracking-widest">Remove</button>
                                                         </div>
                                                     ) : (
                                                         <div className="flex items-center gap-3">
@@ -1369,122 +1368,151 @@ const EditProfile = ({ defaultTab }) => {
                                         </div>
                                     )}
 
-                                    {/* PRIVACY SETTINGS TAB */}
+
+                                    {/* MAIN SETTINGS MENU TAB (Image 1) */}
+                                    {activeTab === 'settings' && (
+                                        <div className="space-y-4">
+                                            {[
+                                                { id: 'privacy', label: 'Privacy Settings', icon: ShieldCheck, bg: 'bg-[#FFFDD0]', color: 'text-[#800020]' },
+                                                { id: 'communication', label: 'Communication Settings', icon: Settings, bg: 'bg-[#FFFDD0]', color: 'text-[#800020]' },
+                                                { id: 'account_settings', label: 'Account Settings', icon: User, bg: 'bg-[#FFFDD0]', color: 'text-[#800020]' }
+                                            ].map((item) => (
+                                                <button
+                                                    key={item.id}
+                                                    type="button"
+                                                    onClick={() => setActiveTab(item.id)}
+                                                    className="w-full flex items-center gap-4 p-6 bg-white border border-gray-100 rounded-3xl hover:shadow-xl hover:border-[#D4AF37]/30 transition-all group text-left"
+                                                >
+                                                    <div className={`w-14 h-14 ${item.bg} ${item.color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                                                        <item.icon size={28} />
+                                                    </div>
+                                                    <span className="text-lg font-bold text-gray-800 flex-grow">{item.label}</span>
+                                                    <ChevronRight size={20} className="text-gray-300 group-hover:text-[#800020] transition-colors" />
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {/* PRIVACY SETTINGS TAB (Image 2) */}
                                     {activeTab === 'privacy' && (
-                                        <div className="space-y-6">
-                                            <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm">
-                                                <div className="flex items-center gap-3 mb-6">
-                                                    <div className="w-10 h-10 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
-                                                        <Image size={20} />
+                                        <div className="flex flex-col h-full bg-gray-50/30">
+                                            <div className="flex items-center gap-4 bg-[#800020] text-[#D4AF37] p-6 rounded-t-3xl shadow-lg z-10 sticky top-0">
+                                                <button onClick={() => setActiveTab('settings')} className="hover:scale-110 transition-transform"><ArrowLeft size={24} /></button>
+                                                <h3 className="text-xl font-bold tracking-tight">Privacy Settings</h3>
+                                            </div>
+
+                                            <div className="p-6 space-y-6 overflow-y-auto">
+                                                {/* Photo Privacy */}
+                                                <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-md hover:shadow-lg transition-shadow">
+                                                    <div className="flex items-center gap-4 mb-6">
+                                                        <div className="w-12 h-12 bg-red-50 rounded-2xl flex items-center justify-center text-red-500">
+                                                            <Image size={24} />
+                                                        </div>
+                                                        <div>
+                                                            <h3 className="text-base font-bold text-gray-900 leading-tight">Photo Privacy</h3>
+                                                            <p className="text-xs text-gray-400 font-medium">Control who can see your profile photos</p>
+                                                        </div>
                                                     </div>
-                                                    <div>
-                                                        <h3 className="text-sm font-bold text-gray-900 tracking-tight">Photo Privacy</h3>
-                                                        <p className="text-[10px] text-gray-500 font-medium">Control who can see your profile photos</p>
-                                                    </div>
-                                                </div>
-                                                <div className="space-y-3">
-                                                    {[
-                                                        { id: 'Visible to all', label: 'Visible to all (Recommended)' },
-                                                        { id: 'Visible to members I give access', label: 'Visible only to the members I give access to view' }
-                                                    ].map(option => (
-                                                        <label key={option.id} className={`flex items-center justify-between p-4 rounded-2xl border transition-all cursor-pointer ${formData.photoPrivacy === option.id ? 'bg-[#FFFDD0]/50 border-[#D4AF37]/30 ring-1 ring-[#D4AF37]/20' : 'bg-gray-50/50 border-gray-100 hover:bg-gray-50'}`}>
-                                                            <div className="flex items-center gap-3">
-                                                                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${formData.photoPrivacy === option.id ? 'border-[#800020]' : 'border-gray-300'}`}>
+                                                    <div className="space-y-4">
+                                                        {[
+                                                            { id: 'Visible to all', label: 'Visible to all (Recommended)' },
+                                                            { id: 'Visible to members I give access', label: 'Visible only to the members I give access to view' }
+                                                        ].map(option => (
+                                                            <label key={option.id} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-gray-50 border border-transparent hover:border-gray-100 transition-all cursor-pointer group">
+                                                                <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${formData.photoPrivacy === option.id ? 'border-[#800020] bg-[#800020]/5' : 'border-gray-200'}`}>
                                                                     {formData.photoPrivacy === option.id && <div className="w-2.5 h-2.5 bg-[#800020] rounded-full" />}
                                                                 </div>
-                                                                <span className={`text-[13px] font-bold ${formData.photoPrivacy === option.id ? 'text-[#800020]' : 'text-gray-600'}`}>{option.label}</span>
-                                                            </div>
-                                                            <input type="radio" name="photoPrivacy" value={option.id} checked={formData.photoPrivacy === option.id} onChange={handleChange} className="hidden" />
-                                                        </label>
-                                                    ))}
+                                                                <span className={`text-[15px] font-bold ${formData.photoPrivacy === option.id ? 'text-gray-900' : 'text-gray-500'}`}>{option.label}</span>
+                                                                <input type="radio" name="photoPrivacy" value={option.id} checked={formData.photoPrivacy === option.id} onChange={handleChange} className="hidden" />
+                                                            </label>
+                                                        ))}
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                            <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm">
-                                                <div className="flex items-center gap-3 mb-6">
-                                                    <div className="w-10 h-10 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600">
-                                                        <Sparkles size={20} />
+                                                {/* Horoscope Privacy */}
+                                                <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-md hover:shadow-lg transition-shadow">
+                                                    <div className="flex items-center gap-4 mb-6">
+                                                        <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-500">
+                                                            <Sparkles size={24} />
+                                                        </div>
+                                                        <div>
+                                                            <h3 className="text-base font-bold text-gray-900 leading-tight">Horoscope Privacy</h3>
+                                                            <p className="text-xs text-gray-400 font-medium">Manage visibility of your astrological details</p>
+                                                        </div>
                                                     </div>
-                                                    <div>
-                                                        <h3 className="text-sm font-bold text-gray-900 tracking-tight">Horoscope Privacy</h3>
-                                                        <p className="text-[10px] text-gray-500 font-medium">Manage visibility of your astrological details</p>
-                                                    </div>
-                                                </div>
-                                                <div className="space-y-3">
-                                                    {[
-                                                        { id: 'Visible to all', label: 'Visible to all (Recommended)' },
-                                                        { id: 'Visible to premium members', label: 'Visible only to premium members' },
-                                                        { id: 'Visible to members I give access', label: 'Visible only to the members I give access to view' }
-                                                    ].map(option => (
-                                                        <label key={option.id} className={`flex items-center justify-between p-4 rounded-2xl border transition-all cursor-pointer ${formData.horoscopePrivacy === option.id ? 'bg-[#FFFDD0]/50 border-[#D4AF37]/30 ring-1 ring-[#D4AF37]/20' : 'bg-gray-50/50 border-gray-100 hover:bg-gray-50'}`}>
-                                                            <div className="flex items-center gap-3">
-                                                                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${formData.horoscopePrivacy === option.id ? 'border-[#800020]' : 'border-gray-300'}`}>
+                                                    <div className="space-y-4">
+                                                        {[
+                                                            { id: 'Visible to all', label: 'Visible to all (Only premium members can view your horoscope)' },
+                                                            { id: 'Visible to members I give access', label: 'Visible only to the members I give access to view' }
+                                                        ].map(option => (
+                                                            <label key={option.id} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-gray-50 border border-transparent hover:border-gray-100 transition-all cursor-pointer group">
+                                                                <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${formData.horoscopePrivacy === option.id ? 'border-[#800020] bg-[#800020]/5' : 'border-gray-200'}`}>
                                                                     {formData.horoscopePrivacy === option.id && <div className="w-2.5 h-2.5 bg-[#800020] rounded-full" />}
                                                                 </div>
-                                                                <span className={`text-[13px] font-bold ${formData.horoscopePrivacy === option.id ? 'text-[#800020]' : 'text-gray-600'}`}>{option.label}</span>
-                                                            </div>
-                                                            <input type="radio" name="horoscopePrivacy" value={option.id} checked={formData.horoscopePrivacy === option.id} onChange={handleChange} className="hidden" />
-                                                        </label>
-                                                    ))}
+                                                                <span className={`text-[15px] font-bold ${formData.horoscopePrivacy === option.id ? 'text-gray-900' : 'text-gray-500'}`}>{option.label}</span>
+                                                                <input type="radio" name="horoscopePrivacy" value={option.id} checked={formData.horoscopePrivacy === option.id} onChange={handleChange} className="hidden" />
+                                                            </label>
+                                                        ))}
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                            <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm">
-                                                <div className="flex items-center gap-3 mb-6">
-                                                    <div className="w-10 h-10 bg-green-50 rounded-2xl flex items-center justify-center text-green-600">
-                                                        <Phone size={20} />
+                                                {/* Phone Number Privacy */}
+                                                <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-md hover:shadow-lg transition-shadow">
+                                                    <div className="flex items-center gap-4 mb-6">
+                                                        <div className="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center text-green-500">
+                                                            <Phone size={24} />
+                                                        </div>
+                                                        <div>
+                                                            <h3 className="text-base font-bold text-gray-900 leading-tight">Phone Number Privacy</h3>
+                                                            <p className="text-xs text-gray-400 font-medium">Control who can see your contact number</p>
+                                                        </div>
                                                     </div>
-                                                    <div>
-                                                        <h3 className="text-sm font-bold text-gray-900 tracking-tight">Phone Number Privacy</h3>
-                                                        <p className="text-[10px] text-gray-500 font-medium">Decide who can see your contact number</p>
-                                                    </div>
-                                                </div>
-                                                <div className="space-y-3">
-                                                    {[
-                                                        { id: 'Show to paid members', label: 'Show mobile number only to paid members' },
-                                                        { id: 'Show to whom I grant access', label: 'Show mobile number only to whom I grant access to view' }
-                                                    ].map(option => (
-                                                        <label key={option.id} className={`flex items-center justify-between p-4 rounded-2xl border transition-all cursor-pointer ${formData.phonePrivacy === option.id ? 'bg-[#FFFDD0]/50 border-[#D4AF37]/30 ring-1 ring-[#D4AF37]/20' : 'bg-gray-50/50 border-gray-100 hover:bg-gray-50'}`}>
-                                                            <div className="flex items-center gap-3">
-                                                                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${formData.phonePrivacy === option.id ? 'border-[#800020]' : 'border-gray-300'}`}>
+                                                    <div className="space-y-4">
+                                                        {[
+                                                            { id: 'Show to paid members', label: 'Show mobile number only to paid members' },
+                                                            { id: 'Show to whom I grant access', label: 'Show mobile number only to whom I grant access to view' }
+                                                        ].map(option => (
+                                                            <label key={option.id} className="flex items-center gap-4 p-4 rounded-2xl hover:bg-gray-50 border border-transparent hover:border-gray-100 transition-all cursor-pointer group">
+                                                                <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${formData.phonePrivacy === option.id ? 'border-[#800020] bg-[#800020]/5' : 'border-gray-200'}`}>
                                                                     {formData.phonePrivacy === option.id && <div className="w-2.5 h-2.5 bg-[#800020] rounded-full" />}
                                                                 </div>
-                                                                <span className={`text-[13px] font-bold ${formData.phonePrivacy === option.id ? 'text-[#800020]' : 'text-gray-600'}`}>{option.label}</span>
-                                                            </div>
-                                                            <input type="radio" name="phonePrivacy" value={option.id} checked={formData.phonePrivacy === option.id} onChange={handleChange} className="hidden" />
-                                                        </label>
-                                                    ))}
+                                                                <span className={`text-[15px] font-bold ${formData.phonePrivacy === option.id ? 'text-gray-900' : 'text-gray-500'}`}>{option.label}</span>
+                                                                <input type="radio" name="phonePrivacy" value={option.id} checked={formData.phonePrivacy === option.id} onChange={handleChange} className="hidden" />
+                                                            </label>
+                                                        ))}
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                            <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm">
-                                                <div className="flex items-center gap-3 mb-6">
-                                                    <div className="w-10 h-10 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-600">
-                                                        <Eye size={20} />
-                                                    </div>
-                                                    <div>
-                                                        <h3 className="text-sm font-bold text-gray-900 tracking-tight">Profile View Settings</h3>
-                                                        <p className="text-[10px] text-gray-500 font-medium">Control notifications for your profile activity</p>
-                                                    </div>
-                                                </div>
-                                                <div className="space-y-4">
-                                                    <div className="flex items-center justify-between p-2">
-                                                        <div>
-                                                            <h4 className="text-[13px] font-bold text-gray-700">Shortlist Notifications</h4>
-                                                            <p className="text-[10px] text-gray-400">Let other members know that you have shortlisted their profile</p>
+                                                {/* Profile View Settings */}
+                                                <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-md hover:shadow-lg transition-shadow">
+                                                    <div className="flex items-center gap-4 mb-6">
+                                                        <div className="w-12 h-12 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-500">
+                                                            <User size={24} />
                                                         </div>
-                                                        <button type="button" onClick={() => setFormData({ ...formData, showShortlist: !formData.showShortlist })} className={`w-12 h-6 rounded-full transition-all relative ${formData.showShortlist ? 'bg-[#800020]' : 'bg-gray-200'}`}>
-                                                            <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${formData.showShortlist ? 'right-1' : 'left-1'}`} />
-                                                        </button>
-                                                    </div>
-                                                    <div className="flex items-center justify-between p-2 border-t border-gray-50 pt-4">
                                                         <div>
-                                                            <h4 className="text-[13px] font-bold text-gray-700">Profile View Notifications</h4>
-                                                            <p className="text-[10px] text-gray-400">Let other members know that you have viewed their profile</p>
+                                                            <h3 className="text-base font-bold text-gray-900 leading-tight">Profile View Settings</h3>
+                                                            <p className="text-xs text-gray-400 font-medium">Manage how others see your activity</p>
                                                         </div>
-                                                        <button type="button" onClick={() => setFormData({ ...formData, showViewed: !formData.showViewed })} className={`w-12 h-6 rounded-full transition-all relative ${formData.showViewed ? 'bg-[#800020]' : 'bg-gray-200'}`}>
-                                                            <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${formData.showViewed ? 'right-1' : 'left-1'}`} />
-                                                        </button>
+                                                    </div>
+                                                    <div className="space-y-4">
+                                                        <div className="flex items-center justify-between p-4 rounded-2xl bg-gray-50/50">
+                                                            <div>
+                                                                <h4 className="text-[14px] font-bold text-gray-800">Shortlist Notifications</h4>
+                                                                <p className="text-[11px] text-gray-400 font-medium">Let members know you shortlisted them</p>
+                                                            </div>
+                                                            <button type="button" onClick={() => setFormData({ ...formData, showShortlist: !formData.showShortlist })} className={`w-12 h-6 rounded-full transition-all relative ${formData.showShortlist ? 'bg-[#800020]' : 'bg-gray-300'}`}>
+                                                                <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-all ${formData.showShortlist ? 'right-0.5' : 'left-0.5'}`} />
+                                                            </button>
+                                                        </div>
+                                                        <div className="flex items-center justify-between p-4 rounded-2xl bg-gray-50/50">
+                                                            <div>
+                                                                <h4 className="text-[14px] font-bold text-gray-800">Profile View Alerts</h4>
+                                                                <p className="text-[11px] text-gray-400 font-medium">Let members know you viewed them</p>
+                                                            </div>
+                                                            <button type="button" onClick={() => setFormData({ ...formData, showViewed: !formData.showViewed })} className={`w-12 h-6 rounded-full transition-all relative ${formData.showViewed ? 'bg-[#800020]' : 'bg-gray-300'}`}>
+                                                                <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-all ${formData.showViewed ? 'right-0.5' : 'left-0.5'}`} />
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1493,31 +1521,42 @@ const EditProfile = ({ defaultTab }) => {
 
                                     {/* COMMUNICATION SETTINGS TAB */}
                                     {activeTab === 'communication' && (
-                                        <div className="space-y-6">
-                                            <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm">
-                                                <div className="flex items-center gap-3 mb-6">
-                                                    <div className="w-10 h-10 bg-yellow-50 rounded-2xl flex items-center justify-center text-yellow-600">
-                                                        <Bell size={20} />
-                                                    </div>
-                                                    <div>
-                                                        <h3 className="text-sm font-bold text-gray-900 tracking-tight">Alert Preferences</h3>
-                                                        <p className="text-[10px] text-gray-500 font-medium">How and when you want to be notified</p>
-                                                    </div>
-                                                </div>
-                                                <div className="space-y-6">
-                                                    <div>
-                                                        <h4 className="text-xs font-black text-gray-700 uppercase tracking-widest mb-4">Email Alerts</h4>
-                                                        <div className="space-y-3">
-                                                            {['Daily Matches', 'New Interests', 'Messages', 'News & Offers'].map(alert => (
-                                                                <label key={alert} className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer group">
-                                                                    <div className="w-5 h-5 rounded border-2 border-gray-200 flex items-center justify-center group-hover:border-[#800020]/30 transition-colors">
-                                                                        <input type="checkbox" className="hidden" defaultChecked />
-                                                                        <div className="w-3 h-3 bg-[#800020] rounded-sm opacity-100" />
-                                                                    </div>
-                                                                    <span className="text-sm font-bold text-gray-600">{alert}</span>
-                                                                </label>
-                                                            ))}
+                                        <div className="flex flex-col h-full bg-gray-50/30">
+                                            <div className="flex items-center gap-4 bg-[#800020] text-[#D4AF37] p-6 rounded-t-3xl shadow-lg z-10 sticky top-0">
+                                                <button onClick={() => setActiveTab('settings')} className="hover:scale-110 transition-transform"><ArrowLeft size={24} /></button>
+                                                <h3 className="text-xl font-bold tracking-tight">Communication Settings</h3>
+                                            </div>
+
+                                            <div className="p-6 space-y-6 overflow-y-auto">
+                                                <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-md">
+                                                    <div className="flex items-center gap-3 mb-6">
+                                                        <div className="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-500">
+                                                            <Bell size={24} />
                                                         </div>
+                                                        <div>
+                                                            <h3 className="text-lg font-bold text-gray-900 leading-tight">Notification Alerts</h3>
+                                                            <p className="text-xs text-gray-400 font-medium">Control how we contact you</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="space-y-6">
+                                                        {[
+                                                            { id: 'emailAlerts', label: 'Email Notifications', desc: 'Receive updates via your registered email', icon: '📧' },
+                                                            { id: 'whatsappAlerts', label: 'WhatsApp Notifications', desc: 'Get matches and interests on WhatsApp', icon: '💬' },
+                                                            { id: 'smsAlerts', label: 'SMS Notifications', desc: 'Alerts via text message', icon: '📱' }
+                                                        ].map((item) => (
+                                                            <div key={item.id} className="flex items-center justify-between p-4 rounded-2xl hover:bg-gray-50 transition-all">
+                                                                <div className="flex items-center gap-4">
+                                                                    <span className="text-2xl">{item.icon}</span>
+                                                                    <div>
+                                                                        <h4 className="text-[15px] font-bold text-gray-800">{item.label}</h4>
+                                                                        <p className="text-[11px] text-gray-400 font-medium">{item.desc}</p>
+                                                                    </div>
+                                                                </div>
+                                                                <button type="button" onClick={() => setFormData({ ...formData, [item.id]: !formData[item.id] })} className={`w-12 h-6 rounded-full transition-all relative ${formData[item.id] ? 'bg-[#800020]' : 'bg-gray-200'}`}>
+                                                                    <div className={`absolute top-0.5 w-5 h-5 bg-white rounded-full transition-all ${formData[item.id] ? 'right-0.5' : 'left-0.5'}`} />
+                                                                </button>
+                                                            </div>
+                                                        ))}
                                                     </div>
                                                 </div>
                                             </div>
@@ -1675,131 +1714,167 @@ const EditProfile = ({ defaultTab }) => {
                                         </div>
                                     )}
 
-                                    {/* ACCOUNT SETTINGS TAB */}
+                                    {/* ACCOUNT SETTINGS TAB (Image 3) */}
                                     {activeTab === 'account_settings' && (
-                                        <div className="space-y-6">
-                                            {isDeleting ? (
-                                                <div className="bg-white rounded-3xl p-6 md:p-8 border border-red-100 animate-in fade-in slide-in-from-bottom-4">
-                                                    <div className="flex items-center gap-4 mb-8">
-                                                        <button onClick={() => setIsDeleting(false)} className="p-2 hover:bg-gray-100 rounded-xl transition-colors"><ChevronLeft size={20} /></button>
-                                                        <h2 className="text-xl font-black text-red-600 uppercase tracking-widest">Delete Profile</h2>
-                                                    </div>
+                                        <div className="flex flex-col h-full bg-gray-50/30">
+                                            <div className="flex items-center gap-4 bg-[#800020] text-[#D4AF37] p-6 rounded-t-3xl shadow-lg z-10 sticky top-0">
+                                                <button onClick={() => setActiveTab('settings')} className="hover:scale-110 transition-transform"><ArrowLeft size={24} /></button>
+                                                <h3 className="text-xl font-bold tracking-tight">Account Settings</h3>
+                                            </div>
 
-                                                    <div className="bg-red-50/50 border border-red-100 rounded-2xl p-4 mb-8">
-                                                        <p className="text-[11px] text-red-600 font-bold text-center">Note: Once you delete your profile, it cannot be recovered.</p>
-                                                    </div>
+                                            <div className="p-6 space-y-6 overflow-y-auto">
+                                                {isDeleting ? (
+                                                    <div className="bg-white rounded-3xl p-6 md:p-8 border border-red-100 shadow-md">
+                                                        <div className="flex items-center gap-4 mb-8">
+                                                            <button onClick={() => setIsDeleting(false)} className="p-2 hover:bg-gray-100 rounded-xl transition-colors hover:scale-110"><ArrowLeft size={20} /></button>
+                                                            <h2 className="text-xl font-black text-[#800020] uppercase tracking-widest">Delete Profile</h2>
+                                                        </div>
 
-                                                    <p className="text-sm font-bold text-gray-700 mb-6 px-2">Please choose a reason for profile deletion.</p>
+                                                        <div className="bg-red-50/50 border border-[#800020]/10 rounded-2xl p-4 mb-8">
+                                                            <p className="text-[11px] text-[#800020] font-bold text-center">Note: Once you delete your profile, it cannot be recovered.</p>
+                                                        </div>
 
-                                                    <div className="space-y-3 mb-12">
-                                                        {[
-                                                            { id: 'married', label: 'MARRIED', group: true },
-                                                            { id: 'marriage_fixed', label: 'MARRIAGE FIXED', group: true },
-                                                            {
-                                                                id: 'other', label: 'OTHER REASONS', group: true, options: [
-                                                                    { id: 'search_later', label: 'Prefer to search later' },
-                                                                    { id: 'no_matches', label: 'Not getting enough matches' },
-                                                                    { id: 'not_specify', label: "I'll not specify" },
-                                                                    { id: 'costly', label: 'Very costly from milanamatrimony.com' }
-                                                                ]
-                                                            }
-                                                        ].map((item) => (
-                                                            <div key={item.id} className="space-y-2">
-                                                                {item.options ? (
-                                                                    <>
-                                                                        <div className="px-4 py-3 bg-gray-50 rounded-xl text-xs font-black text-gray-400 uppercase tracking-widest">{item.label}</div>
-                                                                        <div className="grid grid-cols-1 gap-2 pl-2">
-                                                                            {item.options.map((opt) => (
-                                                                                <label key={opt.id} className="flex items-center gap-4 p-4 hover:bg-gray-50 rounded-2xl border border-transparent hover:border-gray-100 transition-all cursor-pointer group">
-                                                                                    <input
-                                                                                        type="radio"
-                                                                                        name="delete_reason"
-                                                                                        checked={deleteReason === opt.label}
-                                                                                        onChange={() => setDeleteReason(opt.label)}
-                                                                                        className="w-5 h-5 accent-red-600"
-                                                                                    />
-                                                                                    <span className="text-sm font-medium text-gray-600 group-hover:text-gray-900">{opt.label}</span>
-                                                                                </label>
-                                                                            ))}
-                                                                        </div>
-                                                                    </>
-                                                                ) : (
-                                                                    <label className="flex items-center gap-4 p-5 bg-white border border-gray-100 rounded-2xl hover:border-red-200 transition-all cursor-pointer group shadow-sm">
-                                                                        <input
-                                                                            type="radio"
-                                                                            name="delete_reason"
-                                                                            checked={deleteReason === item.label}
-                                                                            onChange={() => setDeleteReason(item.label)}
-                                                                            className="w-5 h-5 accent-red-600"
-                                                                        />
-                                                                        <span className="text-base font-black text-gray-900 group-hover:text-red-600 italic font-serif uppercase tracking-widest">{item.label}</span>
-                                                                        <ChevronDown size={16} className="ml-auto text-gray-300" />
-                                                                    </label>
-                                                                )}
-                                                            </div>
-                                                        ))}
-                                                    </div>
+                                                        <p className="text-sm font-bold text-gray-700 mb-6 px-2">Please choose a reason for profile deletion.</p>
 
-                                                    <div className="grid grid-cols-2 gap-4 mb-12">
-                                                        <button
-                                                            onClick={confirmDelete}
-                                                            className="py-4 bg-red-600 text-white rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] shadow-lg shadow-red-200 hover:bg-red-700 transition-all active:scale-95"
-                                                        >
-                                                            Delete Account
-                                                        </button>
-                                                        <button
-                                                            onClick={() => setIsDeleting(false)}
-                                                            className="py-4 bg-gray-100 text-gray-600 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] hover:bg-gray-200 transition-all"
-                                                        >
-                                                            Cancel
-                                                        </button>
-                                                    </div>
+                                                        <div className="space-y-3 mb-12">
+                                                            {[
+                                                                { id: 'married', label: 'MARRIED', group: true },
+                                                                { id: 'marriage_fixed', label: 'MARRIAGE FIXED', group: true },
+                                                                {
+                                                                    id: 'other', label: 'OTHER REASONS', group: true, options: [
+                                                                        { id: 'search_later', label: 'Prefer to search later' },
+                                                                        { id: 'no_matches', label: 'Not getting enough matches' },
+                                                                        { id: 'not_specify', label: "I'll not specify" },
+                                                                        { id: 'costly', label: 'Very costly from milanamatrimony.com' }
+                                                                    ]
+                                                                }
+                                                            ].map((item) => (
+                                                                <div key={item.id} className="space-y-2">
+                                                                    {item.options ? (
+                                                                        <>
+                                                                            <div className="px-4 py-3 bg-gray-50 rounded-xl text-xs font-black text-gray-400 uppercase tracking-widest">{item.label}</div>
+                                                                            <div className="grid grid-cols-1 gap-2 pl-2">
+                                                                                {item.options.map((opt) => (
+                                                                                    <label key={opt.id} className="flex items-center gap-4 p-4 hover:bg-gray-50 rounded-2xl border border-transparent hover:border-gray-100 transition-all cursor-pointer group">
+                                                                                        <input
+                                                                                            type="radio"
+                                                                                            name="delete_reason"
+                                                                                            checked={deleteReason === opt.label}
+                                                                                            onChange={() => setDeleteReason(opt.label)}
+                                                                                            className="w-5 h-5 accent-[#800020]"
+                                                                                        />
+                                                                                        <span className="text-sm font-medium text-gray-600 group-hover:text-gray-900">{opt.label}</span>
+                                                                                    </label>
+                                                                                ))}
+                                                                            </div>
+                                                                        </>
+                                                                    ) : (
+                                                                        <label className="flex items-center gap-4 p-5 bg-white border border-gray-100 rounded-2xl hover:border-[#800020]/20 transition-all cursor-pointer group shadow-sm">
+                                                                            <input
+                                                                                type="radio"
+                                                                                name="delete_reason"
+                                                                                checked={deleteReason === item.label}
+                                                                                onChange={() => setDeleteReason(item.label)}
+                                                                                className="w-5 h-5 accent-[#800020]"
+                                                                            />
+                                                                            <span className="text-base font-black text-gray-900 group-hover:text-[#800020] italic font-serif uppercase tracking-widest">{item.label}</span>
+                                                                            <ChevronDown size={16} className="ml-auto text-gray-300" />
+                                                                        </label>
+                                                                    )}
+                                                                </div>
+                                                            ))}
+                                                        </div>
 
-                                                    {/* Promo Section */}
-                                                    <div className="border-t border-gray-100 pt-8">
-                                                        <h3 className="text-xs font-black text-gray-400 uppercase tracking-widest mb-6 px-2">Our Wedding Services</h3>
-                                                        <div className="bg-gradient-to-br from-white to-orange-50/30 border border-orange-100 rounded-[2.5rem] p-6 shadow-xl relative overflow-hidden">
-                                                            <div className="relative z-10">
-                                                                <h4 className="text-lg font-serif font-black italic text-[#800020] mb-1">WeddingBazaar.com</h4>
-                                                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-4">India's No.1 wedding services platform</p>
-                                                                <ul className="space-y-2 mb-6">
-                                                                    <li className="flex items-start gap-2 text-[11px] text-gray-600 font-medium">
-                                                                        <span className="text-orange-500 mt-0.5">✓</span>
-                                                                        1000s of Photographers, Makeup artists & more
-                                                                    </li>
-                                                                </ul>
-                                                                <button className="px-6 py-2.5 bg-orange-500 text-white text-[10px] font-black uppercase tracking-widest rounded-xl shadow-lg shadow-orange-200">Find Vendors</button>
-                                                            </div>
-                                                            <div className="absolute right-0 bottom-0 w-32 h-32 opacity-20 bg-[url('https://cdn-icons-png.flaticon.com/512/3667/3667231.png')] bg-contain bg-no-repeat bg-right-bottom"></div>
+                                                        <div className="grid grid-cols-2 gap-4">
+                                                            <button
+                                                                onClick={confirmDelete}
+                                                                className="py-4 bg-[#800020] text-[#D4AF37] rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] shadow-lg shadow-[#800020]/20 hover:bg-[#600318] transition-all active:scale-95"
+                                                            >
+                                                                Delete Account
+                                                            </button>
+                                                            <button
+                                                                onClick={() => setIsDeleting(false)}
+                                                                className="py-4 bg-gray-100 text-gray-600 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] hover:bg-gray-200 transition-all"
+                                                            >
+                                                                Cancel
+                                                            </button>
                                                         </div>
                                                     </div>
-                                                </div>
-                                            ) : (
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                    {[
-                                                        { icon: UserX, label: 'Blocked Profiles', tab: 'blocked_profiles', color: 'text-red-600', bg: 'bg-red-50' },
-                                                        { icon: Trash2, label: 'Ignored Profiles', tab: 'ignored_profiles', color: 'text-orange-600', bg: 'bg-orange-50' },
-                                                        { icon: Phone, label: 'Call Preferences', tab: 'communication', color: 'text-blue-600', bg: 'bg-blue-50' },
-                                                        { icon: Lock, label: 'Change Password', tab: 'change_password', color: 'text-purple-600', bg: 'bg-purple-50' },
-                                                        { icon: Shield, label: 'Deactivate/Hide Account', action: 'deactivate', color: 'text-gray-600', bg: 'bg-gray-50' },
-                                                        { icon: Trash2, label: 'Delete Account', action: 'delete', color: 'text-red-500', bg: 'bg-red-50/50' }
-                                                    ].map((item, idx) => (
-                                                        <button key={idx} type="button" onClick={() => item.tab ? setActiveTab(item.tab) : (item.action ? handleAccountAction(item.action) : null)} className="flex items-center gap-4 p-5 bg-white border border-gray-100 rounded-3xl hover:shadow-lg hover:border-[#D4AF37]/30 transition-all group text-left">
-                                                            <div className={`w-12 h-12 ${item.bg} ${item.color} rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform`}><item.icon size={24} /></div>
-                                                            <div><h4 className="text-sm font-bold text-gray-900">{item.label}</h4><p className="text-[10px] text-gray-400 font-medium">Manage your {item.label.toLowerCase()}</p></div>
-                                                            <ChevronRight size={16} className="ml-auto text-gray-300 group-hover:text-[#800020] transition-colors" />
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                            )}
+                                                ) : (
+                                                    <div className="flex flex-col bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-md">
+                                                        {[
+                                                            { icon: UserX, label: 'Blocked Profiles', tab: 'blocked_profiles', color: 'text-[#800020]' },
+                                                            { icon: XIcon, label: 'Ignored Profiles', tab: 'ignored_profiles', color: 'text-[#800020]' },
+                                                            { icon: Phone, label: 'Call Preferences', tab: 'communication', color: 'text-[#800020]' },
+                                                            { icon: Lock, label: 'Change Password', tab: 'change_password', color: 'text-[#800020]' },
+                                                            { icon: LogOut, label: 'Logout', id: 'logout', color: 'text-[#800020]' },
+                                                            { icon: User, label: 'Deactivate/Hide Account', action: 'deactivate', color: 'text-[#800020]' },
+                                                            { icon: Trash2, label: 'Delete Account', action: 'delete', color: 'text-[#800020]' }
+                                                        ].map((item, idx) => (
+                                                            <button
+                                                                key={idx}
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    if (item.id === 'logout') {
+                                                                        logout();
+                                                                        navigate('/login');
+                                                                        return;
+                                                                    }
+                                                                    if (item.tab) setActiveTab(item.tab);
+                                                                    else if (item.action) handleAccountAction(item.action);
+                                                                }}
+                                                                className="flex items-center gap-4 py-5 px-6 border-b border-gray-50 hover:bg-gray-50 transition-all group text-left"
+                                                            >
+                                                                <div className={`${item.color} group-hover:scale-110 transition-transform`}><item.icon size={22} /></div>
+                                                                <span className="text-[15px] font-bold text-gray-800 flex-grow">{item.label}</span>
+                                                                <ChevronRight size={18} className="text-gray-300 group-hover:text-[#800020] transition-transform group-hover:translate-x-1" />
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                     )}
 
                                     {/* LEGACY PLACEHOLDERS (Restore if needed, but replaced by above) */}
                                     {activeTab === 'change_password' && (
-                                        <div className="space-y-4">
-                                            <FormRow label="Current Password"><input type="password" placeholder="Enter current password" disabled className="form-input-premium max-w-md opacity-70 cursor-not-allowed" /></FormRow>
-                                            <FormRow label="New Password"><input type="password" placeholder="Enter new password" disabled className="form-input-premium max-w-md opacity-70 cursor-not-allowed" /></FormRow>
+                                        <div className="flex flex-col h-full bg-gray-50/30">
+                                            <div className="flex items-center gap-4 bg-[#800020] text-[#D4AF37] p-6 rounded-t-3xl shadow-lg z-10 sticky top-0">
+                                                <button onClick={() => setActiveTab('account_settings')} className="hover:scale-110 transition-transform"><ArrowLeft size={24} /></button>
+                                                <h3 className="text-xl font-bold tracking-tight">Change Password</h3>
+                                            </div>
+
+                                            <div className="p-6 space-y-6 overflow-y-auto">
+                                                <div className="bg-white border border-gray-100 rounded-3xl p-8 shadow-md">
+                                                    <div className="flex items-center gap-4 mb-8">
+                                                        <div className="w-12 h-12 bg-maroon-50 rounded-2xl flex items-center justify-center text-[#800020]">
+                                                            <Lock size={24} />
+                                                        </div>
+                                                        <div>
+                                                            <h3 className="text-lg font-bold text-gray-900">Update Securely</h3>
+                                                            <p className="text-xs text-gray-400">Ensure your account stays protected</p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="space-y-6">
+                                                        <FormRow label="Current Password">
+                                                            <input type="password" placeholder="Enter current password" class="form-input-premium max-w-md" />
+                                                        </FormRow>
+                                                        <FormRow label="New Password">
+                                                            <input type="password" placeholder="Enter new password" class="form-input-premium max-w-md" />
+                                                        </FormRow>
+                                                        <FormRow label="Confirm Password">
+                                                            <input type="password" placeholder="Confirm new password" class="form-input-premium max-w-md" />
+                                                        </FormRow>
+                                                    </div>
+
+                                                    <div className="mt-10 flex justify-end">
+                                                        <button type="button" className="px-10 py-4 bg-[#800020] text-[#D4AF37] rounded-xl font-bold uppercase tracking-widest text-xs shadow-lg hover:bg-[#600318] transition-all">
+                                                            Update Password
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     )}
                                 </motion.div>

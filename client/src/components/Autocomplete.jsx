@@ -40,7 +40,7 @@ const Autocomplete = ({
         } else {
             const filtered = options.filter(option =>
                 option.toLowerCase().includes(search.toLowerCase())
-            ).slice(0, 8); // Limit to top 8 suggestions
+            ).slice(0, 100); // Increased limit to show more suggestions
             setFilteredOptions(filtered);
         }
     }, [search, options]);

@@ -4,12 +4,15 @@ const {
     authUser, registerUser, getUserProfile, updateUserProfile,
     getUsers, sendInterest, toggleFavorite, getAllUsersAdmin, toggleApproval,
     getDashboardStats, getFavorites, getInterestsReceived, getInterestsSent,
-    blockUser, ignoreUser, deleteUserAccount
+    blockUser, ignoreUser, deleteUserAccount,
+    forgotPassword, resetPassword
 } = require('../controllers/userController');
 const { protect, admin } = require('../middleware/authMiddleware');
 
 router.post('/', registerUser);
 router.post('/login', authUser);
+router.post('/forgot-password', forgotPassword);
+router.post('/reset-password/:token', resetPassword);
 router.route('/profile').get(protect, getUserProfile).put(protect, updateUserProfile);
 router.route('/').get(protect, getUsers);
 router.post('/interest/:id', protect, sendInterest);

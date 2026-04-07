@@ -77,7 +77,7 @@ const Login = () => {
                     </div>
 
                     <div className="flex justify-end pt-1">
-                        <button type="button" className="text-[10px] font-bold text-[#D4AF37] uppercase tracking-widest hover:text-[#800020] transition-colors">Forgot Password?</button>
+                        <Link to="/forgot-password" size="sm" className="text-[10px] font-bold text-[#D4AF37] uppercase tracking-widest hover:text-[#800020] transition-colors">Forgot Password?</Link>
                     </div>
 
                     <AnimatePresence>

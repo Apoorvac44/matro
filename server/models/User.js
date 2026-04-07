@@ -71,6 +71,8 @@ const User = sequelize.define('User', {
     ignoredProfiles: { type: DataTypes.JSON, defaultValue: [] },
     isDeactivated: { type: DataTypes.BOOLEAN, defaultValue: false },
     deactivationReason: { type: DataTypes.STRING },
+    resetPasswordToken: { type: DataTypes.STRING },
+    resetPasswordExpires: { type: DataTypes.DATE },
 }, {
     hooks: {
         beforeSave: async (user) => {

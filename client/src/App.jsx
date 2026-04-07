@@ -21,6 +21,8 @@ import Notifications from './pages/Notifications';
 import SearchPage from './pages/Search';
 import SuccessStories from './pages/SuccessStories';
 import Help from './pages/Help';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 // Admin Imports
 import AdminLayout from './components/admin/AdminLayout';
@@ -76,8 +78,10 @@ function App() {
             {/* Redirects to Edit Profile Tabs */}
             <Route path="/edit-preferences" element={<ProtectedRoute><EditProfile defaultTab="partner_pref" /></ProtectedRoute>} />
             <Route path="/horoscope" element={<ProtectedRoute><EditProfile defaultTab="horoscope" /></ProtectedRoute>} />
-            <Route path="/settings" element={<ProtectedRoute><EditProfile defaultTab="privacy" /></ProtectedRoute>} />
+            <Route path="/settings" element={<ProtectedRoute><EditProfile defaultTab="settings" /></ProtectedRoute>} />
             <Route path="/membership" element={<ProtectedRoute><EditProfile defaultTab="membership" /></ProtectedRoute>} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
           </Route>
 
           {/* Admin Routes */}

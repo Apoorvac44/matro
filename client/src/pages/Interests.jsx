@@ -41,6 +41,8 @@ const Interests = () => {
         { id: 'sent_pending', label: 'Pending', count: interests.sent.filter(i => i.status === 'pending').length, type: 'item' },
         { id: 'sent_accepted', label: 'Accepted / replied', count: interests.sent.filter(i => i.status === 'accepted').length, type: 'item' },
         { id: 'sent_declined', label: 'Declined', count: interests.sent.filter(i => i.status === 'declined').length, type: 'item' },
+        { id: 'Ignored', type: 'header', className: 'mt-8' },
+        { id: 'sent_ignored', label: 'Ignored Profiles', count: interests.sent.filter(i => i.status === 'ignored').length, type: 'item' },
     ];
 
     const getFilteredInterests = () => {
@@ -83,7 +85,7 @@ const Interests = () => {
                             { id: 'received_pending', label: 'Pending' },
                             { id: 'received_accepted', label: 'Accepted' },
                             { id: 'sent_all', label: `Sent (${interests.sent.length})` },
-                            { id: 'sent_pending', label: 'Sent Pending' },
+                            { id: 'sent_ignored', label: `Ignored (${interests.sent.filter(i => i.status === 'ignored').length})` },
                         ].map(t => (
                             <button
                                 key={t.id}
@@ -102,10 +104,12 @@ const Interests = () => {
                         <div className="flex items-center justify-between mb-4">
                             <div>
                                 <h1 className="text-2xl font-black text-gray-900 uppercase tracking-tight flex items-center gap-3">
-                                    {activeTab.includes('received') ? 'All interests received' : 'All interests sent'}
+                                    {activeTab === 'sent_ignored' ? 'Ignored Profiles' : activeTab.includes('received') ? 'All interests received' : 'All interests sent'}
                                     <span className="text-gray-400 font-bold">({filteredList.length})</span>
                                 </h1>
-                                <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mt-1">Interests and responses from members</p>
+                                <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mt-1">
+                                    {activeTab === 'sent_ignored' ? 'Profiles you have moved to ignore list' : 'Interests and responses from members'}
+                                </p>
                             </div>
                         </div>
 
@@ -218,6 +222,8 @@ const InterestCard = ({ interest, type, onStatusUpdate }) => {
                                 <span className="text-orange-500">Wait for response</span>
                             ) : interest.status === 'accepted' ? (
                                 <span className="text-green-600 flex items-center gap-2">You accepted interest <Check size={12} /></span>
+                            ) : interest.status === 'ignored' ? (
+                                <span className="text-gray-400">You ignored this profile</span>
                             ) : (
                                 <span className="text-gray-400">You declined interest • {new Date(interest.updatedAt).toLocaleDateString()}</span>
                             )}

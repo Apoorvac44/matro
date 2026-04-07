@@ -31,8 +31,12 @@ const Explore = () => {
         citizenship: 'Any',
         countryLivingIn: 'Any',
         // Basic Details
-        age: '23 Yrs - 30 Yrs',
-        height: "4'9\" - 5'9\"",
+        ageMin: '23',
+        ageMax: '30',
+        heightMin: "4'9\"",
+        heightMax: "5'9\"",
+        weightMin: '40',
+        weightMax: '150',
         profileCreatedBy: 'Any',
         maritalStatus: 'Never Married',
         motherTongue: 'Kannada',
@@ -46,9 +50,7 @@ const Explore = () => {
         drinkingHabits: "Doesn't Matter",
         smokingHabits: "Doesn't Matter",
         // Family Details
-        familyStatus: 'Any',
         familyType: 'Any',
-        familyValue: 'Any',
         // Recently created / Type
         profileCreatedDate: 'All', // 'Today', 'Last 3 days', 'One week', 'One month'
         mutualMatches: false,
@@ -78,10 +80,39 @@ const Explore = () => {
     };
 
     let derivedProfiles = profiles.filter(profile => {
+        // Exclude ignored profiles
+        // (This would normally be handled by the API, but we mimic it here)
+
         if (filters.maritalStatus !== 'Any') {
             const isMatch = profile.maritalStatus?.toLowerCase() === filters.maritalStatus.toLowerCase();
             if (filters.maritalStatus === 'Never Married' && profile.maritalStatus !== 'Single' && profile.maritalStatus !== 'Never Married') return false;
         }
+
+        // Age filtering
+        if (profile.age) {
+            if (parseInt(profile.age) < parseInt(filters.ageMin)) return false;
+            if (parseInt(profile.age) > parseInt(filters.ageMax)) return false;
+        }
+
+        // Height filtering (Simplified conversion for comparison)
+        const parseHeight = (h) => {
+            if (!h) return 0;
+            const match = h.match(/(\d+)'(\d+)/);
+            if (match) return parseInt(match[1]) * 12 + parseInt(match[2]);
+            return parseInt(h) || 0;
+        };
+        const pHeight = parseHeight(profile.height);
+        if (pHeight > 0) {
+            if (pHeight < parseHeight(filters.heightMin)) return false;
+            if (pHeight > parseHeight(filters.heightMax)) return false;
+        }
+
+        // Weight filtering
+        if (profile.weight) {
+            if (parseInt(profile.weight) < parseInt(filters.weightMin)) return false;
+            if (parseInt(profile.weight) > parseInt(filters.weightMax)) return false;
+        }
+
         if (filters.occupation !== 'Any' && profile.profession) {
             if (!profile.profession.toLowerCase().includes(filters.occupation.toLowerCase()) && filters.occupation !== 'Other') return false;
         }
@@ -194,6 +225,38 @@ const Explore = () => {
                         {value}
                     </span>
                     <Search size={12} className="text-[#800020] opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+                </div>
+            </div>
+        );
+    };
+
+    const MinMaxFilterRow = ({ label, minValue, maxValue, minKey, maxKey, options }) => {
+        return (
+            <div className="px-4 py-4 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
+                <div className="flex items-center justify-between mb-2">
+                    <span className="text-[13px] text-gray-800 font-medium">{label}</span>
+                </div>
+                <div className="flex items-center gap-3">
+                    <div className="flex-1 space-y-1">
+                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Min</p>
+                        <select
+                            value={minValue}
+                            onChange={(e) => updateFilter(minKey, e.target.value)}
+                            className="w-full bg-white border border-gray-200 rounded text-[12px] p-1.5 outline-none focus:ring-1 focus:ring-[#800020]/20 text-gray-900 font-medium cursor-pointer"
+                        >
+                            {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                        </select>
+                    </div>
+                    <div className="flex-1 space-y-1">
+                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Max</p>
+                        <select
+                            value={maxValue}
+                            onChange={(e) => updateFilter(maxKey, e.target.value)}
+                            className="w-full bg-white border border-gray-200 rounded text-[12px] p-1.5 outline-none focus:ring-1 focus:ring-[#800020]/20 text-gray-900 font-medium cursor-pointer"
+                        >
+                            {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                        </select>
+                    </div>
                 </div>
             </div>
         );
@@ -367,8 +430,12 @@ const Explore = () => {
                                     onClick={() => setFilters({
                                         citizenship: 'Any',
                                         countryLivingIn: 'Any',
-                                        age: '23 Yrs - 30 Yrs',
-                                        height: "4'9\" - 5'9\"",
+                                        ageMin: '18',
+                                        ageMax: '70',
+                                        heightMin: "4'0\"",
+                                        heightMax: "7'0\"",
+                                        weightMin: '40',
+                                        weightMax: '150',
                                         profileCreatedBy: 'Any',
                                         maritalStatus: 'Never Married',
                                         motherTongue: 'Kannada',
@@ -379,9 +446,7 @@ const Explore = () => {
                                         eatingHabits: 'Any',
                                         drinkingHabits: "Doesn't Matter",
                                         smokingHabits: "Doesn't Matter",
-                                        familyStatus: 'Any',
                                         familyType: 'Any',
-                                        familyValue: 'Any',
                                         profileCreatedDate: 'All',
                                         mutualMatches: false,
                                         photosOnly: false
@@ -397,8 +462,30 @@ const Explore = () => {
                                     <AutocompleteFilterRow label="Country Living In" value={filters.countryLivingIn} filterKey="countryLivingIn" />
                                 </FilterSection>
                                 <FilterSection title="Basic Details">
-                                    <EditableFilterRow label="Age" value={filters.age} filterKey="age" options={['18 Yrs - 25 Yrs', '23 Yrs - 30 Yrs', '28 Yrs - 35 Yrs', '35 Yrs - 45 Yrs', 'Any']} />
-                                    <EditableFilterRow label="Height" value={filters.height} filterKey="height" options={["4'0\" - 4'9\"", "4'9\" - 5'9\"", "5'9\" - 6'3\"", "Any"]} />
+                                    <MinMaxFilterRow
+                                        label="Age"
+                                        minValue={filters.ageMin}
+                                        maxValue={filters.ageMax}
+                                        minKey="ageMin"
+                                        maxKey="ageMax"
+                                        options={Array.from({ length: 53 }, (_, i) => (i + 18).toString())}
+                                    />
+                                    <MinMaxFilterRow
+                                        label="Height"
+                                        minValue={filters.heightMin}
+                                        maxValue={filters.heightMax}
+                                        minKey="heightMin"
+                                        maxKey="heightMax"
+                                        options={["4'0\"", "4'1\"", "4'2\"", "4'3\"", "4'4\"", "4'5\"", "4'6\"", "4'7\"", "4'8\"", "4'9\"", "4'10\"", "4'11\"", "5'0\"", "5'1\"", "5'2\"", "5'3\"", "5'4\"", "5'5\"", "5'6\"", "5'7\"", "5'8\"", "5'9\"", "5'10\"", "5'11\"", "6'0\"", "6'1\"", "6'2\"", "6'3\"", "6'4\"", "6'5\"", "6'6\"", "6'7\"", "6'8\"", "6'9\"", "6'10\"", "6'11\"", "7'0\""]}
+                                    />
+                                    <MinMaxFilterRow
+                                        label="Weight (kg)"
+                                        minValue={filters.weightMin}
+                                        maxValue={filters.weightMax}
+                                        minKey="weightMin"
+                                        maxKey="weightMax"
+                                        options={Array.from({ length: 111 }, (_, i) => (i + 40).toString())}
+                                    />
                                     <EditableFilterRow label="Profile created by" value={filters.profileCreatedBy} filterKey="profileCreatedBy" options={['Self', 'Parent', 'Sibling', 'Relative', 'Any']} />
                                     <EditableFilterRow label="Marital Status" value={filters.maritalStatus} filterKey="maritalStatus" options={['Never Married', 'Divorced', 'Widowed', 'Awaiting Divorce', 'Any']} />
                                     <EditableFilterRow label="Mother Tongue" value={filters.motherTongue} filterKey="motherTongue" options={['Kannada', 'Hindi', 'Telugu', 'Tamil', 'English', 'Any']} />
@@ -415,9 +502,7 @@ const Explore = () => {
                                     <EditableFilterRow label="Smoking Habits" value={filters.smokingHabits} filterKey="smokingHabits" options={['No', 'Occasionally', 'Yes', "Doesn't Matter"]} />
                                 </FilterSection>
                                 <FilterSection title="Family Details">
-                                    <EditableFilterRow label="Family Status" value={filters.familyStatus} filterKey="familyStatus" options={['Middle Class', 'Upper Middle Class', 'Rich/Affluent', 'Any']} />
                                     <EditableFilterRow label="Family Type" value={filters.familyType} filterKey="familyType" options={['Joint', 'Nuclear', 'Any']} />
-                                    <EditableFilterRow label="Family Value" value={filters.familyValue} filterKey="familyValue" options={['Orthodox', 'Traditional', 'Moderate', 'Liberal', 'Any']} />
                                 </FilterSection>
                             </div>
                             <div className="absolute bottom-0 left-0 w-full bg-white border-t border-gray-200 px-4 py-4 shrink-0 shadow-lg z-10">

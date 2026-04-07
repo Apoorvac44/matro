@@ -431,7 +431,88 @@ const toggleApproval = async (req, res) => {
     res.json({ message: user.isApproved ? 'User Approved' : 'User Blocked', isApproved: user.isApproved });
 };
 
+const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const user = await User.findOne({ where: { email } });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found with this email' });
+        }
+
+        // Generate reset token
+        const resetToken = require('crypto').randomBytes(32).toString('hex');
+        const hashedToken = require('crypto').createHash('sha256').update(resetToken).digest('hex');
+
+        user.resetPasswordToken = hashedToken;
+        user.resetPasswordExpires = Date.now() + 30 * 60 * 1000; // 30 minutes
+
+        await user.save();
+
+        // Send email
+        const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password/${resetToken}`;
+        const sendEmail = require('../utils/sendEmail');
+
+        const message = `You are receiving this email because you (or someone else) have requested the reset of a password. Please make a put request to: \n\n ${resetUrl}`;
+        const html = `
+            <div style="font-family: sans-serif; padding: 20px; color: #333;">
+                <h2 style="color: #800020;">Password Reset Request</h2>
+                <p>You requested a password reset for your Milana Matrimony account.</p>
+                <p>Please click the button below to reset your password. This link is valid for 30 minutes.</p>
+                <a href="${resetUrl}" style="display: inline-block; padding: 12px 24px; background-color: #800020; color: #D4AF37; text-decoration: none; border-radius: 8px; font-weight: bold;">Reset Password</a>
+                <p style="margin-top: 20px; font-size: 12px; color: #666;">If you did not request this, please ignore this email.</p>
+            </div>
+        `;
+
+        try {
+            await sendEmail({
+                email: user.email,
+                subject: 'Password Reset Request',
+                message,
+                html
+            });
+            res.json({ message: 'Email sent' });
+        } catch (error) {
+            user.resetPasswordToken = null;
+            user.resetPasswordExpires = null;
+            await user.save();
+            console.error("Email send error:", error);
+            res.status(500).json({ message: 'Email could not be sent' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+const resetPassword = async (req, res) => {
+    try {
+        const hashedToken = require('crypto').createHash('sha256').update(req.params.token).digest('hex');
+
+        const { Op } = require('sequelize');
+        const user = await User.findOne({
+            where: {
+                resetPasswordToken: hashedToken,
+                resetPasswordExpires: { [Op.gt]: Date.now() }
+            }
+        });
+
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid or expired token' });
+        }
+
+        user.password = req.body.password;
+        user.resetPasswordToken = null;
+        user.resetPasswordExpires = null;
+
+        await user.save();
+        res.json({ message: 'Password reset successful' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 module.exports = {
+    forgotPassword, resetPassword,
     authUser, registerUser, getUserProfile, updateUserProfile,
     getUsers, sendInterest, toggleFavorite, getAllUsersAdmin, toggleApproval,
     getDashboardStats, getFavorites, getInterestsReceived, getInterestsSent,

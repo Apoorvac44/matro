@@ -36,7 +36,7 @@ const ProfileCard = ({ profile }) => {
         if (!profileId) return;
         setSending(true);
         try {
-            await api.sendInterest(profileId, interested ? 'pending' : 'declined');
+            await api.sendInterest(profileId, interested ? 'pending' : 'ignored');
             if (interested) {
                 setInterestSent(true);
             } else {
@@ -113,7 +113,7 @@ const ProfileCard = ({ profile }) => {
                         className="flex-1 py-1.5 px-3 flex items-center justify-center gap-1.5 bg-white rounded-full border border-gray-200 text-gray-700 font-bold transition-all hover:bg-gray-50 shadow-sm active:scale-95"
                     >
                         <X size={14} className="text-gray-400" />
-                        <span className="text-[11px]">Don't Show</span>
+                        <span className="text-[11px]">Ignore</span>
                     </button>
 
                     <button
@@ -154,13 +154,6 @@ const ProfileCard = ({ profile }) => {
                     </div>
                     {/* Circular Action Icons - Side by Side on Right */}
                     <div className="flex gap-2 shrink-0 pt-0.5">
-                        <a
-                            href={`tel:${profile.mobile || ''}`}
-                            onClick={(e) => { e.stopPropagation(); if (!profile.mobile) { e.preventDefault(); alert('Phone number not available'); } }}
-                            className="w-8 h-8 rounded-full border border-orange-100 flex items-center justify-center text-orange-500 hover:bg-orange-50 transition-colors z-20 shadow-sm bg-white"
-                        >
-                            <Phone size={14} />
-                        </a>
                         <button
                             onClick={(e) => { e.stopPropagation(); e.preventDefault(); navigate(`/chat/${profileId}`); }}
                             className="w-8 h-8 rounded-full border border-green-100 flex items-center justify-center text-green-500 hover:bg-green-50 transition-colors z-20 shadow-sm bg-white"
