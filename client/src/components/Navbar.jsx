@@ -144,9 +144,9 @@ const Navbar = () => {
 
                                             {/* Menu Items */}
                                             <div className="px-2 pb-1 space-y-0.5 max-h-[280px] overflow-y-auto custom-scrollbar">
-                                                <DropdownLink to="/dashboard" icon={<Home size={16} />} label="Profile" />
-                                                <DropdownLink to="/edit-preferences" icon={<Settings size={16} />} label="Edit Preferences" />
-                                                <DropdownLink to="/horoscope" icon={<Sparkles size={16} />} label="View/Edit Horoscope" />
+                                                <DropdownLink to="/dashboard" icon={<Home size={16} />} label="Profile" onClick={() => setShowProfileDropdown(false)} />
+                                                <DropdownLink to="/edit-preferences" icon={<Settings size={16} />} label="Edit Preferences" onClick={() => setShowProfileDropdown(false)} />
+                                                <DropdownLink to="/horoscope" icon={<Sparkles size={16} />} label="View/Edit Horoscope" onClick={() => setShowProfileDropdown(false)} />
 
                                                 <div className="px-5 py-2">
                                                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Support & feedback</p>
@@ -168,22 +168,13 @@ const Navbar = () => {
                                                             label="Success Stories"
                                                             onClick={() => { navigate('/success-stories'); setShowProfileDropdown(false); }}
                                                         />
+                                                        <DropdownItem
+                                                            icon={<LogOut size={16} />}
+                                                            label="Logout"
+                                                            onClick={() => { logout(); setShowProfileDropdown(false); navigate('/login'); }}
+                                                        />
                                                     </div>
                                                 </div>
-                                            </div>
-
-                                            <div className="pt-2 border-t border-gray-50 bg-gray-50/50">
-                                                <button
-                                                    onClick={() => { logout(); setShowProfileDropdown(false); navigate('/login'); }}
-                                                    className="w-full h-12 px-6 flex items-center justify-between text-gray-500 hover:text-[#800020] transition-colors group"
-                                                >
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm group-hover:shadow group-hover:text-red-500 transition-all">
-                                                            <LogOut size={14} />
-                                                        </div>
-                                                        <span className="text-[11px] font-black uppercase tracking-widest">Logout</span>
-                                                    </div>
-                                                </button>
                                             </div>
                                         </motion.div>
                                     )}
@@ -198,9 +189,10 @@ const Navbar = () => {
     );
 };
 
-const DropdownLink = ({ to, icon, label }) => (
+const DropdownLink = ({ to, icon, label, onClick }) => (
     <Link
         to={to}
+        onClick={onClick}
         className="w-full h-12 px-6 flex items-center gap-3 text-gray-500 hover:text-[#800020] hover:bg-[#800020]/5 transition-all group"
     >
         <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm group-hover:shadow transition-all text-[#800020]/40 group-hover:text-[#800020]">

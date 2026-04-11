@@ -5,27 +5,44 @@ import * as api from '../services/api';
 
 const ProfileCard = ({ profile }) => {
     const navigate = useNavigate();
+    const [isShortlisted, setIsShortlisted] = useState(false);
     const [interestSent, setInterestSent] = useState(false);
     const [imgError, setImgError] = useState(false);
     const [dismissed, setDismissed] = useState(false);
     const [sending, setSending] = useState(false);
 
-    const profileId = profile?._id || profile?.id;
+    let profileId = profile?._id || profile?.id;
+    if (profileId && typeof profileId === 'string') {
+        profileId = profileId.replace(/_[23]$/, '');
+    }
 
     // Move hooks to top
     React.useEffect(() => {
-        const checkInterestStatus = async () => {
+        const fetchStatus = async () => {
             if (!profileId) return;
             try {
-                const { data: sentList } = await api.getSentInterestsList();
-                if (sentList.includes(profileId)) {
+                const [sentRes, shortlistedRes] = await Promise.all([
+                    api.getSentInterestsList().catch(() => ({ data: [] })),
+                    api.getShortlistedProfiles().catch(() => ({ data: [] }))
+                ]);
+                
+                const sentData = sentRes?.data || (Array.isArray(sentRes) ? sentRes : []);
+                if (Array.isArray(sentData) && sentData.includes(profileId)) {
                     setInterestSent(true);
                 }
+
+                const shortlistedData = shortlistedRes?.data || (Array.isArray(shortlistedRes) ? shortlistedRes : []);
+                if (Array.isArray(shortlistedData)) {
+                    const shortlistedIds = shortlistedData.map(p => p?._id || p?.id).filter(Boolean);
+                    if (shortlistedIds.includes(profileId)) {
+                        setIsShortlisted(true);
+                    }
+                }
             } catch (err) {
-                console.error(err);
+                console.error("Error in ProfileCard fetchStatus:", err);
             }
         };
-        checkInterestStatus();
+        fetchStatus();
     }, [profileId]);
 
     if (!profile || dismissed) return null;
@@ -64,7 +81,7 @@ const ProfileCard = ({ profile }) => {
             className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm relative z-0 flex flex-col group transition-all hover:shadow-md cursor-pointer w-full h-full"
         >
             {/* Image Section */}
-            <div className="relative w-full aspect-[4/3] sm:aspect-square bg-gray-100 shrink-0 pointer-events-none overflow-hidden">
+            <div className="relative w-full aspect-[4/3] sm:aspect-square bg-gray-100 shrink-0 overflow-hidden">
                 {imgSrc && !imgError ? (
                     <img
                         src={imgSrc}
@@ -89,13 +106,22 @@ const ProfileCard = ({ profile }) => {
 
 
 
-                {/* Top-right Shortlist button - compact on mobile */}
+                {/* Top-right Shortlist button - sleek pill style */}
                 <button
-                    className="absolute top-2 right-2 bg-black/60 backdrop-blur-md text-white p-2 rounded-full flex items-center justify-center hover:bg-black transition z-20 sm:p-1.5 sm:px-3 sm:py-1.5 sm:gap-1.5 sm:rounded-full"
-                    onClick={(e) => { e.stopPropagation(); e.preventDefault(); console.log('Shortlisted'); }}
+                    className={`absolute top-3 right-3 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center gap-1.5 transition-all z-20 shadow-lg border border-white/10 active:scale-90 ${isShortlisted ? 'bg-[#800020] text-white' : 'bg-black/50 text-white hover:bg-black/70'}`}
+                    onClick={async (e) => { 
+                        e.stopPropagation(); 
+                        e.preventDefault(); 
+                        try {
+                            await api.toggleShortlist(profileId);
+                            setIsShortlisted(!isShortlisted);
+                        } catch (err) {
+                            console.error(err);
+                        }
+                    }}
                 >
-                    <Bookmark size={12} className="fill-transparent" />
-                    <span className="hidden sm:inline text-[11px] font-semibold">Shortlist</span>
+                    <Bookmark size={12} className={isShortlisted ? 'fill-white' : 'fill-transparent group-hover:fill-white transition-all'} />
+                    <span className="text-[10px] font-black uppercase tracking-widest">{isShortlisted ? 'Shortlisted' : 'Shortlist'}</span>
                 </button>
 
                 {/* Bottom-right Photo count */}

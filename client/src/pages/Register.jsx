@@ -60,7 +60,6 @@ const registrationSchema = z.object({
     location: z.string().min(1, 'Location is required'),
     // Step 3
     education: z.string().min(1, 'Education is required'),
-    collegeInstitution: z.string().optional(),
     profession: z.string().min(1, 'Profession is required'),
     occupationDetail: z.string().optional(),
     income: z.string().optional(),
@@ -176,6 +175,16 @@ const Register = () => {
         if (isValid) {
             setStep(step + 1);
             window.scrollTo(0, 0);
+        }
+    };
+
+    const handleVerifyOtp = () => {
+        const otpInput = document.getElementById('otpInput')?.value;
+        if (otpInput === '1234') {
+            setOtpVerified(true);
+            alert('Mobile number verified successfully!');
+        } else {
+            alert('Invalid OTP. Please try again.');
         }
     };
 
@@ -358,7 +367,7 @@ const Register = () => {
                                                 <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Full Name *</label>
                                                 <div className="relative group">
                                                     <User className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#800020] transition-colors" size={18} />
-                                                    <input {...register('name')} className="form-input-premium" placeholder="John Doe" />
+                                                    <input {...register('name')} className="form-input-premium" placeholder="Enter your full name" />
                                                 </div>
                                                 {errors.name && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.name.message}</p>}
                                             </div>
@@ -422,9 +431,30 @@ const Register = () => {
                                         </div>
 
                                         {otpSent && !otpVerified && (
-                                            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="p-4 bg-blue-50 rounded-none border border-blue-100 flex gap-4 items-center">
-                                                <input maxLength={4} onChange={(e) => { if (e.target.value === '1234') setOtpVerified(true); }} className="w-32 px-4 py-2 rounded-none bg-white border border-blue-200 outline-none font-bold text-center tracking-[0.5em]" placeholder="1234" />
-                                                <p className="text-xs font-bold text-[#800020]">Enter "1234" to verify (Mock)</p>
+                                            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="p-4 bg-blue-50 rounded-none border border-blue-100 flex flex-col sm:flex-row gap-4 items-center">
+                                                <div className="flex-1 flex gap-2 w-full">
+                                                    <input 
+                                                        id="otpInput"
+                                                        maxLength={4} 
+                                                        className="w-full sm:w-32 px-4 py-2 rounded-none bg-white border border-blue-200 outline-none font-bold text-center tracking-[0.5em]" 
+                                                        placeholder="1234" 
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        onClick={handleVerifyOtp}
+                                                        className="px-6 py-2 bg-[#800020] text-[#D4AF37] text-[10px] font-black rounded-none uppercase tracking-widest hover:bg-[#112240] transition-all shadow-md active:scale-95"
+                                                    >
+                                                        Verify OTP
+                                                    </button>
+                                                </div>
+                                                <p className="text-[10px] font-bold text-[#800020] uppercase tracking-wider whitespace-nowrap">Enter "1234" to verify (Mock)</p>
+                                            </motion.div>
+                                        )}
+
+                                        {otpSent && otpVerified && (
+                                            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="p-4 bg-green-50 rounded-none border border-green-100 flex gap-3 items-center">
+                                                <CheckCircle className="text-green-600" size={20} />
+                                                <p className="text-xs font-bold text-green-700 uppercase tracking-widest">Mobile Number Verified</p>
                                             </motion.div>
                                         )}
 
@@ -618,43 +648,35 @@ const Register = () => {
                                         </div>
 
                                         <div className="space-y-1.5">
-                                            <Autocomplete
-                                                label="College / Institution"
-                                                value={watch('collegeInstitution')}
-                                                onChange={(val) => setValue('collegeInstitution', val)}
-                                                options={colleges}
-                                                placeholder="Search for College / Institution"
-                                            />
+                                            <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Profession *</label>
+                                            <div className="relative group">
+                                                <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#800020] transition-colors z-10" size={18} />
+                                                <select {...register('profession')} className="form-input-premium appearance-none pl-12">
+                                                    <option value="">Select Profession</option>
+                                                    <option>Software Professional</option>
+                                                    <option>Engineer</option>
+                                                    <option>Doctor</option>
+                                                    <option>Business Owner</option>
+                                                    <option>Government Employee</option>
+                                                    <option>Teacher / Academician</option>
+                                                    <option>Accountant / CA</option>
+                                                    <option>Advocate / Legal</option>
+                                                    <option>Service Sector</option>
+                                                    <option>Civil Service (IAS/IPS)</option>
+                                                    <option>Not Working</option>
+                                                    <option>Others</option>
+                                                </select>
+                                                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+                                            </div>
+                                            {errors.profession && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.profession.message}</p>}
+                                        </div>
+
+                                        <div className="space-y-1.5">
+                                            <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Company</label>
+                                            <input {...register('occupationDetail')} className="form-input-premium" placeholder="e.g. Google, Microsoft, Self Employed" />
                                         </div>
 
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <div className="space-y-1.5">
-                                                <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Profession *</label>
-                                                <div className="relative group">
-                                                    <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#800020] transition-colors z-10" size={18} />
-                                                    <select {...register('profession')} className="form-input-premium appearance-none pl-12">
-                                                        <option value="">Select Profession</option>
-                                                        <option>Software Professional</option>
-                                                        <option>Engineer</option>
-                                                        <option>Doctor</option>
-                                                        <option>Business Owner</option>
-                                                        <option>Government Employee</option>
-                                                        <option>Teacher / Academician</option>
-                                                        <option>Accountant / CA</option>
-                                                        <option>Advocate / Legal</option>
-                                                        <option>Service Sector</option>
-                                                        <option>Civil Service (IAS/IPS)</option>
-                                                        <option>Not Working</option>
-                                                        <option>Others</option>
-                                                    </select>
-                                                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
-                                                </div>
-                                                {errors.profession && <p className="text-red-500 text-[10px] font-bold uppercase">{errors.profession.message}</p>}
-                                            </div>
-                                            <div className="space-y-1.5">
-                                                <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Company</label>
-                                                <input {...register('occupationDetail')} className="form-input-premium" placeholder="e.g. Google, Microsoft, Self Employed" />
-                                            </div>
                                             <div className="space-y-1.5">
                                                 <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Annual Income</label>
                                                 <div className="relative group">

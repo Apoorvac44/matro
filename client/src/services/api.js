@@ -153,14 +153,40 @@ const INITIAL_PROFILES = [
         isApproved: true, interests: ['Helping others', 'Cooking'],
         mobile: '9880011225', dob: '1997-01-12', motherTongue: 'Kannada', maritalStatus: 'Never Married', height: "5'3\"",
         workLocation: 'Mysuru'
+    },
+    {
+        _id: 'm1', name: 'Arjun Gowda', email: 'arjun@example.com', age: 27, gender: 'Male', location: 'Bengaluru',
+        profession: 'Data Scientist', education: 'M.Tech', income: '₹22 LPA',
+        profilePicture: 'https://randomuser.me/api/portraits/men/44.jpg',
+        aboutMe: 'Passionate about AI and fitness. Looking for a supportive partner.',
+        isApproved: true, interests: ['Gym', 'Coding', 'Trekking'],
+        mobile: '9123412345', dob: '1996-11-10', motherTongue: 'Kannada', maritalStatus: 'Single', height: "5'8\"",
+        workLocation: 'Bengaluru'
+    },
+    {
+        _id: 'm2', name: 'Vivek Sharma', email: 'vivek@example.com', age: 29, gender: 'Male', location: 'Mangaluru',
+        profession: 'Bank Manager', education: 'MBA', income: '₹15 LPA',
+        profilePicture: 'https://randomuser.me/api/portraits/men/51.jpg',
+        aboutMe: 'Simple and family-oriented. Love spending weekends near the beach.',
+        isApproved: true, interests: ['Finance', 'Reading', 'Travel'],
+        mobile: '9988771122', dob: '1994-08-05', motherTongue: 'Kannada', maritalStatus: 'Single', height: "5'9\"",
+        workLocation: 'Mangaluru'
+    },
+    {
+        _id: 'd3', name: 'Sowmya', email: 'sowmya@example.com', age: 27, gender: 'Female', location: 'Mysuru',
+        profession: 'Doctor', education: 'MBBS', income: '₹18 LPA',
+        profilePicture: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=500&fit=cover',
+        isApproved: true, interests: ['Helping others', 'Cooking'],
+        mobile: '9880011225', dob: '1997-01-12', motherTongue: 'Kannada', maritalStatus: 'Never Married', height: "5'3\"",
+        workLocation: 'Mysuru'
     }
 ];
 
 // Helper to get profiles from LocalStorage or use initial data
 const getStoredProfiles = () => {
-    const stored = localStorage.getItem('dummy_profiles_v4');
+    const stored = localStorage.getItem('dummy_profiles_v5');
     if (stored) return JSON.parse(stored);
-    localStorage.setItem('dummy_profiles_v4', JSON.stringify(INITIAL_PROFILES));
+    localStorage.setItem('dummy_profiles_v5', JSON.stringify(INITIAL_PROFILES));
     return INITIAL_PROFILES;
 };
 
@@ -168,7 +194,7 @@ let DUMMY_PROFILES = getStoredProfiles();
 
 const updateStoredProfiles = (profiles) => {
     DUMMY_PROFILES = profiles;
-    localStorage.setItem('dummy_profiles_v4', JSON.stringify(profiles));
+    localStorage.setItem('dummy_profiles_v5', JSON.stringify(profiles));
 };
 
 let DUMMY_PLANS = [
@@ -322,6 +348,15 @@ export const getProfile = (id) => {
     return mockResolve(profiles[0]);
 };
 
+export const getMyProfile = () => {
+    const currentUser = getLoggedInUser();
+    if (!currentUser) return mockResolve(null);
+    const profiles = getStoredProfiles();
+    // Try to find the full profile record in the stored profiles
+    const full = profiles.find(p => p._id === currentUser._id || p.id === currentUser._id || p.email === currentUser.email);
+    return mockResolve(full || currentUser);
+};
+
 export const updateProfile = (formData) => {
     const profiles = getStoredProfiles();
     const currentUser = getLoggedInUser();
@@ -344,7 +379,19 @@ export const updateProfile = (formData) => {
     return mockResolve(formData);
 };
 
-export const getProfiles = () => mockResolve(getStoredProfiles());
+export const getProfiles = () => {
+    const user = getLoggedInUser();
+    const all = getStoredProfiles();
+    
+    // If no user or admin, return all
+    if (!user || user.isAdmin) return mockResolve(all);
+    
+    // Filter opposite gender
+    const preferredGender = user.gender?.toLowerCase() === 'male' ? 'female' : 'male';
+    const filtered = all.filter(p => !p.isAdmin && p._id !== user._id && p.gender?.toLowerCase() === preferredGender);
+    
+    return mockResolve(filtered);
+};
 
 export const sendInterest = (id, status = 'pending') => {
     const sent = getSentInterestsData();
@@ -359,8 +406,26 @@ export const sendInterest = (id, status = 'pending') => {
     return mockResolve({ message: 'Interest updated' });
 };
 
+export const getShortlistedProfiles = () => {
+    const stored = localStorage.getItem('shortlisted_v1');
+    const ids = stored ? JSON.parse(stored) : [];
+    const profiles = getStoredProfiles();
+    return mockResolve(profiles.filter(p => ids.includes(p._id)));
+};
+
+export const toggleShortlist = (id) => {
+    const stored = localStorage.getItem('shortlisted_v1');
+    let ids = stored ? JSON.parse(stored) : [];
+    if (ids.includes(id)) {
+        ids = ids.filter(i => i !== id);
+    } else {
+        ids.push(id);
+    }
+    localStorage.setItem('shortlisted_v1', JSON.stringify(ids));
+    return mockResolve({ message: 'Shortlist toggled', isShortlisted: ids.includes(id) });
+};
+
 export const getSentInterestsList = () => mockResolve(getSentInterestsData().filter(i => i.status === 'pending' || i.status === 'accepted').map(i => i.receiverId));
-export const toggleFavorite = (id) => mockResolve({ message: 'Favorite toggled' });
 
 export const sendMessage = (data) => {
     const { receiverId, content } = data;
@@ -530,7 +595,7 @@ export const deleteAccount = (data) => axios.delete(`${BASE_URL}/users/account`,
 
 export default {
     login, register, getProfile, updateProfile, getProfiles, sendInterest,
-    toggleFavorite, sendMessage, getConversations, getMessages, getAdminUsers,
+    getShortlistedProfiles, toggleShortlist, sendMessage, getConversations, getMessages, getAdminUsers,
     toggleApproval, getDashboardStats, getFavorites, getInterestsReceived,
     getInterestsSent, getGallery, addGalleryPhoto, deleteGalleryPhoto,
     createMembershipPlan, updateMembershipPlan, deleteMembershipPlan,

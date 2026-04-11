@@ -20,7 +20,7 @@ const connectDB = async () => {
         console.log('MySQL Connected via Sequelize');
     } catch (error) {
         console.error(`Unable to connect to the database: ${error.message}`);
-        process.exit(1);
+        console.log('Continuing without database connection for development...');
     }
 };
 

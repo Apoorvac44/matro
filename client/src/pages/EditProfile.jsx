@@ -48,7 +48,7 @@ const EditProfile = ({ defaultTab }) => {
         aadharCard: '', membership: 'p1',
         weight: '', bodyType: '', profileCreatedBy: '', eatingHabits: '', smokingHabits: '', drinkingHabits: '',
         timeOfBirth: '', star: '', raasi: '', kujaDosha: '', kulaDaiva: '', horoscope: '',
-        familyType: '', familyStatus: '', brothers: '', sisters: '', ancestralOrigin: '',
+        familyType: '', brothers: '', sisters: '', ancestralOrigin: '',
         collegeInstitution: '', educationDetail: '', employedIn: '', occupationDetail: '',
         parentsContact: '', familyValue: '', nativePlace: '', fatherName: '', motherName: '', fatherOccupation: '', motherOccupation: '', aboutFamily: '',
         prefMaritalStatus: [], prefHeightMin: '', prefHeightMax: '', prefPhysicalStatus: '', prefMotherTongue: '',
@@ -211,7 +211,7 @@ const EditProfile = ({ defaultTab }) => {
                     kujaDosha: data.kujaDosha || '',
                     kulaDaiva: data.kulaDaiva || '',
                     horoscope: data.horoscope || '',
-                    familyStatus: data.familyStatus || '',
+
                     brothers: data.brothers || '',
                     sisters: data.sisters || '',
                     ancestralOrigin: data.ancestralOrigin || '',
@@ -860,12 +860,13 @@ const EditProfile = ({ defaultTab }) => {
                                                 </div>
                                             </FormRow>
                                             <FormRow label="College / Institution">
-                                                <Autocomplete
-                                                    label="College / Institution"
+                                                <input
+                                                    type="text"
+                                                    name="collegeInstitution"
                                                     value={formData.collegeInstitution}
-                                                    onChange={(val) => setFormData({ ...formData, collegeInstitution: val })}
-                                                    options={colleges}
-                                                    placeholder="Search for College / Institution"
+                                                    onChange={handleChange}
+                                                    className="form-input-premium max-w-md"
+                                                    placeholder="Enter College / Institution"
                                                 />
                                             </FormRow>
                                             <FormRow label="Field of Study">
@@ -1608,13 +1609,32 @@ const EditProfile = ({ defaultTab }) => {
                                                         </ul>
 
                                                         <button
-                                                            disabled={formData.membership === plan._id}
-                                                            className={`w-full py-4 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] transition-all ${formData.membership === plan._id ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-gray-900 text-white hover:bg-[#800020] hover:shadow-lg hover:shadow-[#800020]/20'}`}
+                                                            disabled={formData.membership === plan._id || !formData.tcAccepted}
+                                                            className={`w-full py-4 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] transition-all ${formData.membership === plan._id || !formData.tcAccepted ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-gray-900 text-white hover:bg-[#800020] hover:shadow-lg hover:shadow-[#800020]/20'}`}
                                                         >
                                                             {formData.membership === plan._id ? 'Current Plan' : 'Select Plan'}
                                                         </button>
                                                     </div>
                                                 ))}
+                                            </div>
+
+                                            {/* Terms and Conditions Checkbox */}
+                                            <div className="mt-8 p-6 bg-[#800020]/5 rounded-[2rem] border border-[#800020]/10 flex flex-col md:flex-row items-center justify-between gap-4">
+                                                <div className="flex items-center gap-3">
+                                                    <input
+                                                        type="checkbox"
+                                                        id="tc-global"
+                                                        className="w-5 h-5 accent-[#800020] rounded cursor-pointer"
+                                                        onChange={(e) => setFormData({ ...formData, tcAccepted: e.target.checked })}
+                                                    />
+                                                    <label htmlFor="tc-global" className="text-xs font-bold text-gray-700 uppercase tracking-widest cursor-pointer select-none">
+                                                        I accept the <span className="text-[#800020] underline">Terms & Conditions</span>
+                                                    </label>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <Shield size={14} className="text-[#D4AF37]" />
+                                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">100% Secure Payment</span>
+                                                </div>
                                             </div>
 
                                             {/* Comparison Table */}
