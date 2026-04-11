@@ -86,9 +86,7 @@ const ProfileDetail = () => {
         }
     };
 
-    const handleChat = () => {
-        navigate(`/chat/${id}`);
-    };
+
 
     if (loading) return <div className="h-screen flex items-center justify-center bg-white">
         <Loader2 className="animate-spin text-[#800020]" size={48} />
@@ -165,14 +163,6 @@ const ProfileDetail = () => {
     const matchData = calculateMatch();
 
     const renderLockedValue = (value) => {
-        if (!canViewPremiumDetails) {
-            return (
-                <div onClick={() => navigate('/membership')} className="flex items-center gap-2 text-red-500 cursor-pointer group">
-                    <Lock size={12} className="group-hover:animate-bounce" />
-                    <span className="text-xs font-bold hover:underline italic">Upgrade to view ></span>
-                </div>
-            );
-        }
         return <span className="text-gray-900 font-semibold">{value || 'Not Specified'}</span>;
     };
 
@@ -195,7 +185,7 @@ const ProfileDetail = () => {
                         {/* Profile Photo Hero */}
                         <div className="relative mb-10 w-full flex justify-center group">
                             <div 
-                                className="relative w-64 h-64 md:w-80 md:h-80 rounded-[3rem] overflow-hidden bg-gray-50 border-4 border-[#800020]/10 shadow-xl cursor-pointer hover:border-[#800020]/30 transition-all z-10" 
+                                className="relative w-full max-w-[320px] aspect-square rounded-[3rem] overflow-hidden bg-gray-50 border-4 border-[#800020]/10 shadow-xl cursor-pointer hover:border-[#800020]/30 transition-all z-10" 
                                 onClick={() => setActivePhotoIndex(heroPhotoIndex)}
                             >
                                 {allPhotos[heroPhotoIndex] ? (
@@ -242,7 +232,7 @@ const ProfileDetail = () => {
                             <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-bold text-gray-500 uppercase tracking-widest">
                                 <span className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-full border border-gray-100">
                                     <Clock size={14} className="text-[#800020]" />
-                                    {profile.age || '24'} Years
+                                    {profile.dob ? (new Date().getFullYear() - new Date(profile.dob).getFullYear()) + ' Years' : '24 Years'}
                                 </span>
                                 <span className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-full border border-gray-100">
                                     <User size={14} className="text-[#800020]" />
@@ -261,19 +251,13 @@ const ProfileDetail = () => {
                                 <button
                                     onClick={handleInterest}
                                     disabled={interestSent}
-                                    className={`flex-1 max-w-[240px] py-5 rounded-[2rem] font-black uppercase text-[10px] tracking-[0.2em] transition-all flex items-center justify-center gap-3 shadow-lg ${interestSent ? 'bg-green-500 text-white cursor-default' : 'bg-[#800020] text-white hover:bg-[#600018] active:scale-95'}`}
+                                    className={`w-full max-w-[320px] py-5 rounded-[2rem] font-black uppercase text-[10px] tracking-[0.2em] transition-all flex items-center justify-center gap-3 shadow-lg ${interestSent ? 'bg-green-500 text-white cursor-default' : 'bg-[#800020] text-white hover:bg-[#600018] active:scale-95'}`}
                                 >
                                     {interestSent ? (
                                         <><CheckCircle size={18} /> Interest Sent</>
                                     ) : (
                                         <><Heart size={18} /> Send Interest</>
                                     )}
-                                </button>
-                                <button
-                                    onClick={handleChat}
-                                    className="flex-1 max-w-[240px] py-5 rounded-[2rem] border-2 border-[#800020]/10 font-black uppercase text-[10px] tracking-[0.2em] text-[#800020] hover:bg-[#800020]/5 transition-all flex items-center justify-center gap-3 active:scale-95"
-                                >
-                                    <MessageSquare size={18} /> Message
                                 </button>
                             </div>
                         )}
@@ -321,7 +305,6 @@ const ProfileDetail = () => {
                                 </div>
                                 <div className="p-4">
                                     {[
-                                        { label: 'Age', value: profile.age ? `${profile.age} Years` : 'Not Specified' },
                                         { label: 'Height', value: profile.height || 'Not Specified' },
                                         { label: 'Spoken Languages', value: `${profile.motherTongue || 'Regional'} (Mother Tongue), English` },
                                         { label: 'Profile created by', value: profile.profileCreatedBy || 'Not Specified' },
@@ -329,13 +312,10 @@ const ProfileDetail = () => {
                                         { label: 'Lives In', value: profile.location || 'Not Specified' },
                                         { label: 'Eating Habits', value: profile.eatingHabits || 'Not Specified' },
                                         { label: 'Religion', value: `${profile.religion || 'Hindu'}` },
-                                        { label: 'Subcaste', value: profile.caste || 'Not Specified' },
-                                        { label: 'Kuja Dosham', value: profile.kujaDosha || 'No' },
                                         { label: 'Date Of Birth', value: renderLockedValue(profile.dob) },
                                         { label: 'Time Of Birth', value: renderLockedValue(profile.timeOfBirth) },
                                         { label: 'Star', value: renderLockedValue(profile.star) },
                                         { label: 'Raasi', value: renderLockedValue(profile.raasi) },
-                                        { label: 'Kundli Score', value: renderLockedValue('Not Calculated') },
                                         { label: 'Horoscope', value: renderLockedValue(profile.horoscope) },
                                         { label: 'Employment', value: profile.profession || 'Not Specified' },
                                         canViewMobile ? { label: 'Mobile', value: profile.mobile || 'Private' } : null
@@ -405,6 +385,20 @@ const ProfileDetail = () => {
                                     ))}
                                 </div>
                             </div>
+
+                             {/* Interests Section - NEW LOCATION (Before Partner Pref) */}
+                             {profile.interests?.length > 0 && (
+                                <div className="mb-12">
+                                    <h3 className="text-[10px] font-bold text-[#800020] uppercase tracking-[0.2em] mb-6">Interests</h3>
+                                    <div className="flex flex-wrap gap-3">
+                                        {profile.interests.map(interest => (
+                                            <span key={interest} className="px-5 py-2 bg-[#FFFDD0] text-[#800020] rounded-full text-[10px] font-bold uppercase tracking-widest shadow-sm border border-[#D4AF37]/20">
+                                                {interest}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Partner Preferences */}
                             {canViewPartnerPref && (
@@ -523,7 +517,7 @@ const ProfileDetail = () => {
 
                         <div className="space-y-12">
                             {canViewAboutYou && (
-                                <div className="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-[#800020]/5">
+                                <div className="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-[#800020]/5 mt-12">
                                     <h3 className="text-[10px] font-bold text-[#800020] uppercase tracking-[0.2em] mb-6 pb-2 border-b border-[#800020]/5">About Me</h3>
                                     <p className="text-gray-600 leading-relaxed text-lg italic font-serif">
                                         {profile.aboutMe || "I'm looking for a partner who respects values and has a modern outlook on life. Let's connect to know more."}
@@ -531,18 +525,15 @@ const ProfileDetail = () => {
                                 </div>
                             )}
 
-                            {profile.interests?.length > 0 && (
-                                <div>
-                                    <h3 className="text-[10px] font-bold text-[#800020] uppercase tracking-[0.2em] mb-6">Interests</h3>
-                                    <div className="flex flex-wrap gap-3">
-                                        {profile.interests.map(interest => (
-                                            <span key={interest} className="px-5 py-2 bg-[#FFFDD0] text-[#800020] rounded-full text-[10px] font-bold uppercase tracking-widest shadow-sm border border-[#D4AF37]/20">
-                                                {interest}
-                                            </span>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
+                            {/* "Next Profile" Button */}
+                            <div className="pt-12 flex justify-center">
+                                <button
+                                    onClick={() => navigate('/explore')}
+                                    className="px-10 py-5 bg-gradient-to-r from-[#800020] to-[#600318] text-[#D4AF37] rounded-none font-black uppercase text-[12px] tracking-[0.3em] shadow-2xl hover:scale-105 active:scale-95 transition-all flex items-center gap-4"
+                                >
+                                    Next Profile <ChevronRight size={20} />
+                                </button>
+                            </div>
 
 
                         </div>
@@ -603,7 +594,7 @@ const ProfileDetail = () => {
                                 transition={{ type: 'spring', damping: 25, stiffness: 200 }}
                                 src={allPhotos[activePhotoIndex]}
                                 alt={`Gallery image ${activePhotoIndex + 1}`}
-                                className="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl border border-white/10"
+                                className="w-full h-auto max-w-[90vw] max-h-[85vh] object-contain rounded-2xl shadow-2xl border border-white/10"
                                 onClick={(e) => e.stopPropagation()}
                             />
                         </div>

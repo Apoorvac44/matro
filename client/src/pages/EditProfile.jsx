@@ -36,7 +36,7 @@ const FormRow = ({ label, required, children }) => (
 
 const EditProfile = ({ defaultTab }) => {
     const [formData, setFormData] = useState({
-        name: '', age: '', gender: '', location: '',
+        name: '', gender: '', location: '',
         education: '', profession: '', income: '', workLocation: '',
         interests: '', aboutMe: '', profilePicture: '',
         photos: [], // Gallery photos
@@ -177,7 +177,6 @@ const EditProfile = ({ defaultTab }) => {
                 const dataMap = {
                     _id: data._id || data.id || '',
                     name: data.name || '',
-                    age: data.age || '',
                     gender: data.gender || '',
                     location: data.location || '',
                     education: data.education || '',
@@ -726,9 +725,7 @@ const EditProfile = ({ defaultTab }) => {
                                                 <input type="date" name="dob" value={formData.dob} onChange={handleChange} className="form-input-premium max-w-md" />
                                             </FormRow>
 
-                                            <FormRow label="Age" required>
-                                                <input type="number" name="age" value={formData.age} onChange={handleChange} className="form-input-premium max-w-[150px]" placeholder="Years" />
-                                            </FormRow>
+
 
                                             <FormRow label="Gender" required>
                                                 <div className="flex gap-6 items-center flex-wrap h-full pt-3">

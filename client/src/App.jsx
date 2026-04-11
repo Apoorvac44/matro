@@ -9,8 +9,7 @@ import Dashboard from './pages/Dashboard';
 import Explore from './pages/Explore';
 import ProfileDetail from './pages/ProfileDetail';
 import EditProfile from './pages/EditProfile';
-import Chat from './pages/Chat';
-import ChatInbox from './pages/ChatInbox';
+
 import Contact from './pages/Contact';
 import Gallery from './pages/Gallery';
 import Splash from './components/Splash';
@@ -63,8 +62,7 @@ function App() {
             <Route path="/profile/:id" element={<ProtectedRoute><ProfileDetail /></ProtectedRoute>} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/edit-profile" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
-            <Route path="/chat/inbox" element={<ProtectedRoute><ChatInbox /></ProtectedRoute>} />
-            <Route path="/chat/:id" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
+
             <Route path="/gallery" element={<ProtectedRoute><Gallery /></ProtectedRoute>} />
             <Route path="/contact" element={<ProtectedRoute><Contact /></ProtectedRoute>} />
 

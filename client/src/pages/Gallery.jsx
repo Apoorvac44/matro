@@ -232,7 +232,7 @@ const Gallery = () => {
                             animate={{ scale: 1, opacity: 1 }}
                             src={selectedPhoto}
                             alt="Full View"
-                            className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+                            className="w-full h-auto max-w-[90vw] max-h-[85vh] object-contain rounded-lg shadow-2xl"
                             onClick={(e) => e.stopPropagation()}
                         />
                     </motion.div>

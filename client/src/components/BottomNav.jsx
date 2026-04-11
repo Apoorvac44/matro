@@ -9,7 +9,6 @@ const BottomNav = () => {
         { name: 'Home', path: '/', icon: <Home size={22} /> },
         { name: 'Matches', path: '/explore', icon: <Heart size={22} /> },
         { name: 'Interests', path: '/interests', icon: <Users size={22} /> },
-        { name: 'Chat', path: '/chat/inbox', icon: <MessageSquare size={22} /> },
         { name: 'Profile', path: '/dashboard', icon: <User size={22} /> },
     ];
 
@@ -28,9 +27,6 @@ const BottomNav = () => {
                     >
                         <div className="relative">
                             {link.icon}
-                            {link.name === 'Chat' && (
-                                <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white shadow-sm" />
-                            )}
                         </div>
                         <span className={`text-[9px] font-bold ${isActive ? 'text-[#800020]' : 'opacity-60'}`}>
                             {link.name}

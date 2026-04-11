@@ -168,7 +168,7 @@ const Dashboard = () => {
                                     Your {user?.membership || 'Basic'} <span className="text-[#D4AF37] not-italic">Journey</span>
                                 </h2>
                                 <p className="text-white/60 text-sm font-medium max-w-md leading-relaxed">
-                                    Unlock the full potential of Milana Matrimony. Gain access to direct chats, verified badges, and personalized matchmaker assistance.
+                                    Unlock the full potential of Milana Matrimony. Gain access to verified badges and personalized matchmaker assistance.
                                 </p>
                             </div>
 

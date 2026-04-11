@@ -178,15 +178,7 @@ const ProfileCard = ({ profile }) => {
                             {shortId} | Last seen few hours ago
                         </p>
                     </div>
-                    {/* Circular Action Icons - Side by Side on Right */}
-                    <div className="flex gap-2 shrink-0 pt-0.5">
-                        <button
-                            onClick={(e) => { e.stopPropagation(); e.preventDefault(); navigate(`/chat/${profileId}`); }}
-                            className="w-8 h-8 rounded-full border border-green-100 flex items-center justify-center text-green-500 hover:bg-green-50 transition-colors z-20 shadow-sm bg-white"
-                        >
-                            <MessageSquare size={14} />
-                        </button>
-                    </div>
+                    <div className="flex gap-2 shrink-0 pt-0.5" />
                 </div>
 
                 <div className="text-[11px] text-gray-600 leading-snug line-clamp-2 mb-1.5 font-medium">

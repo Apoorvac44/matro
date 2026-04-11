@@ -311,14 +311,9 @@ const InterestCard = ({ interest, type, onStatusUpdate, formatDate, sentInterest
                                 <Heart size={18} className="fill-[#D4AF37]" /> Accept Interest
                             </button>
                         ) : isAccepted ? (
-                            <>
-                                <button
-                                    onClick={() => navigate(`/chat/${profile._id}`)}
-                                    className="w-full py-4 bg-[#800020] text-[#D4AF37] rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-3 shadow-lg shadow-[#800020]/10 hover:bg-[#600318] transition-all active:scale-95"
-                                >
-                                    <MessageSquare size={16} /> Send Message
-                                </button>
-                            </>
+                            <div className="w-full py-4 bg-green-50 text-green-700 border border-green-200 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] shadow-sm flex items-center justify-center gap-2 cursor-default transition-all">
+                                <CheckCircle size={16} /> Interest Accepted
+                            </div>
                         ) : (
                             // Sent Pending
                             <div className="w-full py-4 bg-gray-50 text-gray-400 border border-gray-100 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-center italic">

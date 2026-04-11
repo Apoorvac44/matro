@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Calendar, Mail, Lock, Phone, User, MapPin, Briefcase, GraduationCap, Heart, Sparkles, CheckCircle, Eye, EyeOff, Coins, Shield, Image as ImageIcon, Ruler, Users, Info, ChevronDown, ChevronLeft, ChevronRight, Loader2, ArrowRight } from 'lucide-react';
+import { Calendar, Mail, Lock, Phone, User, MapPin, Briefcase, GraduationCap, Heart, Sparkles, CheckCircle, Eye, EyeOff, Coins, Shield, Image as ImageIcon, Ruler, Users, Info, ChevronDown, ChevronLeft, ChevronRight, Loader2, ArrowRight, CreditCard, X } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as api from '../services/api';
@@ -101,13 +101,18 @@ const Register = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [otpSent, setOtpSent] = useState(false);
     const [otpVerified, setOtpVerified] = useState(false);
-    const [age, setAge] = useState(null);
     const { login } = useContext(AuthContext);
+    const [dob, setDob] = useState('');
+    const [gender, setGender] = useState('');
     const navigate = useNavigate();
     const [plans, setPlans] = useState([]);
     const [loading, setLoading] = useState(false); // Added loading state
     const [aadharFileName, setAadharFileName] = useState('');
     const [casteCertificateFileName, setCasteCertificateFileName] = useState('');
+    const [termsAccepted, setTermsAccepted] = useState(false);
+    const [paymentDone, setPaymentDone] = useState(false);
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [paymentProcessing, setPaymentProcessing] = useState(false);
 
     const { register, handleSubmit, formState: { errors }, watch, trigger, setValue } = useForm({
         resolver: zodResolver(registrationSchema),
@@ -389,7 +394,7 @@ const Register = () => {
 
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div className="space-y-1.5">
-                                                <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Date of Birth * {age && `(${age} years)`}</label>
+                                                <label className="text-xs font-black text-gray-700 uppercase tracking-widest">Date of Birth *</label>
                                                 <div className="relative group">
                                                     <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#800020] transition-colors" size={18} />
                                                     <input
@@ -977,11 +982,92 @@ const Register = () => {
                                             </div>
                                         </div>
 
+                                        {/* Demo Payment Button - shown for paid plans */}
+                                        {(() => {
+                                            const selectedPlan = plans.find(p => p._id === watch('membership'));
+                                            const isPaid = selectedPlan && selectedPlan.price > 0;
+                                            if (!isPaid) return null;
+                                            return (
+                                                <div className="p-6 bg-gradient-to-br from-[#FFFDD0]/60 to-[#D4AF37]/10 border-2 border-[#D4AF37]/30 rounded-none">
+                                                    <div className="flex items-center gap-4 mb-4">
+                                                        <div className="bg-[#D4AF37] p-3 rounded-none shadow-lg">
+                                                            <CreditCard className="text-white" size={24} />
+                                                        </div>
+                                                        <div>
+                                                            <h4 className="font-black text-[#800020] uppercase text-xs tracking-widest">Payment Required</h4>
+                                                            <p className="text-[10px] text-gray-500 font-bold uppercase mt-0.5">
+                                                                {selectedPlan.name} Plan — ₹{selectedPlan.price.toLocaleString()} / {selectedPlan.duration}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    {paymentDone ? (
+                                                        <div className="flex items-center gap-3 py-3 px-4 bg-green-50 border border-green-200">
+                                                            <CheckCircle className="text-green-600" size={18} />
+                                                            <span className="text-xs font-black text-green-700 uppercase tracking-widest">Payment Successful (Demo)</span>
+                                                        </div>
+                                                    ) : (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setShowPaymentModal(true)}
+                                                            className="w-full py-4 bg-[#D4AF37] text-[#800020] flex items-center justify-center gap-3 rounded-none font-bold uppercase tracking-[0.2em] text-[10px] shadow-xl hover:bg-[#B38D15] hover:-translate-y-0.5 transition-all active:scale-95"
+                                                        >
+                                                            <CreditCard size={16} /> Pay ₹{selectedPlan?.price?.toLocaleString() || '0'} Now (Demo)
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            );
+                                        })()}
+
                                         <div className="space-y-6 pt-4 text-center pb-8 border-b border-[#800020]/10">
                                             <p className="text-sm font-serif italic text-[#800020]/80">Almost there! Your account along with your verified documents will go to the admin for review after you click on "Create Account".</p>
                                         </div>
 
-                                        <div className="space-y-6 pt-4 text-center">
+                                        {/* Terms and Conditions Checkbox */}
+                                        <div className="pt-4">
+                                            <label className="flex items-start gap-3 cursor-pointer group select-none">
+                                                <div className="relative mt-0.5 shrink-0">
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={termsAccepted}
+                                                        onChange={(e) => setTermsAccepted(e.target.checked)}
+                                                        className="sr-only peer"
+                                                    />
+                                                    <div className="w-5 h-5 border-2 border-gray-300 rounded-sm peer-checked:bg-[#800020] peer-checked:border-[#800020] transition-all flex items-center justify-center">
+                                                        {termsAccepted && (
+                                                            <svg className="w-3 h-3 text-white" viewBox="0 0 12 12" fill="none">
+                                                                <path d="M2 6L5 9L10 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                                            </svg>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                <span className="text-xs text-gray-600 leading-relaxed">
+                                                    I agree to the{' '}
+                                                    <span className="text-[#800020] font-bold underline underline-offset-2 cursor-pointer hover:text-[#D4AF37] transition-colors"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            alert('Terms & Conditions:\n\n1. All information provided must be accurate and truthful.\n2. You must be at least 18 years old to register.\n3. Uploaded documents will be verified by our admin team.\n4. We respect your privacy and will not share your data with third parties.\n5. Membership payments are non-refundable once the profile is approved.\n6. Any misuse of the platform may result in account termination.\n7. By registering, you consent to our community guidelines and terms of service.');
+                                                        }}
+                                                    >
+                                                        Terms & Conditions
+                                                    </span>{' '}
+                                                    and{' '}
+                                                    <span className="text-[#800020] font-bold underline underline-offset-2 cursor-pointer hover:text-[#D4AF37] transition-colors"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            alert('Privacy Policy:\n\n1. Your personal data is encrypted and stored securely.\n2. We collect only necessary information for matchmaking purposes.\n3. Your contact details are shared only upon mutual interest acceptance.\n4. You can request data deletion at any time by contacting support.\n5. We use cookies to enhance your browsing experience.');
+                                                        }}
+                                                    >
+                                                        Privacy Policy
+                                                    </span>
+                                                    . I confirm that all information provided is accurate.
+                                                </span>
+                                            </label>
+                                            {!termsAccepted && (
+                                                <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider mt-2 ml-8">You must accept to proceed</p>
+                                            )}
+                                        </div>
+
+                                        <div className="space-y-6 pt-2 text-center">
                                             <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#800020]/60">Your journey begins here</p>
                                             <p className="text-sm font-serif font-medium italic text-gray-500 max-w-sm mx-auto">
                                                 By creating an account, you agree to our community guidelines.
@@ -1013,7 +1099,10 @@ const Register = () => {
                                 ) : (
                                     <button
                                         type="button"
-                                        disabled={loading}
+                                        disabled={loading || !termsAccepted || (() => {
+                                            const selectedPlan = plans.find(p => p._id === watch('membership'));
+                                            return selectedPlan && selectedPlan.price > 0 && !paymentDone;
+                                        })()}
                                         onClick={handleSubmit(onSubmit, (err) => {
                                             console.log("Validation Errors:", err);
                                         })}
@@ -1040,6 +1129,131 @@ const Register = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Demo Payment Modal */}
+            <AnimatePresence>
+                {showPaymentModal && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                        onClick={() => !paymentProcessing && setShowPaymentModal(false)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                            animate={{ scale: 1, opacity: 1, y: 0 }}
+                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                            onClick={(e) => e.stopPropagation()}
+                            className="bg-white w-full max-w-md shadow-2xl border border-[#800020]/10"
+                        >
+                            {/* Modal Header */}
+                            <div className="bg-[#800020] p-6 flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <CreditCard className="text-[#D4AF37]" size={24} />
+                                    <div>
+                                        <h3 className="text-white font-black uppercase text-xs tracking-widest">Demo Payment</h3>
+                                        <p className="text-[#D4AF37] text-[9px] font-bold uppercase mt-0.5">Simulated Gateway</p>
+                                    </div>
+                                </div>
+                                {!paymentProcessing && (
+                                    <button onClick={() => setShowPaymentModal(false)} className="text-white/50 hover:text-white transition-colors">
+                                        <X size={20} />
+                                    </button>
+                                )}
+                            </div>
+
+                            {/* Modal Body */}
+                            <div className="p-6 space-y-5">
+                                {/* Plan Summary */}
+                                <div className="p-4 bg-[#FFFDD0]/50 border border-[#D4AF37]/20">
+                                    <div className="flex justify-between items-center">
+                                        <div>
+                                            <p className="text-xs font-black text-gray-900 uppercase tracking-widest">
+                                                {plans.find(p => p._id === watch('membership'))?.name} Plan
+                                            </p>
+                                            <p className="text-[9px] text-gray-400 font-bold uppercase mt-0.5">
+                                                {plans.find(p => p._id === watch('membership'))?.duration}
+                                            </p>
+                                        </div>
+                                        <p className="text-xl font-serif font-black text-[#800020] italic">
+                                            ₹{plans.find(p => p._id === watch('membership'))?.price?.toLocaleString() || '0'}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Demo Card Form */}
+                                <div className="space-y-4">
+                                    <div className="space-y-1.5">
+                                        <label className="text-[10px] font-black text-gray-700 uppercase tracking-widest">Card Number</label>
+                                        <input
+                                            type="text"
+                                            defaultValue="4111 1111 1111 1111"
+                                            readOnly
+                                            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 text-sm font-mono text-gray-600 outline-none"
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-1.5">
+                                            <label className="text-[10px] font-black text-gray-700 uppercase tracking-widest">Expiry</label>
+                                            <input
+                                                type="text"
+                                                defaultValue="12/28"
+                                                readOnly
+                                                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 text-sm font-mono text-gray-600 outline-none"
+                                            />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <label className="text-[10px] font-black text-gray-700 uppercase tracking-widest">CVV</label>
+                                            <input
+                                                type="text"
+                                                defaultValue="123"
+                                                readOnly
+                                                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 text-sm font-mono text-gray-600 outline-none"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="p-3 bg-blue-50 border border-blue-100 flex items-center gap-2">
+                                    <Info size={14} className="text-blue-500 shrink-0" />
+                                    <p className="text-[10px] text-blue-600 font-bold">This is a demo payment. No real charges will be made.</p>
+                                </div>
+
+                                {/* Pay Button */}
+                                <button
+                                    type="button"
+                                    disabled={paymentProcessing}
+                                    onClick={() => {
+                                        setPaymentProcessing(true);
+                                        setTimeout(() => {
+                                            setPaymentProcessing(false);
+                                            setPaymentDone(true);
+                                            setShowPaymentModal(false);
+                                        }, 2500);
+                                    }}
+                                    className="w-full py-4 bg-[#800020] text-[#D4AF37] flex items-center justify-center gap-3 rounded-none font-bold uppercase tracking-[0.2em] text-[10px] shadow-xl hover:bg-[#600318] transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
+                                >
+                                    {paymentProcessing ? (
+                                        <>
+                                            <Loader2 size={16} className="animate-spin" /> Processing Payment...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Shield size={16} /> Confirm & Pay ₹{plans.find(p => p._id === watch('membership'))?.price?.toLocaleString() || '0'}
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+
+                            <div className="px-6 pb-6 flex items-center justify-center gap-2">
+                                <Shield size={12} className="text-gray-300" />
+                                <p className="text-[8px] text-gray-400 font-bold uppercase tracking-widest">Secured with 256-bit SSL Encryption</p>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* Global Styles Hook */}
             <style>{`
